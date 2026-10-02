@@ -13,80 +13,108 @@
   <div id="game-container"></div>
 
   <div id="ui-layer">
-    <!-- മുകളിലെ വരി (സ്ക്രോൾ ചെയ്യാവുന്നത്) -->
-    <div class="top-nav">
-      <div id="owner-tag" class="owner-pill hidden">👑 OWNER</div>
-      <div class="points-badge">🪙 <span id="user-points">100</span></div>
-      <button class="nav-btn" onclick="takeSelfie()">📸 Selfie Zone</button>
-      <button class="nav-btn mic-free" id="mic-btn">🎙️ Free Mic</button>
-      <button class="nav-btn video-star" onclick="startVideoCall()">📹 Video Call</button>
-    </div>
-
-    <!-- ഗെയിംസ് ബട്ടൺ -->
-    <div class="game-launcher">
-      <button onclick="openGamesModal()">🎮 Games</button>
-    </div>
-
-    <!-- വാഹനങ്ങൾ -->
-    <div class="action-dock">
-      <button onclick="setMoveMode('walk')">🏃 Walk</button>
-      <button onclick="setMoveMode('bike')">🏍️ Bike</button>
-      <button onclick="setMoveMode('elephant')">🐘 Elephant</button>
-      <button onclick="setMoveMode('beast')" class="star-btn">🦖 Ride Dino</button>
-      <button onclick="setMoveMode('heli')">🚁 Helicopter</button>
-      <button onclick="setMoveMode('ship')">🚢 Ship</button>
-    </div>
-
-    <!-- മൊബൈലിൽ നടക്കാനുള്ള ടച്ച് ബട്ടണുകൾ -->
-    <div class="touch-controls">
-      <div></div>
-      <button class="touch-btn" id="btn-up">⬆️</button>
-      <div></div>
-      <button class="touch-btn" id="btn-left">⬅️</button>
-      <div></div>
-      <button class="touch-btn" id="btn-right">➡️</button>
-      <div></div>
-      <button class="touch-btn" id="btn-down">⬇️</button>
-      <div></div>
-    </div>
-
-    <!-- ചാറ്റ് ബോക്സ് -->
-    <div class="chat-wrapper">
-      <div id="chat-messages"></div>
-      <div class="emoji-bar">
-        <span onclick="sendEmoji('❤️')">❤️</span>
-        <span onclick="sendEmoji('🔥')">🔥</span>
-        <span onclick="sendEmoji('👏')">👏</span>
-        <span onclick="sendEmoji('🎉')">🎉</span>
+    <!-- ടോപ്പ് ബാർ -->
+    <div class="top-bar">
+      <div class="user-badges">
+        <div id="owner-tag" class="owner-pill hidden">👑 OWNER</div>
+        <div class="points-pill">🪙 <span id="user-points">100</span></div>
       </div>
-      <div class="chat-input-row">
-        <input type="text" id="chat-field" placeholder="Chat...">
-        <button onclick="dispatchChat()">Send</button>
+      <div class="top-actions">
+        <button class="circle-btn" onclick="openModal('avatar-modal')" title="Avatar">🎨</button>
+        <button class="circle-btn" onclick="takeInstantSelfie()" title="Selfie">📸</button>
+        <button class="circle-btn" onclick="toggleFreeMic()" title="Mic">🎙️</button>
+        <button class="circle-btn star-btn" onclick="requestVideoCall()" title="Video Call">📹</button>
+      </div>
+    </div>
+
+    <!-- വലതുവശത്തെ ഡ്രോയർ മെനു (വാഹനങ്ങളും ഗെയിമുകളും) -->
+    <div class="action-circle-menu">
+      <button class="menu-btn" onclick="openModal('rides-modal')">🚀 Rides & Beasts</button>
+      <button class="menu-btn" onclick="openModal('games-modal')">🎮 Mini Games</button>
+      <button class="menu-btn" onclick="openModal('social-modal')">❤️ Social / Marry</button>
+    </div>
+
+    <!-- അനലോഗ് ടച്ച് ജോയ്സ്റ്റിക്ക് -->
+    <div id="joystick-zone">
+      <div id="joystick-knob"></div>
+    </div>
+
+    <!-- ഗ്രൂപ്പ് ചാറ്റ് ബോക്സ് -->
+    <div class="chat-box">
+      <div id="chat-logs"></div>
+      <div class="emoji-tray">
+        <span onclick="addEmoji('❤️')">❤️</span>
+        <span onclick="addEmoji('🔥')">🔥</span>
+        <span onclick="addEmoji('🎉')">🎉</span>
+        <span onclick="addEmoji('💍')">💍</span>
+      </div>
+      <div class="chat-inputs">
+        <input type="text" id="chat-input" placeholder="Chat...">
+        <button onclick="sendChat()">Send</button>
       </div>
     </div>
   </div>
 
-  <div id="selfie-banner" class="banner hidden">
+  <!-- സെൽഫി പ്രോക്സിമിറ്റി ബാഡ്ജ് -->
+  <div id="selfie-banner" class="selfie-toast hidden">
     <span>🌟 Near <strong id="star-name">BTS Zone</strong></span>
-    <button onclick="takeSelfie()">📸 Click</button>
+    <button onclick="takeInstantSelfie()">📸 Selfie</button>
   </div>
 
-  <div id="beast-modal" class="modal hidden">
+  <!-- 1. വാഹനം & ബീസ്റ്റ് മെനു -->
+  <div id="rides-modal" class="modal hidden">
     <div class="modal-card">
-      <h3>🦖 Unlock Godzilla / Dino Ride</h3>
-      <button onclick="redeemWithPoints()" class="action-btn">🪙 500 Points</button>
-      <button onclick="buyWithStars()" class="star-full-btn">⭐ 50 Stars</button>
-      <button onclick="closeBeastModal()" class="close-btn">Cancel</button>
+      <h3>🚀 Mount Rides & Beasts</h3>
+      <div class="grid-picker">
+        <button onclick="selectRide('walk')">🏃 Walk</button>
+        <button onclick="selectRide('car')">🏎️ Red Car</button>
+        <button onclick="selectRide('bike')">🏍️ Sports Bike</button>
+        <button onclick="selectRide('elephant')">🐘 Elephant</button>
+        <button onclick="selectRide('kong')">🦍 King Kong</button>
+        <button onclick="selectRide('godzilla')">🦖 Godzilla</button>
+        <button onclick="selectRide('heli')">🚁 Helicopter</button>
+        <button onclick="selectRide('ship')">🚢 Ocean Ship</button>
+      </div>
+      <button onclick="closeModal('rides-modal')" class="btn-close">Close</button>
     </div>
   </div>
 
+  <!-- 2. മിനി ഗെയിംസ് മെനു (പോയിന്റ് സിസ്റ്റം) -->
   <div id="games-modal" class="modal hidden">
     <div class="modal-card">
-      <h3>🎮 Mini Games</h3>
-      <button onclick="playMiniGame('football')" class="action-btn">⚽ Football (+50 pts)</button>
-      <button onclick="playMiniGame('dice')" class="action-btn">🎲 Lucky Dice (+30 pts)</button>
-      <button onclick="playMiniGame('parkour')" class="action-btn">🌋 Lava Parkour (+100 pts)</button>
-      <button onclick="closeGamesModal()" class="close-btn">Close</button>
+      <h3>🎮 Mini Games Hub</h3>
+      <p style="font-size:12px; color:#94a3b8;">Earn Points to unlock rides & gifts!</p>
+      <button onclick="runMiniGame('football', 50)" class="btn-blue">⚽ Football Shootout (+50 pts)</button>
+      <button onclick="runMiniGame('dice', 30)" class="btn-blue">🎲 Lucky Dice Roll (+30 pts)</button>
+      <button onclick="runMiniGame('parkour', 100)" class="btn-blue">🌋 Lava Island Parkour (+100 pts)</button>
+      <button onclick="closeModal('games-modal')" class="btn-close">Close</button>
+    </div>
+  </div>
+
+  <!-- 3. ക്യാരക്ടർ കസ്റ്റമൈസ് മെനു -->
+  <div id="avatar-modal" class="modal hidden">
+    <div class="modal-card">
+      <h3>🎨 Customize Avatar</h3>
+      <p style="font-size:12px;">Shirt Color:</p>
+      <div class="grid-picker">
+        <button style="background:#ef4444;" onclick="changeShirt('#ef4444')">Red</button>
+        <button style="background:#2563eb;" onclick="changeShirt('#2563eb')">Blue</button>
+        <button style="background:#10b981;" onclick="changeShirt('#10b981')">Green</button>
+        <button style="background:#f59e0b; color:#000;" onclick="changeShirt('#f59e0b')">Gold</button>
+        <button style="background:#8b5cf6;" onclick="changeShirt('#8b5cf6')">Purple</button>
+        <button style="background:#0f172a;" onclick="changeShirt('#0f172a')">Dark</button>
+      </div>
+      <button onclick="closeModal('avatar-modal')" class="btn-close">Done</button>
+    </div>
+  </div>
+
+  <!-- 4. സോഷ്യൽ & പ്രൊപ്പോസൽ മെനു -->
+  <div id="social-modal" class="modal hidden">
+    <div class="modal-card">
+      <h3>❤️ Social Lounge</h3>
+      <button onclick="triggerProposal()" class="btn-yellow">💍 Propose Marriage (Fireworks)</button>
+      <button onclick="requestVideoCall()" class="btn-blue">🎁 Send Telegram Stars Gift</button>
+      <button onclick="closeModal('social-modal')" class="btn-close">Close</button>
     </div>
   </div>
 
