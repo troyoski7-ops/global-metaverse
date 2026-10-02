@@ -3,82 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GlobeVibe 3D</title>
+  <title>GlobeVibe 3D Metaverse</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-    body, html { width: 100%; height: 100%; overflow: hidden; background: #87ceeb; font-family: system-ui, -apple-system, sans-serif; }
-    #game-container { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: system-ui, sans-serif; }
+    #canvas-container { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
-    #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 10px; }
-    .top-bar, .side-dock, .chat-box, .modal-card, #joystick-base { pointer-events: auto; }
+    #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 8px; }
+    .top-bar, .side-dock, .chat-box, .modal-card, #joystick-base, #dismount-btn, #sky-banner { pointer-events: auto; }
 
-    /* ഹെഡർ ബാർ */
+    /* ആകാശത്ത് തിളങ്ങുന്ന ലൈവ് വിഷ് ബാനർ */
+    #sky-banner { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, #ff007f, #7928ca); color: #fff; font-weight: 900; font-size: 13px; padding: 8px 18px; border-radius: 20px; box-shadow: 0 0 20px #ff007f; display: none; text-shadow: 0 0 8px #fff; z-index: 25; text-align: center; }
+
+    /* ഹെഡർ */
     .top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-    .badges { display: flex; gap: 6px; align-items: center; }
-    .owner-tag { background: linear-gradient(45deg, #ffd700, #ff8c00); color: #000; font-weight: 900; padding: 4px 8px; border-radius: 12px; font-size: 11px; }
-    .vip-tag { background: linear-gradient(45deg, #a855f7, #ec4899); color: #fff; font-weight: bold; padding: 4px 8px; border-radius: 12px; font-size: 11px; }
-    .points-tag { background: rgba(15, 23, 42, 0.85); color: #ffd700; padding: 4px 10px; border-radius: 12px; font-weight: bold; border: 1px solid #ffd700; font-size: 11px; }
+    .badges { display: flex; gap: 5px; align-items: center; }
+    .badge { background: rgba(15, 23, 42, 0.9); color: #fff; padding: 5px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; border: 1px solid rgba(255,255,255,0.2); }
+    .owner-tag { background: linear-gradient(45deg, #ffd700, #ff8c00); color: #000; }
     
-    .top-actions { display: flex; gap: 5px; }
-    .pill-btn { background: rgba(15, 23, 42, 0.85); color: #fff; border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 9px; border-radius: 12px; font-size: 11px; backdrop-filter: blur(8px); cursor: pointer; }
-    .star-gold { background: linear-gradient(45deg, #eab308, #ca8a04); color: #000; font-weight: bold; border: none; }
+    .top-btns { display: flex; gap: 4px; }
+    .btn-top { background: rgba(15, 23, 42, 0.85); color: #fff; border: 1px solid rgba(255, 255, 255, 0.25); padding: 5px 8px; border-radius: 12px; font-size: 11px; backdrop-filter: blur(8px); cursor: pointer; }
+    .star-btn { background: linear-gradient(45deg, #eab308, #ca8a04); color: #000; font-weight: bold; border: none; }
 
-    /* വലതുവശത്തെ ആക്ഷൻ മെനുകൾ */
-    .side-dock { position: absolute; right: 10px; top: 50px; display: flex; flex-direction: column; gap: 6px; }
-    .dock-btn { background: rgba(15, 23, 42, 0.85); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); padding: 8px 12px; border-radius: 12px; font-size: 11px; backdrop-filter: blur(8px); cursor: pointer; }
+    /* ഡിസ്മൗണ്ട് / ഇറങ്ങാനുള്ള ചുവന്ന ബട്ടൺ */
+    #dismount-btn { position: absolute; top: 88px; left: 50%; transform: translateX(-50%); background: #ef4444; color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: bold; font-size: 12px; border: 2px solid #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.9); display: none; cursor: pointer; z-index: 20; }
 
-    /* 🕹️ സുഗമമായ 360° ടച്ച് ജോയ്സ്റ്റിക്ക് */
-    #joystick-base { position: absolute; left: 16px; bottom: 20px; width: 110px; height: 110px; background: rgba(0, 0, 0, 0.25); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.4); touch-action: none; }
+    /* സൈഡ് പാനൽ */
+    .side-dock { position: absolute; right: 8px; top: 48px; display: flex; flex-direction: column; gap: 5px; }
+    .dock-btn { background: rgba(15, 23, 42, 0.85); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); padding: 7px 10px; border-radius: 12px; font-size: 10px; backdrop-filter: blur(8px); text-align: left; cursor: pointer; }
+
+    /* 🕹️ 360° അനലോഗ് ജോയ്സ്റ്റിക്ക് */
+    #joystick-base { position: absolute; left: 16px; bottom: 20px; width: 110px; height: 110px; background: rgba(0, 0, 0, 0.35); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.4); touch-action: none; }
     #joystick-stick { position: absolute; left: 35px; top: 35px; width: 40px; height: 40px; background: #38bdf8; border-radius: 50%; box-shadow: 0 0 10px rgba(56, 189, 248, 0.8); pointer-events: none; }
 
     /* ഗ്രൂപ്പ് ചാറ്റ് */
-    .chat-box { position: absolute; right: 10px; bottom: 12px; width: 220px; background: rgba(15, 23, 42, 0.9); border-radius: 12px; padding: 6px; border: 1px solid rgba(255, 255, 255, 0.2); }
-    #chat-content { height: 45px; overflow-y: auto; font-size: 11px; color: #fff; margin-bottom: 4px; }
-    .emoji-row { display: flex; gap: 8px; font-size: 15px; margin-bottom: 3px; cursor: pointer; }
+    .chat-box { position: absolute; right: 8px; bottom: 12px; width: 210px; background: rgba(15, 23, 42, 0.9); border-radius: 12px; padding: 6px; border: 1px solid rgba(255, 255, 255, 0.2); }
+    #chat-content { height: 45px; overflow-y: auto; font-size: 10px; color: #fff; margin-bottom: 4px; }
     .chat-controls { display: flex; gap: 3px; }
     .chat-controls input { flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; padding: 4px 6px; border-radius: 6px; font-size: 10px; }
     .chat-controls button { background: #0284c7; color: #fff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; }
 
     /* മോഡലുകൾ */
     .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(4px); }
-    .modal-card { background: #1e293b; color: #fff; padding: 16px; border-radius: 16px; width: 85%; max-width: 310px; display: flex; flex-direction: column; gap: 8px; text-align: center; }
-    .grid-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 6px 0; }
-    .color-row { display: flex; justify-content: space-around; margin: 8px 0; }
-    .color-dot { width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer; }
-    .btn-action { background: #0284c7; color: #fff; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-    .btn-pink { background: #ec4899; color: #fff; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-    .btn-close { background: #64748b; color: #fff; border: none; padding: 6px; border-radius: 6px; font-size: 11px; cursor: pointer; }
-    .star-buy-row { background: #334155; border: 1px solid #eab308; color: #fff; padding: 8px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .modal-card { background: #1e293b; color: #fff; padding: 14px; border-radius: 16px; width: 85%; max-width: 310px; display: flex; flex-direction: column; gap: 8px; text-align: center; max-height: 85vh; overflow-y: auto; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin: 4px 0; }
+    .btn-act { background: #0284c7; color: #fff; border: none; padding: 8px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
+    .btn-close { background: #64748b; color: #fff; border: none; padding: 6px; border-radius: 6px; font-size: 10px; cursor: pointer; }
     .hidden { display: none !important; }
   </style>
 </head>
 <body>
-  <div id="game-container"></div>
+  <div id="canvas-container"></div>
+  <div id="sky-banner"></div>
+
+  <!-- ഇറങ്ങാനുള്ള ബട്ടൺ -->
+  <button id="dismount-btn" onclick="dismountVehicle()">🚪 Dismount / Walk Normal</button>
 
   <div id="ui-layer">
-    <!-- ടോപ്പ് ബാർ -->
     <div class="top-bar">
       <div class="badges">
-        <div id="owner-badge" class="owner-tag hidden">👑 OWNER</div>
-        <div id="vip-badge" class="vip-tag hidden">⭐ VIP</div>
-        <div class="points-tag">🪙 <span id="pts-val">100</span></div>
+        <div id="owner-tag" class="badge owner-tag hidden">👑 OWNER</div>
+        <div class="badge">🪙 <span id="pts">100</span></div>
       </div>
-      <div class="top-actions">
-        <button class="pill-btn" onclick="openBox('avatar-box')">🧑 Character</button>
-        <button class="pill-btn" onclick="openBox('server-box')">🌐 Server</button>
-        <button class="pill-btn star-gold" onclick="openBox('stars-box')">⭐ Stars</button>
+      <div class="top-btns">
+        <button class="btn-top" onclick="openBox('country-box')">🌍 Server</button>
+        <button class="btn-top" onclick="openBox('avatar-box')">🧑 Avatar</button>
+        <button class="btn-top star-btn" onclick="openBox('stars-box')">⭐ Stars Shop</button>
       </div>
     </div>
 
-    <!-- സൈഡ് ബട്ടണുകൾ -->
     <div class="side-dock">
-      <button class="dock-btn" onclick="openBox('rides-box')">🚀 Rides & Giants</button>
-      <button class="dock-btn" onclick="openBox('stage-box')">🎤 Concert Stage</button>
-      <button class="dock-btn" onclick="openBox('friends-box')">❤️️ Friends & Love</button>
-      <button class="dock-btn" onclick="takeInstantSelfie()">📸 Selfie Zone</button>
+      <button class="dock-btn" onclick="openBox('rides-box')">🚀 Realistic Vehicles</button>
+      <button class="dock-btn" onclick="openBox('stage-box')">🎤 Concert Stage & Mic</button>
+      <button class="dock-btn" onclick="openBox('sky-wish-box')">🎆 Sky Wish (Stars)</button>
+      <button class="dock-btn" onclick="teleportToMountain()">🏔️ Climb Mountain</button>
+      <button class="dock-btn" onclick="teleportToVolcano()">🌋 Lava Volcano (Stars)</button>
+      <button class="dock-btn" onclick="openBox('room-box')">💬 Group Chats</button>
     </div>
 
     <!-- 🕹️ ജോയ്സ്റ്റിക്ക് -->
@@ -86,107 +89,111 @@
       <div id="joystick-stick"></div>
     </div>
 
-    <!-- ലൈവ് ഗ്രൂപ്പ് ചാറ്റ് -->
+    <!-- ചാറ്റ് ബോക്സ് -->
     <div class="chat-box">
       <div id="chat-content"></div>
-      <div class="emoji-row">
-        <span onclick="putEmoji('❤️')">❤️</span>
-        <span onclick="putEmoji('🔥')">🔥</span>
-        <span onclick="putEmoji('🎉')">🎉</span>
-        <span onclick="putEmoji('💍')">💍</span>
-      </div>
       <div class="chat-controls">
         <input type="text" id="chat-txt" placeholder="Group chat..." maxlength="80">
-        <button onclick="postChat()">Send</button>
+        <button onclick="sendChatMessage()">Send</button>
       </div>
     </div>
   </div>
 
-  <!-- 1. ക്യാരക്ടർ മോഡൽ (Boy / Girl) -->
+  <!-- 1. രാജ്യങ്ങൾ (Servers) -->
+  <div id="country-box" class="modal hidden">
+    <div class="modal-card">
+      <h3>🌍 Select Telegram Active Server</h3>
+      <div class="grid-2">
+        <button onclick="setWorldServer('kerala', '🌴 Kerala')" class="btn-act">🌴 Kerala</button>
+        <button onclick="setWorldServer('india', '🇮🇳 India')" class="btn-act">🇮🇳 India</button>
+        <button onclick="setWorldServer('uae', '🇦🇪 UAE/Dubai')" class="btn-act">🇦🇪 UAE</button>
+        <button onclick="setWorldServer('russia', '🇷🇺 Russia')" class="btn-act">🇷🇺 Russia</button>
+        <button onclick="setWorldServer('usa', '🇺🇸 USA')" class="btn-act">🇺🇸 USA</button>
+        <button onclick="setWorldServer('germany', '🇩🇪 Germany')" class="btn-act">🇩🇪 Germany</button>
+      </div>
+      <button onclick="closeBox('country-box')" class="btn-close">Close</button>
+    </div>
+  </div>
+
+  <!-- 2. ക്യാരക്ടർ ബിൽഡർ (Boy / Girl) -->
   <div id="avatar-box" class="modal hidden">
     <div class="modal-card">
-      <h3>Select Your Character</h3>
-      <div class="grid-btns">
-        <button onclick="setCharGender('boy')" class="btn-action">👦 Boy</button>
-        <button onclick="setCharGender('girl')" class="btn-pink">👧 Girl</button>
+      <h3>🧑 Select Character Model</h3>
+      <div class="grid-2">
+        <button onclick="setCharGender('boy')" class="btn-act">👦 Boy</button>
+        <button onclick="setCharGender('girl')" class="btn-act" style="background:#ec4899;">👧 Girl</button>
       </div>
       <p style="font-size:11px;">Outfit Color:</p>
-      <div class="color-row">
-        <button class="color-dot" style="background:#ef4444;" onclick="setCharColor('#ef4444')"></button>
-        <button class="color-dot" style="background:#2563eb;" onclick="setCharColor('#2563eb')"></button>
-        <button class="color-dot" style="background:#10b981;" onclick="setCharColor('#10b981')"></button>
-        <button class="color-dot" style="background:#f59e0b;" onclick="setCharColor('#f59e0b')"></button>
-        <button class="color-dot" style="background:#8b5cf6;" onclick="setCharColor('#8b5cf6')"></button>
+      <div style="display:flex; justify-content:space-around; margin:5px 0;">
+        <div style="width:28px;height:28px;border-radius:50%;background:#ef4444;cursor:pointer;" onclick="setCharColor('#ef4444')"></div>
+        <div style="width:28px;height:28px;border-radius:50%;background:#2563eb;cursor:pointer;" onclick="setCharColor('#2563eb')"></div>
+        <div style="width:28px;height:28px;border-radius:50%;background:#10b981;cursor:pointer;" onclick="setCharColor('#10b981')"></div>
+        <div style="width:28px;height:28px;border-radius:50%;background:#f59e0b;cursor:pointer;" onclick="setCharColor('#f59e0b')"></div>
       </div>
       <button onclick="closeBox('avatar-box')" class="btn-close">Done</button>
     </div>
   </div>
 
-  <!-- 2. റൈഡുകളും ജയന്റ്സും -->
+  <!-- 3. ഒറിജിനൽ വാഹനങ്ങൾ & ജീവികൾ -->
   <div id="rides-box" class="modal hidden">
     <div class="modal-card">
-      <h3>Mount Rides & Giants</h3>
-      <div class="grid-btns">
-        <button onclick="mountRide('walk')" class="btn-action">🏃 Walk</button>
-        <button onclick="mountRide('car')" class="btn-action">🏎️ Red Car</button>
-        <button onclick="mountRide('bike')" class="btn-action">🏍️ Bike</button>
-        <button onclick="mountRide('kong')" class="btn-action">🦍 King Kong</button>
-        <button onclick="mountRide('godzilla')" class="btn-action">🦖 Godzilla</button>
-        <button onclick="mountRide('heli')" class="btn-action">🚁 Helicopter</button>
+      <h3>🚀 Realistic Rides & Giants</h3>
+      <div class="grid-2">
+        <button onclick="mountVehicle('car')" class="btn-act">🏎️ Sports Car</button>
+        <button onclick="mountVehicle('bike')" class="btn-act">🏍️ Super Bike</button>
+        <button onclick="mountVehicle('cycle')" class="btn-act">🚲 Bicycle</button>
+        <button onclick="mountVehicle('heli')" class="btn-act">🚁 Helicopter</button>
+        <button onclick="mountVehicle('ship')" class="btn-act">🚢 Ocean Ship</button>
+        <button onclick="mountVehicle('godzilla')" class="btn-act" style="background:#14532d;">🦖 Godzilla</button>
+        <button onclick="mountVehicle('kong')" class="btn-act" style="background:#1f2937;">🦍 King Kong</button>
       </div>
       <button onclick="closeBox('rides-box')" class="btn-close">Close</button>
-    </div>
-  </div>
-
-  <!-- 3. സെർവർ റൂമുകൾ (Kerala, UAE, USA) -->
-  <div id="server-box" class="modal hidden">
-    <div class="modal-card">
-      <h3>🌐 Select World Server</h3>
-      <div class="grid-btns">
-        <button onclick="joinServer('kerala', '🌴 Kerala')" class="btn-action">🌴 Kerala</button>
-        <button onclick="joinServer('india', '🇮🇳 India')" class="btn-action">🇮🇳 India</button>
-        <button onclick="joinServer('uae', '🇦🇪 UAE/Dubai')" class="btn-action">🇦🇪 UAE</button>
-        <button onclick="joinServer('usa', '🇺🇸 USA/Global')" class="btn-action">🇺🇸 Global</button>
-      </div>
-      <button onclick="closeBox('server-box')" class="btn-close">Close</button>
     </div>
   </div>
 
   <!-- 4. കോൺസേർട്ട് സ്റ്റേജ് & മൈക്ക് -->
   <div id="stage-box" class="modal hidden">
     <div class="modal-card">
-      <h3>🎤 Live Stage & Concert</h3>
-      <button id="stage-mic-btn" onclick="toggleStageMic()" class="btn-action" style="background:#ef4444;">🎙️ Start Singing (Live Mic)</button>
-      <p style="font-size:11px; margin-top:6px;">Sync DJ Songs:</p>
-      <button onclick="playStageTrack('https://commondatastorage.googleapis.com/codeskulptor-demos/riceracer_assets/music/win.ogg', 'Neon EDM Beat')" class="btn-action">🎵 Play Neon Beat</button>
-      <button onclick="playStageTrack('https://commondatastorage.googleapis.com/codeskulptor-assets/Epoq-Lepidoptera.ogg', 'Chill Lo-Fi')" class="btn-action">🎶 Play Lo-Fi Groove</button>
+      <h3>🎤 Concert Arena</h3>
+      <button onclick="sitInAudience()" class="btn-act" style="background:#8b5cf6;">🪑 Sit in Audience Seat</button>
+      <button id="mic-btn" onclick="toggleVoiceMic()" class="btn-act" style="background:#ef4444;">🎙️ Stage Mic (Sing to Everyone)</button>
       <button onclick="closeBox('stage-box')" class="btn-close">Close</button>
     </div>
   </div>
 
-  <!-- 5. ഒഫീഷ്യൽ Telegram Stars ഷോപ്പ് -->
-  <div id="stars-box" class="modal hidden">
+  <!-- 5. ആകാശത്ത് വിഷ് എഴുതാൻ (Sky Wish via Stars) -->
+  <div id="sky-wish-box" class="modal hidden">
     <div class="modal-card">
-      <h3>⭐ Telegram Stars Gifts</h3>
-      <div class="star-buy-row" onclick="buyStarItem('VIP All-Access Pass', 'Unlock VIP badge and all rides', 25, 'vip_pass')">
-        <span>👑 VIP Metaverse Pass</span>
-        <strong style="color:#facc15;">⭐ 25 Stars</strong>
-      </div>
-      <div class="star-buy-row" onclick="buyStarItem('Super Fireworks Gift', 'Trigger fireworks for everyone', 10, 'star_gift')">
-        <span>🎆 Fireworks Gift</span>
-        <strong style="color:#facc15;">⭐ 10 Stars</strong>
-      </div>
-      <button onclick="closeBox('stars-box')" class="btn-close">Close</button>
+      <h3>🎆 Broadcast Wish in Sky</h3>
+      <p style="font-size:11px; color:#cbd5e1;">ആകാശത്ത് എല്ലാവരും കാണുന്ന തരത്തിൽ പടക്കങ്ങളോടെ നിങ്ങളുടെ ആശംസകൾ എഴുതുക:</p>
+      <input type="text" id="sky-txt-input" placeholder="Happy Birthday / Love You..." style="padding:8px; border-radius:8px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
+      <button onclick="submitSkyWish()" class="btn-act" style="background:linear-gradient(45deg, #eab308, #ca8a04); color:#000;">⭐ Send to Sky (15 Stars)</button>
+      <button onclick="closeBox('sky-wish-box')" class="btn-close">Close</button>
     </div>
   </div>
 
-  <!-- 6. ഫ്രണ്ട്സ് & പ്രൊപ്പോസ് -->
-  <div id="friends-box" class="modal hidden">
+  <!-- 6. ഗ്രൂപ്പ് റൂമുകൾ -->
+  <div id="room-box" class="modal hidden">
     <div class="modal-card">
-      <h3>❤️ Social & Friends Hub</h3>
-      <button onclick="addFriendNearby()" class="btn-action">➕ Add Player as Friend</button>
-      <button onclick="proposeWithFireworks()" class="btn-action" style="background:#eab308; color:#000;">💍 Propose Marriage (Fireworks)</button>
-      <button onclick="closeBox('friends-box')" class="btn-close">Close</button>
+      <h3>💬 Custom Group Lounges</h3>
+      <div id="room-buttons" class="grid-2"></div>
+      <p style="font-size:11px; margin-top:8px;">Create New Group Room:</p>
+      <div style="display:flex; gap:4px;">
+        <input type="text" id="new-group-name" placeholder="Room title..." style="flex:1; padding:6px; border-radius:6px; border:none; font-size:10px;">
+        <button onclick="createRoomAction()" class="btn-act">Create</button>
+      </div>
+      <button onclick="closeBox('room-box')" class="btn-close">Close</button>
+    </div>
+  </div>
+
+  <!-- 7. Telegram Stars ഔദ്യോഗിക ഷോപ്പ് (Monetization) -->
+  <div id="stars-box" class="modal hidden">
+    <div class="modal-card">
+      <h3>⭐ Telegram Stars Official Store</h3>
+      <button onclick="purchaseStarsPerk('Unlock Godzilla & King Kong', 'beast_ride', 25)" class="btn-act" style="background:#15803d;">🦖 Unlock Giants (25 Stars)</button>
+      <button onclick="purchaseStarsPerk('Private Video Call Pass', 'video_pass', 35)" class="btn-act" style="background:#ca8a04;">📹 1-on-1 Video Calling (35 Stars)</button>
+      <button onclick="openBox('sky-wish-box'); closeBox('stars-box');" class="btn-act" style="background:#a855f7;">🎆 Sky Fireworks Message (15 Stars)</button>
+      <button onclick="closeBox('stars-box')" class="btn-close">Close</button>
     </div>
   </div>
 
@@ -196,142 +203,240 @@
     if (tg) { tg.ready(); tg.expand(); }
 
     let isOwner = false;
-    let myColor = '#2563eb';
-    let myGender = 'boy';
-    let activeRide = 'walk';
-    let userPoints = 100;
+    let unlockedBeast = false;
+    let userGender = 'boy';
+    let userColor = '#2563eb';
+    let activeMode = 'walk';
+    let userPts = 100;
 
-    // --- 3D Scene Setup ---
+    // --- Three.js 3D Engine Setup ---
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
+    scene.fog = new THREE.FogExp2(0x87ceeb, 0.003);
+
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    document.getElementById('game-container').appendChild(renderer.domElement);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
 
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
     scene.add(hemiLight);
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
-    dirLight.position.set(40, 70, 40);
+    dirLight.position.set(40, 80, 40);
     scene.add(dirLight);
 
-    // പച്ചപ്പുല്ല് ദ്വീപ് & നീലക്കടൽ
-    const island = new THREE.Mesh(new THREE.CylinderGeometry(110, 115, 4, 32), new THREE.MeshStandardMaterial({ color: 0x2e7d32, roughness: 0.8 }));
+    // ദ്വീപ് & സമുദ്രം
+    const island = new THREE.Mesh(new THREE.CylinderGeometry(140, 150, 4, 32), new THREE.MeshStandardMaterial({ color: 0x2e7d32 }));
     island.position.y = -2;
     scene.add(island);
 
-    const ocean = new THREE.Mesh(new THREE.PlaneGeometry(1600, 1600), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2 }));
+    const ocean = new THREE.Mesh(new THREE.PlaneGeometry(2200, 2200), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1 }));
     ocean.rotation.x = -Math.PI / 2;
     ocean.position.y = -3.8;
     scene.add(ocean);
 
-    // 🪙 നിലത്ത് കറങ്ങുന്ന ഗോൾഡ് കോയിനുകൾ (Collect Points)
-    const coins = [];
-    const coinGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.2, 16);
-    const coinMat = new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.2 });
-    for (let i = 0; i < 30; i++) {
-      const c = new THREE.Mesh(coinGeo, coinMat);
-      const angle = Math.random() * Math.PI * 2;
-      const dist = 10 + Math.random() * 85;
-      c.position.set(Math.cos(angle) * dist, 1, Math.sin(angle) * dist);
-      c.rotation.z = Math.PI / 2;
-      scene.add(c);
-      coins.push(c);
-    }
+    // 🏔️ മലകയറ്റ കൊടുമുടി
+    const mountain = new THREE.Mesh(new THREE.ConeGeometry(30, 40, 16), new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.9 }));
+    mountain.position.set(-65, 18, -50);
+    scene.add(mountain);
 
-    // 🎤 ലൈവ് കോൺസേർട്ട് സ്റ്റേജ്
+    // 🌋 ലാവ പുകയുന്ന അഗ്നിപർവ്വതം (Volcano)
+    const volcano = new THREE.Group();
+    const vBase = new THREE.Mesh(new THREE.ConeGeometry(35, 35, 16), new THREE.MeshStandardMaterial({ color: 0x262626 }));
+    vBase.position.y = 15; volcano.add(vBase);
+    const lavaTop = new THREE.Mesh(new THREE.CylinderGeometry(6, 8, 1, 16), new THREE.MeshStandardMaterial({ color: 0xff3b00, emissive: 0xff3b00, emissiveIntensity: 0.8 }));
+    lavaTop.position.y = 31; volcano.add(lavaTop);
+    volcano.position.set(70, 0, -60);
+    scene.add(volcano);
+
+    // 🎤 കോൺസേർട്ട് സ്റ്റേജും കസേരകളും (Audience Chairs)
     const stage = new THREE.Group();
-    const stageBase = new THREE.Mesh(new THREE.BoxGeometry(16, 1.5, 12), new THREE.MeshStandardMaterial({ color: 0x111827 }));
-    stageBase.position.y = 0.75; stage.add(stageBase);
-    const stageRoof = new THREE.Mesh(new THREE.BoxGeometry(16, 0.6, 12), new THREE.MeshStandardMaterial({ color: 0xec4899, emissive: 0xec4899, emissiveIntensity: 0.4 }));
-    stageRoof.position.y = 7; stage.add(stageRoof);
-    stage.position.set(0, 0, -45);
+    const sBase = new THREE.Mesh(new THREE.BoxGeometry(18, 1.5, 12), new THREE.MeshStandardMaterial({ color: 0x111827 }));
+    sBase.position.y = 0.75; stage.add(sBase);
+    const sRoof = new THREE.Mesh(new THREE.BoxGeometry(18, 0.5, 12), new THREE.MeshStandardMaterial({ color: 0xec4899, emissive: 0xec4899, emissiveIntensity: 0.5 }));
+    sRoof.position.y = 7; stage.add(sRoof);
+    stage.position.set(0, 0, -50);
     scene.add(stage);
 
-    // 🦖 യഥാർത്ഥ ഗോഡ്സില്ല
-    const godzilla = new THREE.Group();
-    const gzB = new THREE.Mesh(new THREE.BoxGeometry(6, 9, 9), new THREE.MeshStandardMaterial({ color: 0x14532d }));
-    gzB.position.y = 4.5; godzilla.add(gzB);
-    const gzH = new THREE.Mesh(new THREE.BoxGeometry(4, 4, 6), new THREE.MeshStandardMaterial({ color: 0x052e16 }));
-    gzH.position.set(0, 9.5, 5); godzilla.add(gzH);
-    godzilla.position.set(-35, 0, 20);
-    scene.add(godzilla);
+    for (let r = 0; r < 3; r++) {
+      for (let c = -3; c <= 3; c++) {
+        const chair = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1, 1.2), new THREE.MeshStandardMaterial({ color: 0x8b5cf6 }));
+        chair.position.set(c * 2.5, 0.5, -35 + r * 2.5);
+        scene.add(chair);
+      }
+    }
 
-    // 🦍 യഥാർത്ഥ കിംഗ് കോങ്
-    const kong = new THREE.Group();
-    const kB = new THREE.Mesh(new THREE.BoxGeometry(6, 8, 5), new THREE.MeshStandardMaterial({ color: 0x1f2937 }));
-    kB.position.y = 4; kong.add(kB);
-    const kH = new THREE.Mesh(new THREE.BoxGeometry(4, 4, 4), new THREE.MeshStandardMaterial({ color: 0x111827 }));
-    kH.position.set(0, 8.8, 0.5); kong.add(kH);
-    kong.position.set(35, 0, 20);
-    scene.add(kong);
-
-    // 🏎️ റെഡ് സ്പോർട്സ് കാർ
+    // ----------------------------------------------------
+    // 🏎️ ഒറിജിനൽ സ്പോർട്സ് കാർ (Chassis, Cabin, 4 Wheels, Lights)
+    // ----------------------------------------------------
     const car = new THREE.Group();
-    const carB = new THREE.Mesh(new THREE.BoxGeometry(3.5, 1.2, 6), new THREE.MeshStandardMaterial({ color: 0xdc2626 }));
-    carB.position.y = 0.8; car.add(carB);
-    const carC = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1, 3), new THREE.MeshStandardMaterial({ color: 0x111827 }));
-    carC.position.set(0, 1.8, -0.2); car.add(carC);
-    car.position.set(-18, 0, -20);
+    const carBody = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1, 5.5), new THREE.MeshStandardMaterial({ color: 0xdc2626, metalness: 0.6, roughness: 0.2 }));
+    carBody.position.y = 0.8; car.add(carBody);
+    const carCabin = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.9, 2.8), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+    carCabin.position.set(0, 1.6, -0.2); car.add(carCabin);
+
+    // 4 റിയൽ വീലുകൾ
+    const wheelGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.4, 16);
+    const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111827 });
+    const carWheels = [];
+    const wPositions = [ [-1.6, 0.5, 1.8], [1.6, 0.5, 1.8], [-1.6, 0.5, -1.8], [1.6, 0.5, -1.8] ];
+    wPositions.forEach(pos => {
+      const w = new THREE.Mesh(wheelGeo, wheelMat);
+      w.rotation.z = Math.PI / 2;
+      w.position.set(...pos);
+      car.add(w);
+      carWheels.push(w);
+    });
+    // ഹെഡ്‌ലൈറ്റുകൾ
+    const lightGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.1, 12);
+    const lightMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff });
+    const l1 = new THREE.Mesh(lightGeo, lightMat); l1.position.set(-1, 0.8, 2.75); l1.rotation.x = Math.PI / 2; car.add(l1);
+    const l2 = l1.clone(); l2.position.set(1, 0.8, 2.75); car.add(l2);
+    car.position.set(-20, 0, -15);
     scene.add(car);
 
-    // 🏍️ ബൈക്ക്
-    const bike = new THREE.Mesh(new THREE.BoxGeometry(1, 1.5, 3), new THREE.MeshStandardMaterial({ color: 0xf59e0b }));
-    bike.position.set(18, 0.8, -20);
+    // ----------------------------------------------------
+    // 🏍️ ഒറിജിനൽ സൂപ്പർ ബൈക്ക് (Bike Wheels, Frame, Handlebar)
+    // ----------------------------------------------------
+    const bike = new THREE.Group();
+    const bikeFrame = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.8, 2.2), new THREE.MeshStandardMaterial({ color: 0xf59e0b }));
+    bikeFrame.position.y = 0.9; bike.add(bikeFrame);
+    const bSeat = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.8), new THREE.MeshStandardMaterial({ color: 0x111827 }));
+    bSeat.position.set(0, 1.2, -0.2); bike.add(bSeat);
+
+    const bWheelF = new THREE.Mesh(wheelGeo, wheelMat); bWheelF.rotation.z = Math.PI / 2; bWheelF.position.set(0, 0.5, 1.3); bike.add(bWheelF);
+    const bWheelB = new THREE.Mesh(wheelGeo, wheelMat); bWheelB.rotation.z = Math.PI / 2; bWheelB.position.set(0, 0.5, -1.3); bike.add(bWheelB);
+    const bHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.2), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+    bHandle.rotation.z = Math.PI / 2; bHandle.position.set(0, 1.4, 0.8); bike.add(bHandle);
+    bike.position.set(20, 0, -15);
     scene.add(bike);
 
-    // 🧑‍🤝‍🧑 യഥാർത്ഥ Boy & Girl അവതാർ
-    let player = new THREE.Group();
-    scene.add(player);
+    // ----------------------------------------------------
+    // 🚲 ഒറിജിനൽ സൈക്കിൾ (Bicycle Frame & Thin Wheels)
+    // ----------------------------------------------------
+    const cycle = new THREE.Group();
+    const thinWheelGeo = new THREE.CylinderGeometry(0.45, 0.45, 0.1, 16);
+    const cWheelF = new THREE.Mesh(thinWheelGeo, wheelMat); cWheelF.rotation.z = Math.PI / 2; cWheelF.position.set(0, 0.45, 1); cycle.add(cWheelF);
+    const cWheelB = new THREE.Mesh(thinWheelGeo, wheelMat); cWheelB.rotation.z = Math.PI / 2; cWheelB.position.set(0, 0.45, -1); cycle.add(cWheelB);
+    const cFrame = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.8), new THREE.MeshStandardMaterial({ color: 0x10b981 }));
+    cFrame.rotation.x = Math.PI / 4; cFrame.position.set(0, 0.9, 0); cycle.add(cFrame);
+    const cBar = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.9), new THREE.MeshStandardMaterial({ color: 0x111827 }));
+    cBar.rotation.z = Math.PI / 2; cBar.position.set(0, 1.3, 0.8); cycle.add(cBar);
+    cycle.position.set(10, 0, -15);
+    scene.add(cycle);
 
-    function renderAvatar() {
-      while (player.children.length > 0) player.remove(player.children[0]);
-      
-      const body = new THREE.Mesh(new THREE.BoxGeometry(1, 1.3, 0.6), new THREE.MeshStandardMaterial({ color: myColor }));
-      body.position.y = 1.3;
-      player.add(body);
+    // ----------------------------------------------------
+    // 🚁 ഒറിജിനൽ ഹെലികോപ്റ്റർ (Cockpit, Tail & Spinning Rotor)
+    // ----------------------------------------------------
+    const heli = new THREE.Group();
+    const hBody = new THREE.Mesh(new THREE.SphereGeometry(1.5, 16, 16), new THREE.MeshStandardMaterial({ color: 0x3b82f6 }));
+    hBody.position.y = 1.6; heli.add(hBody);
+    const hTail = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 3), new THREE.MeshStandardMaterial({ color: 0x1e40af }));
+    hTail.rotation.x = Math.PI / 2; hTail.position.set(0, 1.6, -2.5); heli.add(hTail);
 
-      const head = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), new THREE.MeshStandardMaterial({ color: '#ffd166' }));
-      head.position.y = 2.4;
-      player.add(head);
+    const rotor = new THREE.Mesh(new THREE.BoxGeometry(6, 0.05, 0.4), new THREE.MeshStandardMaterial({ color: 0x111827 }));
+    rotor.position.set(0, 3.2, 0); heli.add(rotor);
+    heli.position.set(-10, 0, -25);
+    scene.add(heli);
 
-      if (myGender === 'girl') {
+    // 🚢 കടലിലെ കപ്പൽ (Ship)
+    const ship = new THREE.Group();
+    const sHull = new THREE.Mesh(new THREE.BoxGeometry(7, 3.5, 18), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+    sHull.position.y = 1.2; ship.add(sHull);
+    const sCabin = new THREE.Mesh(new THREE.BoxGeometry(4.5, 3.5, 7), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+    sCabin.position.set(0, 4, 0); ship.add(sCabin);
+    ship.position.set(95, -2, 50);
+    scene.add(ship);
+
+    // 🦖 ഗോഡ്‌സില്ല & 🦍 കിംഗ് കോങ്
+    const godzilla = new THREE.Group();
+    const gBody = new THREE.Mesh(new THREE.BoxGeometry(6, 10, 10), new THREE.MeshStandardMaterial({ color: 0x14532d }));
+    gBody.position.y = 5; godzilla.add(gBody);
+    godzilla.position.set(-45, 0, 20);
+    scene.add(godzilla);
+
+    const kong = new THREE.Group();
+    const kBody = new THREE.Mesh(new THREE.BoxGeometry(6, 9, 6), new THREE.MeshStandardMaterial({ color: 0x1f2937 }));
+    kBody.position.y = 4.5; kong.add(kBody);
+    kong.position.set(45, 0, 20);
+    scene.add(kong);
+
+    // ----------------------------------------------------
+    // 🧑‍🤝‍🧑 ഒറിജിനൽ ഹ്യൂമനോയിഡ് അവതാർ (Realistic Limbs & Body)
+    // ----------------------------------------------------
+    let myPlayer = new THREE.Group();
+    scene.add(myPlayer);
+
+    function buildHumanoidModel() {
+      while(myPlayer.children.length > 0) myPlayer.remove(myPlayer.children[0]);
+
+      // ഉടൽ
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1, 1.3, 0.6), new THREE.MeshStandardMaterial({ color: userColor }));
+      body.position.y = 1.3; myPlayer.add(body);
+
+      // തല & കഴുത്ത്
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 16), new THREE.MeshStandardMaterial({ color: '#ffd166' }));
+      head.position.y = 2.3; myPlayer.add(head);
+
+      // കണ്ണുകൾ
+      const eyeGeo = new THREE.SphereGeometry(0.06, 8, 8);
+      const eyeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+      const eyeL = new THREE.Mesh(eyeGeo, eyeMat); eyeL.position.set(-0.14, 2.35, 0.38); myPlayer.add(eyeL);
+      const eyeR = new THREE.Mesh(eyeGeo, eyeMat); eyeR.position.set(0.14, 2.35, 0.38); myPlayer.add(eyeR);
+
+      if (userGender === 'girl') {
         const hair = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.95, 0.9), new THREE.MeshStandardMaterial({ color: 0x7c2d12 }));
-        hair.position.set(0, 2.5, -0.1);
-        player.add(hair);
+        hair.position.set(0, 2.45, -0.1); myPlayer.add(hair);
       } else {
-        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.5, 0.25, 8), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
-        cap.position.y = 2.85;
-        player.add(cap);
+        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.45, 0.2, 12), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+        cap.position.y = 2.75; myPlayer.add(cap);
       }
 
-      const lLeg = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.8, 0.4), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
-      lLeg.position.set(-0.25, 0.4, 0); player.add(lLeg);
-      const rLeg = lLeg.clone();
-      rLeg.position.set(0.25, 0.4, 0); player.add(rLeg);
+      // കൈകൾ
+      const armMat = new THREE.MeshStandardMaterial({ color: userColor });
+      const armL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 1, 0.3), armMat); armL.position.set(-0.7, 1.3, 0); myPlayer.add(armL);
+      const armR = new THREE.Mesh(new THREE.BoxGeometry(0.28, 1, 0.3), armMat); armR.position.set(0.7, 1.3, 0); myPlayer.add(armR);
 
-      player.userData = { body, lLeg, rLeg };
+      // കാലുകൾ
+      const legMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
+      const legL = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.8, 0.4), legMat); legL.position.set(-0.25, 0.4, 0); myPlayer.add(legL);
+      const legR = legL.clone(); legR.position.set(0.25, 0.4, 0); myPlayer.add(legR);
+
+      myPlayer.userData = { body, legL, legR, armL, armR };
     }
-    renderAvatar();
+    buildHumanoidModel();
 
     // രജിസ്ട്രേഷൻ
     socket.emit('registerUser', {
       name: tg?.initDataUnsafe?.user?.first_name || "Gokul",
       telegramId: tg?.initDataUnsafe?.user?.id || 1689374364,
-      shirtColor: myColor,
-      gender: myGender
+      gender: userGender,
+      shirtColor: userColor
     });
 
     socket.on('ownerVerified', (d) => {
       isOwner = d.isOwner;
-      userPoints = d.points;
-      document.getElementById('pts-val').innerText = userPoints;
-      if (isOwner) document.getElementById('owner-badge').classList.remove('hidden');
-      if (d.isVIP) document.getElementById('vip-badge').classList.remove('hidden');
+      unlockedBeast = d.unlockedBeast;
+      if (isOwner) document.getElementById('owner-tag').classList.remove('hidden');
+      renderRoomButtons(d.rooms);
     });
 
-    // 🕹️ സുഗമമായ അനലോഗ് ജോയ്സ്റ്റിക്ക് കൺട്രോൾ
+    // 👆 സ്ക്രീൻ ടച്ച് ഡ്രാഗ് വഴി ക്യാമറ 360° തിരിക്കൽ
+    let isDragging = false, prevX = 0, cameraAngle = 0;
+    window.addEventListener('touchstart', (e) => {
+      if (e.target.closest('#joystick-base') || e.target.closest('#ui-layer')) return;
+      isDragging = true; prevX = e.touches[0].clientX;
+    });
+    window.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      const curX = e.touches[0].clientX;
+      cameraAngle -= (curX - prevX) * 0.008;
+      prevX = curX;
+    });
+    window.addEventListener('touchend', () => { isDragging = false; });
+
+    // 🕹️ ജോയ്സ്റ്റിക്ക് കൺട്രോൾ
     let moveX = 0, moveZ = 0;
     const jBase = document.getElementById('joystick-base');
     const jStick = document.getElementById('joystick-stick');
@@ -356,50 +461,101 @@
     jBase.addEventListener('touchend', clearTouch);
     jBase.addEventListener('touchcancel', clearTouch);
 
-    // മോഡൽ കൺട്രോൾസ്
+    // മോഡലുകൾ
     window.openBox = (id) => document.getElementById(id).classList.remove('hidden');
     window.closeBox = (id) => document.getElementById(id).classList.add('hidden');
 
-    window.setCharGender = (g) => { myGender = g; renderAvatar(); };
-    window.setCharColor = (c) => { myColor = c; renderAvatar(); };
+    window.setCharGender = (g) => { userGender = g; buildHumanoidModel(); };
+    window.setCharColor = (c) => { userColor = c; buildHumanoidModel(); };
 
-    window.joinServer = (key, name) => {
-      closeBox('server-box');
-      socket.emit('switchRegionServer', key);
-      alert(`🌍 Joined ${name} Server!`);
+    window.setWorldServer = (k, name) => {
+      closeBox('country-box');
+      alert(`🌍 Connected to ${name} server!`);
     };
 
-    window.mountRide = (type) => {
-      activeRide = type;
+    // വാഹനം കയറൽ
+    window.mountVehicle = (t) => {
+      activeMode = t;
       closeBox('rides-box');
-      if (type === 'car') player.position.set(car.position.x, 1.2, car.position.z);
-      else if (type === 'bike') player.position.set(bike.position.x, 1.2, bike.position.z);
-      else if (type === 'kong') player.position.set(kong.position.x, 9, kong.position.z);
-      else if (type === 'godzilla') player.position.set(godzilla.position.x, 10.5, godzilla.position.z);
-      else if (type === 'heli') player.position.y = 25;
-      else player.position.y = 0;
+      document.getElementById('dismount-btn').style.display = 'block';
+
+      if (t === 'car') myPlayer.position.set(car.position.x, 1.2, car.position.z);
+      else if (t === 'bike') myPlayer.position.set(bike.position.x, 1.2, bike.position.z);
+      else if (t === 'cycle') myPlayer.position.set(cycle.position.x, 1, cycle.position.z);
+      else if (t === 'heli') myPlayer.position.set(heli.position.x, 20, heli.position.z);
+      else if (t === 'ship') myPlayer.position.set(ship.position.x, 2, ship.position.z);
+      else if (t === 'godzilla') myPlayer.position.set(godzilla.position.x, 11, godzilla.position.z);
+      else if (t === 'kong') myPlayer.position.set(kong.position.x, 10, kong.position.z);
     };
 
-    // ⭐ ഒഫീഷ്യൽ Telegram Stars പേയ്‌‌മെന്റ്
-    window.buyStarItem = (title, desc, stars, type) => {
+    // 🚪 വാഹനം വിട്ട് നടക്കാൻ ഇറങ്ങൽ (Dismount)
+    window.dismountVehicle = () => {
+      activeMode = 'walk';
+      myPlayer.position.y = 0;
+      document.getElementById('dismount-btn').style.display = 'none';
+      alert("🚶 Dismounted to normal walk!");
+    };
+
+    // 🏔️ മലകയറ്റവും അഗ്നിപർവ്വതവും
+    window.teleportToMountain = () => {
+      activeMode = 'mountain';
+      myPlayer.position.set(mountain.position.x, 38, mountain.position.z);
+      document.getElementById('dismount-btn').style.display = 'block';
+      alert("🏔️ You climbed the Mountain peak!");
+    };
+
+    window.teleportToVolcano = () => {
+      activeMode = 'volcano';
+      myPlayer.position.set(volcano.position.x, 32, volcano.position.z);
+      document.getElementById('dismount-btn').style.display = 'block';
+      alert("🌋 Standing on the glowing Lava Volcano!");
+    };
+
+    window.sitInAudience = () => {
+      closeBox('stage-box');
+      myPlayer.position.set(0, 0.5, -35);
+      alert("🪑 Seated in audience chair watching concert!");
+    };
+
+    // 🎆 ആകാശത്ത് വിഷ് തെളിയിക്കൽ (Sky Wish via Stars)
+    window.submitSkyWish = () => {
+      const msg = document.getElementById('sky-txt-input').value.trim();
+      if (!msg) return;
+      closeBox('sky-wish-box');
+      socket.emit('requestStarsAction', {
+        title: "Sky Fireworks Message",
+        desc: "Display banner in sky with fireworks",
+        stars: 15,
+        type: 'sky_wish',
+        extraText: msg
+      });
+    };
+
+    socket.on('displaySkyBanner', (d) => {
+      const b = document.getElementById('sky-banner');
+      b.innerText = `🎆 ${d.sender}: "${d.text}" 🎆`;
+      b.style.display = 'block';
+      setTimeout(() => { b.style.display = 'none'; }, 9000);
+    });
+
+    // ⭐ Telegram Stars പേയ്‌മെന്റ് സിസ്റ്റം (നിങ്ങൾക്ക് പണം ലഭിക്കാൻ)
+    window.purchaseStarsPerk = (title, type, stars) => {
       closeBox('stars-box');
-      socket.emit('requestOfficialInvoice', { title, description: desc, stars, type });
+      socket.emit('requestStarsAction', { title, desc: title, type, stars });
     };
 
-    socket.on('openTelegramInvoiceWindow', (d) => {
+    socket.on('openOfficialInvoice', (d) => {
       if (tg?.openInvoice) tg.openInvoice(d.invoiceUrl, (st) => { if (st === 'paid') alert("⭐ Stars Paid Successfully!"); });
       else window.open(d.invoiceUrl, '_blank');
     });
 
-    socket.on('vipUnlocked', () => {
-      document.getElementById('vip-badge').classList.remove('hidden');
-      alert("👑 VIP Pass Active! All rides and features unlocked.");
-    });
+    socket.on('beastUnlocked', () => { unlockedBeast = true; alert("🦖 Giants Unlocked!"); });
+    socket.on('unlockVideoCall', () => alert("📹 Video Call Room Active!"));
 
-    // 🎙️ ലൈവ് മൈക്ക് (Stage Mic)
+    // 🎙️ ലൈവ് വോയ്‌സ് മൈക്ക് (WebRTC Voice Talk)
     let micLive = false, mediaRec = null, streamObj = null;
-    window.toggleStageMic = async () => {
-      const btn = document.getElementById('stage-mic-btn');
+    window.toggleVoiceMic = async () => {
+      const btn = document.getElementById('mic-btn');
       if (!micLive) {
         try {
           streamObj = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -407,73 +563,57 @@
           mediaRec.ondataavailable = (e) => {
             if (e.data.size > 0 && micLive) {
               const r = new FileReader();
-              r.onload = () => socket.emit('streamSingerAudio', r.result);
+              r.onload = () => socket.emit('voiceTalkStream', r.result);
               r.readAsDataURL(e.data);
             }
           };
           mediaRec.start(250);
           micLive = true;
           btn.innerText = "🛑 Stop Singing";
-          btn.style.background = "#475569";
-          alert("🎙️ മൈക്ക് ഓൺ ആയി! നിങ്ങൾ പാടുന്നത് എല്ലാവരും ലൈവായി കേൾക്കും.");
-        } catch (err) { alert("Mic Permission Denied: " + err.message); }
+          alert("🎙️ മൈക്ക് ഓൺ ആയി! നിങ്ങൾ സംസാരിക്കുന്നതും പാടുന്നതും എല്ലാവരും ലൈവായി കേൾക്കും.");
+        } catch (e) { alert("Mic Permission Denied: " + e.message); }
       } else {
         micLive = false;
         if (mediaRec) mediaRec.stop();
         if (streamObj) streamObj.getTracks().forEach(t => t.stop());
-        btn.innerText = "🎙️ Start Singing (Live Mic)";
-        btn.style.background = "#ef4444";
+        btn.innerText = "🎙️ Stage Mic (Sing to Everyone)";
       }
     };
-    socket.on('playLiveSingerVoice', (d) => new Audio(d.audio).play().catch(() => {}));
+    socket.on('incomingLiveVoice', (d) => new Audio(d.audio).play().catch(() => {}));
 
-    // കോൺസേർട്ട് മ്യൂസിക്
-    let stageAudio = new Audio();
-    window.playStageTrack = (url, title) => {
-      closeBox('stage-box');
-      socket.emit('syncStageTrack', url);
-      alert(`🎶 Playing "${title}" on Concert Stage!`);
+    // ഗ്രൂപ്പ് റൂമുകൾ
+    function renderRoomButtons(rooms) {
+      const c = document.getElementById('room-buttons');
+      c.innerHTML = '';
+      rooms.forEach(r => {
+        c.innerHTML += `<button onclick="switchRoom('${r}')" class="btn-act">#${r}</button>`;
+      });
+    }
+    socket.on('roomListUpdated', (rooms) => renderRoomButtons(rooms));
+
+    window.createRoomAction = () => {
+      const inp = document.getElementById('new-group-name');
+      if (inp.value.trim()) { socket.emit('createNewRoom', inp.value.trim()); inp.value = ''; }
     };
-    socket.on('playConcertTrackForAll', (d) => {
-      stageAudio.src = d.url;
-      stageAudio.play().catch(() => {});
-    });
-
-    // ഫ്രണ്ട്സ് & പ്രൊപ്പോസൽ
-    window.addFriendNearby = () => { closeBox('friends-box'); alert("🤝 Player added as Friend!"); };
-    window.proposeWithFireworks = () => {
-      closeBox('friends-box');
-      socket.emit('proposeInGame');
-      alert("💍 Marriage Proposal Sent! Fireworks across the sky! 🎆");
-    };
-
-    // സെൽഫി
-    window.takeInstantSelfie = function() {
-      document.getElementById('ui-layer').style.display = 'none';
-      setTimeout(() => {
-        const dataUrl = renderer.domElement.toDataURL("image/png");
-        const link = document.createElement('a');
-        link.download = `globevibe-selfie.png`;
-        link.href = dataUrl;
-        link.click();
-        document.getElementById('ui-layer').style.display = 'flex';
-      }, 200);
+    window.switchRoom = (r) => {
+      closeBox('room-box');
+      socket.emit('joinChatRoom', r);
+      alert(`💬 Switched to #${r} Lounge!`);
     };
 
-    // ഗ്രൂപ്പ് ചാറ്റ്
-    window.postChat = () => {
+    // ചാറ്റ് അയക്കൽ
+    window.sendChatMessage = () => {
       const f = document.getElementById('chat-txt');
-      if (f.value.trim()) { socket.emit('sendGroupChatMsg', { text: f.value.trim() }); f.value = ''; }
+      if (f.value.trim()) { socket.emit('roomChatMessage', { text: f.value.trim() }); f.value = ''; }
     };
-    window.putEmoji = (em) => { document.getElementById('chat-txt').value += em; };
-    socket.on('broadcastChatMessage', (d) => {
+    socket.on('broadcastRoomChat', (d) => {
       const c = document.getElementById('chat-content');
-      c.innerHTML += `<div><strong>${d.isOwner ? '👑 ' : (d.isVIP ? '⭐ ' : '')}${d.sender}:</strong> ${d.text}</div>`;
+      c.innerHTML += `<div><strong>${d.isOwner ? '👑 ' : ''}${d.sender}:</strong> ${d.text}</div>`;
       c.scrollTop = c.scrollHeight;
     });
-    socket.on('incomingSystemChat', (d) => {
+    socket.on('sysRoomChat', (txt) => {
       const c = document.getElementById('chat-content');
-      c.innerHTML += `<div style="color:#38bdf8;"><em>${d.text}</em></div>`;
+      c.innerHTML += `<div style="color:#38bdf8;"><em>${txt}</em></div>`;
       c.scrollTop = c.scrollHeight;
     });
 
@@ -482,41 +622,47 @@
     function animate() {
       requestAnimationFrame(animate);
 
-      const spd = ['kong', 'godzilla'].includes(activeRide) ? 0.65 : (['car', 'bike'].includes(activeRide) ? 0.8 : 0.4);
+      // ഹെലികോപ്റ്റർ റോട്ടർ കറങ്ങൽ
+      rotor.rotation.y += 0.25;
+
+      const spd = ['kong', 'godzilla'].includes(activeMode) ? 0.65 : (['car', 'bike', 'heli'].includes(activeMode) ? 0.85 : 0.4);
 
       if (moveX !== 0 || moveZ !== 0) {
-        player.position.x += moveX * spd;
-        player.position.z += moveZ * spd;
-        player.rotation.y = Math.atan2(moveX, moveZ);
+        const forwardX = moveX * Math.cos(cameraAngle) + moveZ * Math.sin(cameraAngle);
+        const forwardZ = -moveX * Math.sin(cameraAngle) + moveZ * Math.cos(cameraAngle);
+
+        myPlayer.position.x += forwardX * spd;
+        myPlayer.position.z += forwardZ * spd;
+        myPlayer.rotation.y = Math.atan2(forwardX, forwardZ);
 
         wCycle += 0.2;
-        if (player.userData.lLeg) {
-          player.userData.lLeg.rotation.x = Math.sin(wCycle) * 0.6;
-          player.userData.rLeg.rotation.x = -Math.sin(wCycle) * 0.6;
+        if (myPlayer.userData.legL) {
+          myPlayer.userData.legL.rotation.x = Math.sin(wCycle) * 0.6;
+          myPlayer.userData.legR.rotation.x = -Math.sin(wCycle) * 0.6;
+          myPlayer.userData.armL.rotation.x = -Math.sin(wCycle) * 0.6;
+          myPlayer.userData.armR.rotation.x = Math.sin(wCycle) * 0.6;
         }
 
-        if (activeRide === 'car') car.position.set(player.position.x, 0, player.position.z);
-        if (activeRide === 'bike') bike.position.set(player.position.x, 0, player.position.z);
-        if (activeRide === 'kong') kong.position.set(player.position.x, 0, player.position.z);
-        if (activeRide === 'godzilla') godzilla.position.set(player.position.x, 0, player.position.z);
+        // വീലുകൾ കറങ്ങുന്നു
+        carWheels.forEach(w => w.rotation.x += 0.2);
 
-        socket.emit('updatePosition', { x: player.position.x, y: player.position.y, z: player.position.z });
+        if (activeMode === 'car') car.position.set(myPlayer.position.x, 0, myPlayer.position.z);
+        if (activeMode === 'bike') bike.position.set(myPlayer.position.x, 0, myPlayer.position.z);
+        if (activeMode === 'cycle') cycle.position.set(myPlayer.position.x, 0, myPlayer.position.z);
+        if (activeMode === 'heli') heli.position.set(myPlayer.position.x, 18, myPlayer.position.z);
+        if (activeMode === 'ship') ship.position.set(myPlayer.position.x, -2, myPlayer.position.z);
+        if (activeMode === 'kong') kong.position.set(myPlayer.position.x, 0, myPlayer.position.z);
+        if (activeMode === 'godzilla') godzilla.position.set(myPlayer.position.x, 0, myPlayer.position.z);
+
+        socket.emit('updatePosition', { x: myPlayer.position.x, y: myPlayer.position.y, z: myPlayer.position.z });
       }
 
-      // കോയിൻസ് കറങ്ങുന്നതും കളക്റ്റ് ചെയ്യുന്നതും
-      coins.forEach(coin => {
-        coin.rotation.y += 0.05;
-        if (coin.visible && player.position.distanceTo(coin.position) < 2.5) {
-          coin.visible = false;
-          userPoints += 10;
-          document.getElementById('pts-val').innerText = userPoints;
-        }
-      });
-
-      camera.position.x = player.position.x;
-      camera.position.y = player.position.y + 7;
-      camera.position.z = player.position.z + 12;
-      camera.lookAt(player.position.x, player.position.y + 1, player.position.z);
+      // ടച്ച് ഡ്രാഗ് അനുസരിച്ചുള്ള 360° ക്യാമറ ആംഗിൾ
+      const camDist = 12;
+      camera.position.x = myPlayer.position.x + Math.sin(cameraAngle) * camDist;
+      camera.position.y = myPlayer.position.y + 7;
+      camera.position.z = myPlayer.position.z + Math.cos(cameraAngle) * camDist;
+      camera.lookAt(myPlayer.position.x, myPlayer.position.y + 1, myPlayer.position.z);
 
       renderer.render(scene, camera);
     }
