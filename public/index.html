@@ -14,12 +14,14 @@
     #canvas-container { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
     #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 8px; }
-    .top-bar, .side-dock, .chat-box, .modal-card, #joystick-base, #proximity-prompt, #player-interact-prompt, #jump-btn, #dismount-btn, #mic-float-btn, #share-float-btn, #sky-banner, #gift-broadcast, #video-call-window { pointer-events: auto; }
+    .top-bar, .side-dock, .chat-box, .modal-card, #joystick-base, #proximity-prompt, #player-interact-prompt, #jump-btn, #dismount-btn, #mic-float-btn, #share-float-btn, #sky-banner, #gift-broadcast, #video-call-window, #pts-popup { pointer-events: auto; }
 
     #sky-banner { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, #ff007f, #7928ca); color: #fff; font-weight: 900; font-size: 16px; padding: 12px 30px; border-radius: 35px; box-shadow: 0 0 35px #ff007f; display: none; text-shadow: 0 0 12px #fff; z-index: 35; text-align: center; }
     #gift-broadcast { position: absolute; top: 110px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #eab308, #ca8a04); color: #000; font-weight: 900; font-size: 14px; padding: 10px 24px; border-radius: 25px; box-shadow: 0 0 25px #eab308; display: none; z-index: 35; text-align: center; border: 2px solid #fff; }
 
-    /* ലൈവ് വീഡിയോ കോൾ വിൻഡോ */
+    #pts-popup { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; font-weight: 900; color: #facc15; text-shadow: 0 0 12px #ca8a04; display: none; pointer-events: none; z-index: 50; }
+    @keyframes popUp { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -120px) scale(1.4); } }
+
     #video-call-window { position: absolute; top: 75px; left: 12px; width: 140px; height: 185px; background: #0f172a; border: 2px solid #38bdf8; border-radius: 12px; overflow: hidden; display: none; z-index: 40; box-shadow: 0 0 20px rgba(56, 189, 248, 0.7); }
     #remote-video { width: 100%; height: 100%; object-fit: cover; }
     #close-video-btn { position: absolute; top: 4px; right: 4px; background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; font-weight: bold; font-size: 11px; cursor: pointer; }
@@ -70,6 +72,7 @@
   <div id="canvas-container"></div>
   <div id="sky-banner"></div>
   <div id="gift-broadcast"></div>
+  <div id="pts-popup">+10 🌸</div>
 
   <div id="video-call-window">
     <button id="close-video-btn" onclick="stopVideoCalling()">✕</button>
@@ -104,7 +107,8 @@
       <button class="dock-btn" onclick="teleportParkourZone()" id="ui-dock-parkour">🌋 Volcano Top Climb</button>
       <button class="dock-btn" onclick="teleportConcert()" id="ui-dock-concert">🎤 Concert & Audience</button>
       <button class="dock-btn" onclick="teleportDragonArea()" id="ui-dock-dragon">🐉 Flying Dragon</button>
-      <button class="dock-btn" onclick="teleportMechArea()" id="ui-dock-mech">🤖 Giant Mech Mount</button>
+      <button class="dock-btn" onclick="teleportMechArea()" id="ui-dock-mech">🤖 2-Player Mech Mount</button>
+      <button class="dock-btn" onclick="teleportDinoArea()" id="ui-dock-dino">🦖 2-Player Dinosaur</button>
       <button class="dock-btn" onclick="teleportSeaBattle()" id="ui-dock-whale">🐋 Oceanic Blue Whale</button>
       <button class="dock-btn" onclick="openBox('friends-box')" id="ui-dock-friends">🤝 Friends & Requests</button>
       <button class="dock-btn" onclick="openBox('stage-gift-box')">🎁 Concert Gift (Stars)</button>
@@ -124,7 +128,7 @@
     </div>
   </div>
 
-  <!-- 1. 10 ഭാഷകളിലേക്കുള്ള ക്രമീകരണം (Settings & UI Language) -->
+  <!-- 1. 10 ഭാഷകൾ -->
   <div id="lang-box" class="modal hidden">
     <div class="modal-card">
       <h3>⚙️ Select Language</h3>
@@ -145,7 +149,7 @@
     </div>
   </div>
 
-  <!-- 2. പ്രൊഫൈൽ & Boy/Girl മോഡൽ -->
+  <!-- 2. പ്രൊഫൈൽ -->
   <div id="profile-box" class="modal hidden">
     <div class="modal-card">
       <h3>👤 Profile Settings</h3>
@@ -160,7 +164,7 @@
     </div>
   </div>
 
-  <!-- 3. ഫ്രണ്ട്സ് & ഇൻകമിംഗ് റിക്വസ്റ്റുകൾ -->
+  <!-- 3. ഫ്രണ്ട്സ് ലിസ്റ്റ് -->
   <div id="friends-box" class="modal hidden">
     <div class="modal-card">
       <h3>🤝 Friends List (<span id="friends-count">0</span>)</h3>
@@ -171,7 +175,7 @@
     </div>
   </div>
 
-  <!-- 4. പ്ലെയർ ഇന്ററാക്ട് & പ്രൈവറ്റ് ഫ്രണ്ട്സ് വീഡിയോ കോൾ -->
+  <!-- 4. പ്ലെയർ ഇന്ററാക്ട് & വീഡിയോ കോൾ -->
   <div id="player-modal" class="modal hidden">
     <div class="modal-card">
       <h3 id="target-player-title">Player Interaction</h3>
@@ -183,11 +187,10 @@
     </div>
   </div>
 
-  <!-- 5. കോൺസേർട്ട് സ്റ്റേജ് ഗിഫ്റ്റുകൾ (Telegram Stars) -->
+  <!-- 5. കോൺസേർട്ട് സ്റ്റേജ് ഗിഫ്റ്റുകൾ -->
   <div id="stage-gift-box" class="modal hidden">
     <div class="modal-card">
       <h3>🎁 Concert Live Stage Gifts</h3>
-      <p style="font-size:11px; color:#cbd5e1;">സ്റ്റേജിൽ പാടുന്നയാൾക്ക് ലൈവായി ഗിഫ്റ്റ് നൽകുക:</p>
       <button onclick="sendStageGift('🌹 Rose Bouquet', 5)" class="btn-act" style="background:#e11d48;">🌹 Rose Gift (5 Stars)</button>
       <button onclick="sendStageGift('👑 Royal Crown', 25)" class="btn-act" style="background:#ca8a04;">👑 Royal Crown (25 Stars)</button>
       <button onclick="sendStageGift('🎆 Mega Stage Fireworks', 50)" class="btn-act" style="background:#a855f7;">🎆 Mega Fireworks (50 Stars)</button>
@@ -195,7 +198,7 @@
     </div>
   </div>
 
-  <!-- 6. ഷെയർ & ഇൻവൈറ്റ് സെറ്റിംഗ്സ് -->
+  <!-- 6. ഷെയർ & ഇൻവൈറ്റ് -->
   <div id="share-box" class="modal hidden">
     <div class="modal-card">
       <h3>🚀 Invite & Share Settings</h3>
@@ -208,7 +211,7 @@
     </div>
   </div>
 
-  <!-- 7. രാജ്യങ്ങൾ / സെർവർ -->
+  <!-- 7. രാജ്യങ്ങൾ -->
   <div id="country-box" class="modal hidden">
     <div class="modal-card">
       <h3>🌍 Select World Server</h3>
@@ -224,7 +227,7 @@
     </div>
   </div>
 
-  <!-- 8. ഗ്രൂപ്പ് റൂമുകൾ & ഗ്രൂപ്പ് വീഡിയോ കോൾ -->
+  <!-- 8. ഗ്രൂപ്പ് റൂമുകൾ -->
   <div id="room-box" class="modal hidden">
     <div class="modal-card">
       <h3>💬 Custom Group Lounges</h3>
@@ -243,14 +246,14 @@
   <div id="stars-box" class="modal hidden">
     <div class="modal-card">
       <h3>⭐ Telegram Stars Official Store</h3>
-      <button onclick="purchaseStars('Full Control: Dragon, Mech & Giants', 'beast_ride', 25)" class="btn-act" style="background:#15803d;">🦖 Unlock Dragon & Mech (25 Stars)</button>
+      <button onclick="purchaseStars('Full Control: Dragon, Mech & Dino Giants', 'beast_ride', 25)" class="btn-act" style="background:#15803d;">🦖 Unlock Dragon, Mech & Dinos (25 Stars)</button>
       <button onclick="purchaseStars('Friends & Group Video Call Pass', 'video_pass', 30)" class="btn-act" style="background:#ca8a04;">📹 Video Calling Pass (30 Stars)</button>
       <button onclick="openBox('sky-wish-box'); closeBox('stars-box');" class="btn-act" style="background:#a855f7;">🎆 Sky Fireworks Wish (15 Stars)</button>
       <button onclick="closeBox('stars-box')" class="btn-close">Close</button>
     </div>
   </div>
 
-  <!-- 10. ആകാശത്ത് വിഷ് & പടക്കങ്ങൾ (Stars) -->
+  <!-- 10. ആകാശത്ത് വിഷ് & പടക്കങ്ങൾ -->
   <div id="sky-wish-box" class="modal hidden">
     <div class="modal-card">
       <h3>🎆 Sky Wish Broadcast</h3>
@@ -267,12 +270,25 @@
 
     const SHARE_URL = window.location.href;
     let isOwner = false, unlockedBeast = false, hasVideoPass = false;
-    let userGender = 'boy', userColor = '#2563eb', activeRide = 'walk', userPts = 100;
+    let userGender = 'boy', activeRide = 'walk', userPts = 100;
     let otherPlayers = {};
     let nearbyTarget = null;
     let nearbyPlayerId = null;
+    let currentHostVehicleId = null;
 
-    // --- 🦘 വോൾക്കാനോ ക്രെയ്റ്റർ ടോപ്പ് വരെയുള്ള ഈസി ജമ്പ് സിസ്റ്റം ---
+    // 2-Player Seat Layouts
+    const VEHICLE_SEATS = {
+      dino: {
+        driver: { x: 0, y: 3.5, z: 0.8 },
+        passenger: { x: 0, y: 3.6, z: -1.2 }
+      },
+      mech: {
+        driver: { x: 0, y: 4.5, z: 0.6 },
+        passenger: { x: 0, y: 4.8, z: -1.0 }
+      }
+    };
+
+    // 🦘 വോൾക്കാനോ ക്രെയ്റ്റർ ടോപ്പ് വരെയുള്ള ഈസി ജമ്പ് സിസ്റ്റം
     let isJumping = false;
     let jumpVelocityY = 0;
     const GRAVITY = -0.016;
@@ -302,7 +318,7 @@
       }
     };
 
-    // --- 3D Scene ---
+    // 3D Scene
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
     scene.fog = new THREE.FogExp2(0x87ceeb, 0.0004);
@@ -322,7 +338,60 @@
     const ocean = new THREE.Mesh(new THREE.PlaneGeometry(18000, 18000), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1 }));
     ocean.rotation.x = -Math.PI / 2; ocean.position.y = -3; scene.add(ocean);
 
-    // 🌋 വോൾക്കാനോയും ടോപ്പ് ക്രെയ്റ്റർ വരെയുള്ള 18 സ്റ്റെപ്പുകളും
+    // 🌸 ദ്വീപിൽ എല്ലായിടത്തും പോയിന്റ് പൂക്കൾ
+    const collectibleFlowers = [];
+    const flowerColors = [0xff007f, 0xfacc15, 0x38bdf8, 0xa855f7, 0xef4444, 0x10b981];
+    function createFlowerMesh(color) {
+      const g = new THREE.Group();
+      const center = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 8), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+      center.position.y = 0.5; g.add(center);
+      const petalGeo = new THREE.SphereGeometry(0.25, 8, 8);
+      const petalMat = new THREE.MeshStandardMaterial({ color: color, emissive: color, emissiveIntensity: 0.6 });
+      for (let i = 0; i < 5; i++) {
+        const petal = new THREE.Mesh(petalGeo, petalMat);
+        const ang = (i / 5) * Math.PI * 2;
+        petal.position.set(Math.cos(ang) * 0.45, 0.5, Math.sin(ang) * 0.45);
+        g.add(petal);
+      }
+      return g;
+    }
+    for (let i = 0; i < 150; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 30 + Math.random() * 680;
+      const fx = Math.cos(angle) * radius;
+      const fz = Math.sin(angle) * radius;
+      const fl = createFlowerMesh(flowerColors[Math.floor(Math.random() * flowerColors.length)]);
+      fl.position.set(fx, 0, fz);
+      scene.add(fl);
+      collectibleFlowers.push({ mesh: fl, active: true, respawnTimer: 0 });
+    }
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playChimeSound() {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+      } catch(e) {}
+    }
+
+    function showPointPopup(val) {
+      const pop = document.getElementById('pts-popup');
+      pop.innerText = `+${val} 🌸`;
+      pop.style.display = 'block';
+      pop.style.animation = 'none';
+      pop.offsetHeight;
+      pop.style.animation = 'popUp 0.8s ease-out forwards';
+      setTimeout(() => { pop.style.display = 'none'; }, 800);
+    }
+
+    // 🌋 വോൾക്കാനോയും 18 സ്റ്റെപ്പുകളും
     const volcano = new THREE.Group();
     const vBase = new THREE.Mesh(new THREE.ConeGeometry(95, 90, 24), new THREE.MeshStandardMaterial({ color: 0x451a03 })); vBase.position.y = 40; volcano.add(vBase);
     const vCrater = new THREE.Mesh(new THREE.CylinderGeometry(24, 28, 4, 24), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xf97316, emissiveIntensity: 1.0 })); vCrater.position.y = 86; volcano.add(vCrater);
@@ -335,12 +404,12 @@
       const pz = -140 - (i * 7.8);
       plat.position.set(px, py, pz);
       scene.add(plat);
-      volcanoPlatforms.push({ x: px, y: py + 0.6, z: pz, radius: 5.6 });
+      volcanoPlatforms.push({ x: px, y: py + 0.6, z: pz });
     }
 
-    // 🎤 കോൺസേർട്ട് സ്റ്റേജും ഇരിപ്പിടങ്ങളും (Singing & Sitting Enabled)
+    // 🎤 കോൺസേർട്ട് സ്റ്റേജും ഇരിപ്പിടങ്ങളും
     const stageG = new THREE.Group();
-    const sFloor = new THREE.Mesh(new THREE.BoxGeometry(45, 2, 24), new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.5 })); sFloor.position.y = 1; stageG.add(sFloor);
+    const sFloor = new THREE.Mesh(new THREE.BoxGeometry(45, 2, 24), new THREE.MeshStandardMaterial({ color: 0x78350f })); sFloor.position.y = 1; stageG.add(sFloor);
     const sWall = new THREE.Mesh(new THREE.BoxGeometry(45, 16, 1), new THREE.MeshStandardMaterial({ color: 0x1e1b4b })); sWall.position.set(0, 8, -11.5); stageG.add(sWall);
     stageG.position.set(0, 0, -320); scene.add(stageG);
 
@@ -352,45 +421,37 @@
       }
     }
 
-    // ----------------------------------------------------
-    // 📦 .GLB മോഡലുകൾ മാപ്പിൽ ഉറപ്പിക്കുന്നു
-    // ----------------------------------------------------
+    // 📦 .GLB മോഡലുകൾ
     const gltfLoader = new THREE.GLTFLoader();
     const worldInteractables = [];
 
-    // 1. ആകാശത്ത് പറക്കുന്ന ഡ്രാഗൺ
     let dragonMesh = null;
     gltfLoader.load('/dragon.glb', (gltf) => {
       dragonMesh = gltf.scene; dragonMesh.scale.set(3.5, 3.5, 3.5); dragonMesh.position.set(-60, 25, 40); scene.add(dragonMesh);
       worldInteractables.push({ mesh: dragonMesh, type: 'dragon', prompt: '🐉 Ride Flying Dragon', isFlying: true, seatY: 3.5 });
     }, undefined, (e) => console.log('Dragon load error', e));
 
-    // 2. മെക്ക് റോബോട്ട്
     let mechMesh = null;
     gltfLoader.load('/mech.glb', (gltf) => {
       mechMesh = gltf.scene; mechMesh.scale.set(2.8, 2.8, 2.8); mechMesh.position.set(70, 0, 80); scene.add(mechMesh);
-      worldInteractables.push({ mesh: mechMesh, type: 'mech', prompt: '🤖 Mount Giant Mech', seatY: 4.5 });
+      worldInteractables.push({ mesh: mechMesh, type: 'mech', prompt: '🤖 Mount Mech (Driver Seat)', seatY: 4.5 });
     }, undefined, (e) => console.log('Mech load error', e));
 
-    // 3. സമുദ്രത്തിൽ നീന്തുന്ന തിമിംഗലം (Whale)
     let whaleMesh = null;
     gltfLoader.load('/Whale.glb', (gltf) => {
       whaleMesh = gltf.scene; whaleMesh.scale.set(4, 4, 4); whaleMesh.position.set(0, -2, 700); scene.add(whaleMesh);
     }, undefined, (e) => console.log('Whale load error', e));
 
-    // 4. ദിനോസറുകൾ (Trex, Triceratops, Stegosaurus, Ankylosaurus)
     function loadDino(file, scale, x, z, prompt) {
       gltfLoader.load(file, (gltf) => {
         const m = gltf.scene; m.scale.set(scale, scale, scale); m.position.set(x, 0, z); scene.add(m);
         worldInteractables.push({ mesh: m, type: 'dino', prompt, seatY: scale * 3.5 });
       }, undefined, (e) => console.log('Dino load error', file, e));
     }
-    loadDino('/Trex.glb', 1.8, 50, 100, '🦖 Mount T-Rex');
-    loadDino('/Triceratops.glb', 1.6, -80, 110, '🦏 Mount Triceratops');
-    loadDino('/Stegosaurus.glb', 1.6, 120, -80, '🦕 Mount Stegosaurus');
-    loadDino('/Ankylosaurus.glb', 1.5, -120, -70, '🐢 Mount Ankylosaurus');
+    loadDino('/Trex.glb', 1.8, 50, 100, '🦖 Mount T-Rex (Seat 1)');
+    loadDino('/Triceratops.glb', 1.6, -80, 110, '🦏 Mount Triceratops (Seat 1)');
+    loadDino('/Stegosaurus.glb', 1.6, 120, -80, '🦕 Mount Stegosaurus (Seat 1)');
 
-    // 5. പൈൻ മരങ്ങൾ (Pine Trees)
     gltfLoader.load('/tree.glb', (gltf) => {
       for (let i = 0; i < 15; i++) {
         const tr = gltf.scene.clone(); tr.scale.set(1.8, 1.8, 1.8);
@@ -400,7 +461,7 @@
       }
     }, undefined, (e) => console.log('Tree load error', e));
 
-    // 🧑‍🤝‍🧑 ബോക്സ് മാറ്റി റിയലിസ്റ്റിക് ഹ്യൂമനോയിഡ് മോഡൽ
+    // 🧑‍🤝‍🧑 ബോക്സ് മാറ്റി റിയലിസ്റ്റിക് 3D ക്യാരക്ടർ രൂപങ്ങൾ
     let myPlayer = new THREE.Group(); scene.add(myPlayer);
     function buildRealisticCharacter() {
       while(myPlayer.children.length > 0) myPlayer.remove(myPlayer.children[0]);
@@ -444,17 +505,17 @@
 
     // 🌐 10 ഭാഷകളിലേക്കുള്ള ക്രമീകരണം
     const multiLangDict = {
-      ml: { server: "🌍 സെർവർ", lang: "⚙️ ഭാഷ", prof: "👤 പ്രൊഫൈൽ", parkour: "🌋 വോൾക്കാനോ ക്ലൈമ്പ്", concert: "🎤 കോൺസേർട്ട് & സീറ്റ്", dragon: "🐉 പറക്കുന്ന ഡ്രാഗൺ", mech: "🤖 മെക്ക് റോബോട്ട്", whale: "🐋 നീലത്തിമിംഗലം", friends: "🤝 സുഹൃത്തുക്കൾ", group: "💬 ഗ്രൂപ്പുകൾ" },
-      en: { server: "🌍 Server", lang: "⚙️ Lang", prof: "👤 Profile", parkour: "🌋 Volcano Climb", concert: "🎤 Concert & Seats", dragon: "🐉 Flying Dragon", mech: "🤖 Mech Robot", whale: "🐋 Blue Whale", friends: "🤝 Friends", group: "💬 Lounges" },
-      hi: { server: "🌍 सर्वर", lang: "⚙️ भाषा", prof: "👤 प्रोफाइल", parkour: "🌋 ज्वालामुखी चढ़ाई", concert: "🎤 कॉन्सर्ट", dragon: "🐉 उड़ने वाला ड्रैगन", mech: "🤖 मेक रोबोट", whale: "🐋 ब्लू व्हेल", friends: "🤝 दोस्त", group: "💬 समूह" },
-      fa: { server: "🌍 سرور", lang: "⚙️ زبان", prof: "👤 پروفایل", parkour: "🌋 آتشفشان", concert: "🎤 کنسرت", dragon: "🐉 اژدهای پرنده", mech: "🤖 ربات مک", whale: "🐋 نهنگ آبی", friends: "🤝 دوستان", group: "💬 گروه‌ها" },
-      tg: { server: "🌍 Сервер", lang: "⚙️ Забон", prof: "👤 Профил", parkour: "🌋 Вулқон", concert: "🎤 Консерт", dragon: "🐉 Аждаҳо", mech: "🤖 Роботи мек", whale: "🐋 Наҳанги кабуд", friends: "🤝 Дӯстон", group: "💬 Гурӯҳҳо" },
-      uz: { server: "🌍 Server", lang: "⚙️ Til", prof: "👤 Profil", parkour: "🌋 Vulqon", concert: "🎤 Konsert", dragon: "🐉 Uchar ajdaho", mech: "🤖 Mex robot", whale: "🐋 Moviy kit", friends: "🤝 Do‘stlar", group: "💬 Guruhlar" },
-      ru: { server: "🌍 Сервер", lang: "⚙️ Язык", prof: "👤 Профиль", parkour: "🌋 Вулкан", concert: "🎤 Концерт", dragon: "🐉 Дракон", mech: "🤖 Робот Мех", whale: "🐋 Синий кит", friends: "🤝 Друзья", group: "💬 Группы" },
-      zh: { server: "🌍 服务器", lang: "⚙️ 语言", prof: "👤 个人资料", parkour: "🌋 火山攀登", concert: "🎤 音乐会", dragon: "🐉 飞龙", mech: "🤖 机甲", whale: "🐋 蓝鲸", friends: "🤝 好友", group: "💬 休息室" },
-      it: { server: "🌍 Server", lang: "⚙️ Lingua", prof: "👤 Profilo", parkour: "🌋 Scalata Vulcano", concert: "🎤 Concerto", dragon: "🐉 Drago Volante", mech: "🤖 Robot Mech", whale: "🐋 Balenottera", friends: "🤝 Amici", group: "💬 Gruppi" },
-      my: { server: "🌍 ဆာဗာ", lang: "⚙️ ဘာသာစကား", prof: "👤 ပရိုဖိုင်", parkour: "🌋 မီးတောင်", concert: "🎤 ဖျော်ဖြေပွဲ", dragon: "🐉 နဂါး", mech: "🤖 စက်ရုပ်", whale: "🐋 ဝေလငါး", friends: "🤝 သူငယ်ချင်းများ", group: "💬 အဖွဲ့များ" },
-      id: { server: "🌍 Server", lang: "⚙️ Bahasa", prof: "👤 Profil", parkour: "🌋 Panjat Gunung Berapi", concert: "🎤 Konser", dragon: "🐉 Naga Terbang", mech: "🤖 Robot Mech", whale: "🐋 Paus Biru", friends: "🤝 Teman", group: "💬 Grup" }
+      ml: { server: "🌍 സെർവർ", lang: "⚙️️ ഭാഷ", prof: "👤 പ്രൊഫൈൽ", parkour: "🌋 വോൾക്കാനോ ടോപ്പ്", concert: "🎤 കോൺസേർട്ട് & സീറ്റ്", dragon: "🐉 പറക്കുന്ന ഡ്രാഗൺ", mech: "🤖 2-Player മെക്ക്", dino: "🦖 2-Player ദിനോസർ", whale: "🐋 നീലത്തിമിംഗലം", friends: "🤝 സുഹൃത്തുക്കൾ", group: "💬 ഗ്രൂപ്പുകൾ" },
+      en: { server: "🌍 Server", lang: "⚙️ Lang", prof: "👤 Profile", parkour: "🌋 Volcano Top", concert: "🎤 Concert & Seats", dragon: "🐉 Flying Dragon", mech: "🤖 2-Player Mech", dino: "🦖 2-Player Dino", whale: "🐋 Blue Whale", friends: "🤝 Friends", group: "💬 Lounges" },
+      hi: { server: "🌍 सर्वर", lang: "⚙️ भाषा", prof: "👤 प्रोफाइल", parkour: "🌋 ज्वालामुखी शीर्ष", concert: "🎤 कॉन्सर्ट", dragon: "🐉 उड़ने वाला ड्रैगन", mech: "🤖 2-प्लेयर मेक", dino: "🦖 2-प्लेयर डायनासोर", whale: "🐋 ब्लू व्हेल", friends: "🤝 दोस्त", group: "💬 समूह" },
+      fa: { server: "🌍 سرور", lang: "⚙️ زبان", prof: "👤 پروفایل", parkour: "🌋 قله آتشفشان", concert: "🎤 کنسرت", dragon: "🐉 اژدهای پرنده", mech: "🤖 مک دو نفره", dino: "🦖 دایناسور دو نفره", whale: "🐋 نهنگ آبی", friends: "🤝 دوستان", group: "💬 گروه‌ها" },
+      tg: { server: "🌍 Сервер", lang: "⚙️ Забон", prof: "👤 Профил", parkour: "🌋 Қуллаи вулқон", concert: "🎤 Консерт", dragon: "🐉 Аждаҳо", mech: "🤖 Мех 2-нафара", dino: "🦖 Динозавр", whale: "🐋 Наҳанг", friends: "🤝 Дӯстон", group: "💬 Гурӯҳҳо" },
+      uz: { server: "🌍 Server", lang: "⚙️ Til", prof: "👤 Profil", parkour: "🌋 Vulqon cho‘qqisi", concert: "🎤 Konsert", dragon: "🐉 Ajdaho", mech: "🤖 2 kishilik Mex", dino: "🦖 Dinozavr", whale: "🐋 Kit", friends: "🤝 Do‘stlar", group: "💬 Guruhlar" },
+      ru: { server: "🌍 Сервер", lang: "⚙️ Язык", prof: "👤 Профиль", parkour: "🌋 Вершина вулкана", concert: "🎤 Концерт", dragon: "🐉 Дракон", mech: "🤖 2-местный Мех", dino: "🦖 Динозавр", whale: "🐋 Синий кит", friends: "🤝 Друзья", group: "💬 Группы" },
+      zh: { server: "🌍 服务器", lang: "⚙️ 语言", prof: "👤 个人资料", parkour: "🌋 火山之巅", concert: "🎤 音乐会", dragon: "🐉 飞龙", mech: "🤖 双人机甲", dino: "🦖 双人恐龙", whale: "🐋 蓝鲸", friends: "🤝 好友", group: "💬 休息室" },
+      it: { server: "🌍 Server", lang: "⚙️ Lingua", prof: "👤 Profilo", parkour: "🌋 Cima Vulcano", concert: "🎤 Concerto", dragon: "🐉 Drago Volante", mech: "🤖 Mech 2 Giocatori", dino: "🦖 Dinosauro", whale: "🐋 Balenottera", friends: "🤝 Amici", group: "💬 Gruppi" },
+      my: { server: "🌍 ဆာဗာ", lang: "⚙️ ဘာသာစကား", prof: "👤 ပရိုဖိုင်", parkour: "🌋 မီးတောင်ထိပ်", concert: "🎤 ဖျော်ဖြေပွဲ", dragon: "🐉 နဂါး", mech: "🤖 ၂ ယောက်စီး စက်ရုပ်", dino: "🦖 ဒိုင်နိုဆော", whale: "🐋 ဝေလငါး", friends: "🤝 သူငယ်ချင်းများ", group: "💬 အဖွဲ့များ" },
+      id: { server: "🌍 Server", lang: "⚙️ Bahasa", prof: "👤 Profil", parkour: "🌋 Puncak Gunung", concert: "🎤 Konser", dragon: "🐉 Naga Terbang", mech: "🤖 Mech 2 Pemain", dino: "🦖 Dinosaurus", whale: "🐋 Paus Biru", friends: "🤝 Teman", group: "💬 Grup" }
     };
 
     window.applyAppLanguage = (code) => {
@@ -467,6 +528,7 @@
       document.getElementById('ui-dock-concert').innerText = t.concert;
       document.getElementById('ui-dock-dragon').innerText = t.dragon;
       document.getElementById('ui-dock-mech').innerText = t.mech;
+      document.getElementById('ui-dock-dino').innerText = t.dino;
       document.getElementById('ui-dock-whale').innerText = t.whale;
       document.getElementById('ui-dock-friends').innerText = t.friends;
       document.getElementById('ui-dock-group').innerText = t.group;
@@ -588,8 +650,24 @@
       if (inp.value.trim()) { socket.emit('createNewRoom', inp.value.trim()); inp.value = ''; }
     };
 
+    // 2-Player & Proximity Check
     function checkProximity() {
-      // സ്റ്റേജിൽ പാട്ടുപാടാൻ
+      // 2-Player Passenger Detection (മറ്റൊരു പ്ലെയർ ദിനോസറിലോ റോബോട്ടിലോ ഇരിക്കുമ്പോൾ)
+      for (let id in otherPlayers) {
+        const p = otherPlayers[id];
+        if (p.activeRide === 'dino' || p.activeRide === 'mech') {
+          const d = myPlayer.position.distanceTo(new THREE.Vector3(p.x, p.y, p.z));
+          if (d < 5.0 && activeRide === 'walk') {
+            nearbyTarget = { type: p.activeRide + '_passenger', hostId: id, name: p.name, rideType: p.activeRide };
+            const pBtn = document.getElementById('proximity-prompt');
+            pBtn.innerText = p.activeRide === 'dino' ? `🦖 Ride Dino with ${p.name} (Seat 2)` : `🤖 Ride Mech as Co-Pilot with ${p.name}`;
+            pBtn.style.display = 'block';
+            return;
+          }
+        }
+      }
+
+      // സ്റ്റേജ് പാട്ടുപാടാൻ
       if (myPlayer.position.distanceTo(stageG.position) < 25) {
         nearbyTarget = { type: 'sing' };
         const pBtn = document.getElementById('proximity-prompt');
@@ -608,6 +686,7 @@
         }
       }
 
+      // സാധാരണ മൗണ്ട്
       if (activeRide === 'walk') {
         let found = null;
         for (let item of worldInteractables) {
@@ -621,11 +700,23 @@
 
     window.interactWithNearbyTarget = () => {
       if (!nearbyTarget) return;
+
+      // 2-Player Passenger Boarding
+      if (nearbyTarget.type.endsWith('_passenger')) {
+        currentHostVehicleId = nearbyTarget.hostId;
+        activeRide = nearbyTarget.type;
+        document.getElementById('proximity-prompt').style.display = 'none';
+        document.getElementById('dismount-btn').style.display = 'block';
+        socket.emit('mountAsPassenger', { hostId: nearbyTarget.hostId, rideType: nearbyTarget.rideType });
+        alert(`Mounted with ${nearbyTarget.name}!`);
+        return;
+      }
+
       if (nearbyTarget.type === 'sing') {
         myPlayer.position.set(0, 2.0, -320);
         toggleAlwaysVoiceMic();
         document.getElementById('dismount-btn').style.display = 'block';
-        alert("🎤 Standing on Concert Stage! Mic is LIVE for Everyone!");
+        alert("🎤 Standing on Concert Stage! Mic is LIVE!");
         return;
       }
       if (nearbyTarget.type === 'seat') {
@@ -634,8 +725,8 @@
         return;
       }
 
-      if (['dragon', 'mech'].includes(nearbyTarget.type) && !unlockedBeast && !isOwner) {
-        openBox('stars-box'); alert("⭐ Unlock Dragon & Mech with Stars Pass!"); return;
+      if (['dragon', 'mech', 'dino'].includes(nearbyTarget.type) && !unlockedBeast && !isOwner) {
+        openBox('stars-box'); alert("⭐ Unlock Dragon, Mech & Dinos with Stars Pass!"); return;
       }
 
       activeRide = nearbyTarget.type;
@@ -654,7 +745,8 @@
 
     window.dismountActiveRide = () => {
       if (nearbyTarget && nearbyTarget.isFlying) nearbyTarget.mesh.position.y = 15;
-      activeRide = 'walk'; currentBaseY = 0; myPlayer.position.y = 0;
+      if (activeRide.endsWith('_passenger')) socket.emit('dismountPassenger');
+      activeRide = 'walk'; currentBaseY = 0; myPlayer.position.y = 0; currentHostVehicleId = null;
       document.getElementById('dismount-btn').style.display = 'none';
     };
 
@@ -685,6 +777,7 @@
     // ടെലിപോർട്ടുകൾ
     window.teleportDragonArea = () => { myPlayer.position.set(-60, 0, 30); alert("🐉 Reached Flying Dragon Nest!"); };
     window.teleportMechArea = () => { myPlayer.position.set(70, 0, 70); alert("🤖 Reached Giant Mech Bay!"); };
+    window.teleportDinoArea = () => { myPlayer.position.set(50, 0, 90); alert("🦖 Reached Jurassic Dinosaur Zone!"); };
     window.teleportParkourZone = () => { currentParkourIndex = 0; myPlayer.position.set(volcanoPlatforms[0].x, volcanoPlatforms[0].y + 1, volcanoPlatforms[0].z); currentBaseY = volcanoPlatforms[0].y; };
     window.teleportConcert = () => myPlayer.position.set(0, 0, -270);
     window.teleportSeaBattle = () => myPlayer.position.set(0, 0, 680);
@@ -711,7 +804,7 @@
     };
     socket.on('incomingLiveVoice', (d) => new Audio(d.audio).play().catch(() => {}));
 
-    // 🎆 റിയലിസ്റ്റിക് സ്കൈ പടക്കങ്ങൾ (Multi-Burst Physics Fireworks)
+    // 🎆 റിയലിസ്റ്റിക് സ്കൈ പടക്കങ്ങൾ
     const fireworkParticles = [];
     function launchRocketFirework(startX, targetY, startZ, colorHex) {
       const pCount = 120;
@@ -774,6 +867,23 @@
       requestAnimationFrame(animate);
       checkProximity();
 
+      // പൂക്കൾ ശേഖരിക്കൽ
+      for (let f of collectibleFlowers) {
+        if (f.active) {
+          f.mesh.rotation.y += 0.03;
+          f.mesh.position.y = Math.sin(Date.now() * 0.005 + f.mesh.position.x) * 0.15 + 0.2;
+          const dist = myPlayer.position.distanceTo(f.mesh.position);
+          if (dist < 2.0 && activeRide === 'walk') {
+            f.active = false; f.mesh.visible = false; f.respawnTimer = 250;
+            userPts += 10; document.getElementById('pts').innerText = userPts;
+            playChimeSound(); showPointPopup(10);
+          }
+        } else {
+          f.respawnTimer--;
+          if (f.respawnTimer <= 0) { f.active = true; f.mesh.visible = true; }
+        }
+      }
+
       // പടക്കങ്ങൾ
       for (let i = fireworkParticles.length - 1; i >= 0; i--) {
         const fp = fireworkParticles[i];
@@ -787,7 +897,7 @@
         if (fp.life <= 0) { scene.remove(fp.pts); fireworkParticles.splice(i, 1); }
       }
 
-      // ഡ്രാഗൺ ആകാശത്ത് പറക്കുന്നു
+      // ഡ്രാഗൺ
       if (dragonMesh && activeRide !== 'dragon') {
         dragonAngle += 0.015;
         dragonMesh.position.x = Math.sin(dragonAngle) * 90;
@@ -795,42 +905,51 @@
         dragonMesh.rotation.y = dragonAngle + Math.PI / 2;
       }
 
-      // തിമിംഗലം കടലിൽ നീന്തുന്നു
+      // തിമിംഗലം
       if (whaleMesh) {
         whaleMesh.position.x = Math.sin(Date.now() * 0.001) * 80;
         whaleMesh.rotation.y = Math.sin(Date.now() * 0.001) * 0.4;
       }
 
-      // ജമ്പ് ഫിസിക്സ്
-      if (isJumping) {
-        myPlayer.position.y += jumpVelocityY; jumpVelocityY += GRAVITY;
-        if (myPlayer.position.y <= currentBaseY) { myPlayer.position.y = currentBaseY; isJumping = false; jumpVelocityY = 0; }
-      } else if (activeRide === 'walk' && currentParkourIndex === -1) {
-        myPlayer.position.y = currentBaseY;
-      }
-
-      const spd = (['dragon'].includes(activeRide) ? 1.8 : (['mech'].includes(activeRide) ? 1.2 : 0.45));
-
-      if (moveX !== 0 || moveZ !== 0) {
-        const forwardX = moveX * Math.cos(0) + moveZ * Math.sin(0);
-        const forwardZ = -moveX * Math.sin(0) + moveZ * Math.cos(0);
-
-        myPlayer.position.x += forwardX * spd;
-        myPlayer.position.z += forwardZ * spd;
-        myPlayer.rotation.y = Math.atan2(forwardX, forwardZ);
-
-        wCycle += 0.2;
-        if (myPlayer.userData.legL) {
-          myPlayer.userData.legL.rotation.x = Math.sin(wCycle) * 0.6;
-          myPlayer.userData.legR.rotation.x = -Math.sin(wCycle) * 0.6;
+      // 2-Player Passenger Sync
+      if (activeRide.endsWith('_passenger') && currentHostVehicleId && otherPlayers[currentHostVehicleId]) {
+        const host = otherPlayers[currentHostVehicleId];
+        const rType = activeRide.split('_')[0];
+        const sLayout = VEHICLE_SEATS[rType]?.passenger || { x: 0, y: 3.5, z: -1.0 };
+        myPlayer.position.set(host.x + sLayout.x, host.y + sLayout.y, host.z + sLayout.z);
+        myPlayer.rotation.y = host.rotationY || 0;
+      } else {
+        // ജമ്പ് ഫിസിക്സ്
+        if (isJumping) {
+          myPlayer.position.y += jumpVelocityY; jumpVelocityY += GRAVITY;
+          if (myPlayer.position.y <= currentBaseY) { myPlayer.position.y = currentBaseY; isJumping = false; jumpVelocityY = 0; }
+        } else if (activeRide === 'walk' && currentParkourIndex === -1) {
+          myPlayer.position.y = currentBaseY;
         }
 
-        if (nearbyTarget && activeRide !== 'walk' && nearbyTarget.mesh) {
-          nearbyTarget.mesh.position.set(myPlayer.position.x, nearbyTarget.isFlying ? myPlayer.position.y - nearbyTarget.seatY : 0, myPlayer.position.z);
-          nearbyTarget.mesh.rotation.y = myPlayer.rotation.y;
-        }
+        const spd = (['dragon'].includes(activeRide) ? 1.8 : (['mech', 'dino'].includes(activeRide) ? 1.2 : 0.45));
 
-        socket.emit('updatePosition', { x: myPlayer.position.x, y: myPlayer.position.y, z: myPlayer.position.z });
+        if (moveX !== 0 || moveZ !== 0) {
+          const forwardX = moveX * Math.cos(0) + moveZ * Math.sin(0);
+          const forwardZ = -moveX * Math.sin(0) + moveZ * Math.cos(0);
+
+          myPlayer.position.x += forwardX * spd;
+          myPlayer.position.z += forwardZ * spd;
+          myPlayer.rotation.y = Math.atan2(forwardX, forwardZ);
+
+          wCycle += 0.2;
+          if (myPlayer.userData.legL) {
+            myPlayer.userData.legL.rotation.x = Math.sin(wCycle) * 0.6;
+            myPlayer.userData.legR.rotation.x = -Math.sin(wCycle) * 0.6;
+          }
+
+          if (nearbyTarget && activeRide !== 'walk' && nearbyTarget.mesh) {
+            nearbyTarget.mesh.position.set(myPlayer.position.x, nearbyTarget.isFlying ? myPlayer.position.y - nearbyTarget.seatY : 0, myPlayer.position.z);
+            nearbyTarget.mesh.rotation.y = myPlayer.rotation.y;
+          }
+
+          socket.emit('updatePosition', { x: myPlayer.position.x, y: myPlayer.position.y, z: myPlayer.position.z, rotationY: myPlayer.rotation.y });
+        }
       }
 
       const camDist = 18;
