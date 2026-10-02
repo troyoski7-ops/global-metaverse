@@ -13,9 +13,11 @@
     #canvas-container { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
     #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 8px; }
-    .top-bar, .side-dock, .chat-box, .modal-card, #joystick-base, #proximity-prompt, #player-interact-prompt, #jump-btn, #kick-ball-btn, #dismount-btn, #mic-float-btn, #share-float-btn, #swim-indicator, #sky-banner { pointer-events: auto; }
+    .top-bar, .side-dock, .chat-box, .modal-card, #joystick-base, #proximity-prompt, #player-interact-prompt, #jump-btn, #kick-ball-btn, #dismount-btn, #mic-float-btn, #share-float-btn, #swim-indicator, #sky-banner, #gift-broadcast { pointer-events: auto; }
 
     #sky-banner { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, #ff007f, #7928ca); color: #fff; font-weight: 900; font-size: 16px; padding: 12px 30px; border-radius: 35px; box-shadow: 0 0 35px #ff007f; display: none; text-shadow: 0 0 12px #fff; z-index: 35; text-align: center; }
+
+    #gift-broadcast { position: absolute; top: 110px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #eab308, #ca8a04); color: #000; font-weight: 900; font-size: 14px; padding: 10px 24px; border-radius: 25px; box-shadow: 0 0 25px #eab308; display: none; z-index: 35; text-align: center; border: 2px solid #fff; }
 
     .top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .badges { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
@@ -49,11 +51,11 @@
     #joystick-base { position: absolute; left: 16px; bottom: 20px; width: 110px; height: 110px; background: rgba(0, 0, 0, 0.35); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.4); touch-action: none; }
     #joystick-stick { position: absolute; left: 35px; top: 35px; width: 40px; height: 40px; background: #38bdf8; border-radius: 50%; box-shadow: 0 0 10px rgba(56, 189, 248, 0.8); pointer-events: none; }
 
-    .chat-box { position: absolute; right: 8px; bottom: 12px; width: 210px; background: rgba(15, 23, 42, 0.9); border-radius: 12px; padding: 6px; border: 1px solid rgba(255, 255, 255, 0.2); }
-    #chat-content { height: 45px; overflow-y: auto; font-size: 10px; color: #fff; margin-bottom: 4px; }
+    .chat-box { position: absolute; right: 8px; bottom: 12px; width: 220px; background: rgba(15, 23, 42, 0.92); border-radius: 12px; padding: 6px; border: 1px solid rgba(255, 255, 255, 0.2); }
+    #chat-content { height: 50px; overflow-y: auto; font-size: 10px; color: #fff; margin-bottom: 4px; display: flex; flex-direction: column; gap: 2px; }
     .chat-controls { display: flex; gap: 3px; }
-    .chat-controls input { flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; padding: 4px 6px; border-radius: 6px; font-size: 10px; }
-    .chat-controls button { background: #0284c7; color: #fff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; }
+    .chat-controls input { flex: 1; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; padding: 5px 6px; border-radius: 6px; font-size: 10px; outline: none; }
+    .chat-controls button { background: #0284c7; color: #fff; border: none; padding: 5px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; }
 
     .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(4px); }
     .modal-card { background: #1e293b; color: #fff; padding: 14px; border-radius: 16px; width: 85%; max-width: 320px; display: flex; flex-direction: column; gap: 8px; text-align: center; max-height: 85vh; overflow-y: auto; }
@@ -66,6 +68,7 @@
 <body>
   <div id="canvas-container"></div>
   <div id="sky-banner"></div>
+  <div id="gift-broadcast"></div>
 
   <button id="mic-float-btn" onclick="toggleAlwaysVoiceMic()" title="Voice Mic">🎙️</button>
   <button id="share-float-btn" onclick="openBox('share-box')" title="Share Bot">📤</button>
@@ -118,7 +121,7 @@
     </div>
   </div>
 
-  <!-- 1. ഗെയിംസ് ഹബ്ബ് മോഡൽ -->
+  <!-- 1. ഗെയിംസ് ഹബ്ബ് -->
   <div id="games-hub-box" class="modal hidden">
     <div class="modal-card">
       <h3>🎮 Metaverse Mini Games</h3>
@@ -150,7 +153,7 @@
     </div>
   </div>
 
-  <!-- 3. ഫ്രണ്ട്സ് & റിക്വസ്റ്റുകൾ മോഡൽ -->
+  <!-- 3. ഫ്രണ്ട്സ് മോഡൽ -->
   <div id="friends-box" class="modal hidden">
     <div class="modal-card">
       <h3>🤝 Friends List (<span id="friends-count">0</span>)</h3>
@@ -244,7 +247,7 @@
     </div>
   </div>
 
-  <!-- 9. ഗ്രൂപ്പ് റൂമുകൾ & ഇൻവൈറ്റ് -->
+  <!-- 9. ഗ്രൂപ്പ് റൂമുകൾ -->
   <div id="room-box" class="modal hidden">
     <div class="modal-card">
       <h3>💬 Custom Group Lounges</h3>
@@ -254,7 +257,7 @@
         <input type="text" id="new-group-name" placeholder="Room title..." style="flex:1; padding:6px; border-radius:6px; border:none; font-size:10px;">
         <button onclick="createRoomAction()" class="btn-act">Create</button>
       </div>
-      <button onclick="inviteToCurrentLounge()" class="btn-act" style="background:#22c55e; margin-top:6px;">🔗 Invite Friends to Lounge</button>
+      <button onclick="inviteToCurrentLounge()" class="btn-act" style="background:#22c55e; margin-top:6px;">🔗 Copy Lounge Link</button>
       <button onclick="closeBox('room-box')" class="btn-close">Close</button>
     </div>
   </div>
@@ -292,7 +295,7 @@
     let nearbyTarget = null;
     let nearbyPlayerId = null;
 
-    // --- 🦘 ജമ്പ് ഫിസിക്സ് സിസ്റ്റം & വോൾക്കാനോ സ്റ്റെപ്പ് കൊളീഷൻ ---
+    // --- 🦘 ജമ്പ് ഫിസിക്സ് സിസ്റ്റം & എളുപ്പമുള്ള വോൾക്കാനോ സ്റ്റെപ്പുകൾ ---
     let isJumping = false;
     let jumpVelocityY = 0;
     const GRAVITY = -0.016;
@@ -309,9 +312,9 @@
     // --- 3D Scene ---
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
-    scene.fog = new THREE.FogExp2(0x87ceeb, 0.0005);
+    scene.fog = new THREE.FogExp2(0x87ceeb, 0.0004);
 
-    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 8000);
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 9000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -320,32 +323,45 @@
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.4); scene.add(hemiLight);
     const dirLight = new THREE.DirectionalLight(0xffffff, 1.2); dirLight.position.set(150, 300, 150); scene.add(dirLight);
 
-    const island = new THREE.Mesh(new THREE.CylinderGeometry(750, 800, 10, 64), new THREE.MeshStandardMaterial({ color: 0x2e7d32 }));
+    const island = new THREE.Mesh(new THREE.CylinderGeometry(800, 850, 10, 64), new THREE.MeshStandardMaterial({ color: 0x2e7d32 }));
     island.position.y = -5; scene.add(island);
 
-    const ocean = new THREE.Mesh(new THREE.PlaneGeometry(16000, 16000), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1 }));
+    const ocean = new THREE.Mesh(new THREE.PlaneGeometry(18000, 18000), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1 }));
     ocean.rotation.x = -Math.PI / 2; ocean.position.y = -3; scene.add(ocean);
 
-    const road = new THREE.Mesh(new THREE.RingGeometry(220, 260, 64), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+    // 🌊 നദിയും റോഡും
+    const river = new THREE.Mesh(new THREE.PlaneGeometry(35, 900), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
+    river.rotation.x = -Math.PI / 2; river.position.set(220, 0.02, 0); scene.add(river);
+
+    // നദിക്ക് മുകളിലൂടെ നടക്കാൻ സാധിക്കുന്ന സോളിഡ് പാലം (Crossable Solid Bridge)
+    const bridge = new THREE.Group();
+    const bridgePlank = new THREE.Mesh(new THREE.BoxGeometry(45, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0x854d0e, roughness: 0.7 }));
+    bridgePlank.position.y = 1.0; bridge.add(bridgePlank);
+    const bridgeRailL = new THREE.Mesh(new THREE.BoxGeometry(45, 1.4, 0.5), new THREE.MeshStandardMaterial({ color: 0x3e2723 }));
+    bridgeRailL.position.set(0, 2.0, 7.8); bridge.add(bridgeRailL);
+    const bridgeRailR = bridgeRailL.clone(); bridgeRailR.position.set(0, 2.0, -7.8); bridge.add(bridgeRailR);
+    bridge.position.set(220, 0, 0); scene.add(bridge);
+
+    const road = new THREE.Mesh(new THREE.RingGeometry(240, 280, 64), new THREE.MeshStandardMaterial({ color: 0x334155 }));
     road.rotation.x = -Math.PI / 2; road.position.y = 0.05; scene.add(road);
 
     // ----------------------------------------------------
-    // 🌋 1. ലാവ അഗ്നിപർവ്വതവും മുകൾഭാഗം വരെയുള്ള പാർക്കൂർ സ്റ്റെപ്പുകളും (No Sinking!)
+    // 🌋 1. എളുപ്പത്തിൽ കയറാൻ കഴിയുന്ന വോൾക്കാനോ പാർക്കൂർ (Easy Step-by-Step Top Climb)
     // ----------------------------------------------------
     const volcano = new THREE.Group();
     const vBase = new THREE.Mesh(new THREE.ConeGeometry(95, 90, 24), new THREE.MeshStandardMaterial({ color: 0x451a03 })); vBase.position.y = 40; volcano.add(vBase);
     const vCrater = new THREE.Mesh(new THREE.CylinderGeometry(24, 28, 4, 24), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xf97316, emissiveIntensity: 1.0 })); vCrater.position.y = 86; volcano.add(vCrater);
     volcano.position.set(380, 0, -280); scene.add(volcano);
 
-    // ടോപ്പ് വരെയുള്ള 12 സ്റ്റെപ്പുകൾ
-    for (let i = 0; i < 12; i++) {
-      const plat = new THREE.Mesh(new THREE.CylinderGeometry(3.5, 3.8, 1.0, 16), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xe11d48, emissiveIntensity: 0.6 }));
-      const px = 140 + (i * 18);
-      const py = 2 + (i * 6.5);
-      const pz = -140 - (i * 11);
+    // എളുപ്പത്തിൽ ചാടാൻ പാകത്തിന് അടുത്തടുത്തുള്ള 14 വലിയ സ്റ്റെപ്പുകൾ
+    for (let i = 0; i < 14; i++) {
+      const plat = new THREE.Mesh(new THREE.CylinderGeometry(4.8, 5.2, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xe11d48, emissiveIntensity: 0.6 }));
+      const px = 150 + (i * 15);
+      const py = 2 + (i * 5.8);
+      const pz = -140 - (i * 9);
       plat.position.set(px, py, pz);
       scene.add(plat);
-      volcanoPlatforms.push({ x: px, y: py + 0.5, z: pz, radius: 4.2 });
+      volcanoPlatforms.push({ x: px, y: py + 0.6, z: pz, radius: 5.4 });
     }
 
     // ----------------------------------------------------
@@ -353,27 +369,30 @@
     // ----------------------------------------------------
     const seaBattleGroup = new THREE.Group();
     const seaGodzilla = new THREE.Group();
-    const gzTorso = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 6, 15, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b })); gzTorso.position.y = 8; seaGodzilla.add(gzTorso);
-    const gzHead = new THREE.Mesh(new THREE.SphereGeometry(3.5, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b })); gzHead.position.set(0, 16, 2); seaGodzilla.add(gzHead);
-    const spikeGeo = new THREE.ConeGeometry(1.6, 5, 4);
+    const gzTorso = new THREE.Mesh(new THREE.CylinderGeometry(5, 7, 18, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b })); gzTorso.position.y = 9; seaGodzilla.add(gzTorso);
+    const gzHead = new THREE.Mesh(new THREE.SphereGeometry(4, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b })); gzHead.position.set(0, 18, 2.5); seaGodzilla.add(gzHead);
+    const spikeGeo = new THREE.ConeGeometry(1.8, 6, 4);
     const spikeMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 1.0 });
     for (let i = 0; i < 7; i++) {
-      const sp = new THREE.Mesh(spikeGeo, spikeMat); sp.rotation.x = -Math.PI / 3; sp.position.set(0, 7 + (i * 2), -5 - (i * 1.8)); seaGodzilla.add(sp);
+      const sp = new THREE.Mesh(spikeGeo, spikeMat); sp.rotation.x = -Math.PI / 3; sp.position.set(0, 8 + (i * 2.2), -5 - (i * 2)); seaGodzilla.add(sp);
     }
-    seaGodzilla.position.set(-30, 0, 0); seaBattleGroup.add(seaGodzilla);
+    seaGodzilla.position.set(-35, 0, 0); seaBattleGroup.add(seaGodzilla);
 
     const seaKong = new THREE.Group();
-    const kgTorso = new THREE.Mesh(new THREE.CylinderGeometry(5.5, 6.5, 14, 16), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgTorso.position.y = 7.5; seaKong.add(kgTorso);
-    const kgHead = new THREE.Mesh(new THREE.SphereGeometry(3.5, 16, 16), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgHead.position.set(0, 15.5, 0.5); seaKong.add(kgHead);
-    const kgArmL = new THREE.Mesh(new THREE.BoxGeometry(3.2, 9, 3.2), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgArmL.position.set(-7, 10, 4); kgArmL.rotation.x = 0.9; seaKong.add(kgArmL);
-    seaKong.position.set(30, 0, 0); seaBattleGroup.add(seaKong);
+    const kgTorso = new THREE.Mesh(new THREE.CylinderGeometry(6, 7.5, 16, 16), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgTorso.position.y = 8.5; seaKong.add(kgTorso);
+    const kgHead = new THREE.Mesh(new THREE.SphereGeometry(4, 16, 16), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgHead.position.set(0, 17.5, 0.5); seaKong.add(kgHead);
+    const kgArmL = new THREE.Mesh(new THREE.BoxGeometry(3.6, 10, 3.6), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgArmL.position.set(-8, 11, 4); kgArmL.rotation.x = 0.9; seaKong.add(kgArmL);
+    seaKong.position.set(35, 0, 0); seaBattleGroup.add(seaKong);
 
-    seaBattleGroup.position.set(0, -3, 900); scene.add(seaBattleGroup);
+    seaBattleGroup.position.set(0, -3, 950); scene.add(seaBattleGroup);
 
     // ----------------------------------------------------
-    // 📸 3. സെലിബ്രിറ്റി ഫോട്ടോ സോൺ (BTS, Football, Lisa, Avengers)
+    // 📸 3. പ്രീമിയം സെലിബ്രിറ്റി വിഐപി ഫോട്ടോ സോൺ (Red Carpet & Pillars)
     // ----------------------------------------------------
     const celebZone = new THREE.Group();
+    const carpet = new THREE.Mesh(new THREE.BoxGeometry(70, 0.4, 22), new THREE.MeshStandardMaterial({ color: 0xdc2626 }));
+    carpet.position.y = 0.2; celebZone.add(carpet);
+
     function createCelebrityFigure(name, shirtColor, hairColor, x) {
       const g = new THREE.Group();
       const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.6, 1.5, 12), new THREE.MeshStandardMaterial({ color: shirtColor })); torso.position.y = 1.4; g.add(torso);
@@ -383,27 +402,27 @@
       return { mesh: g, name };
     }
     const celebList = [
-      createCelebrityFigure("Iron Man (Avenger)", 0xdc2626, 0x7f1d1d, -18),
-      createCelebrityFigure("CR7 Ronaldo (Football Legend)", 0x2563eb, 0x111827, -6),
+      createCelebrityFigure("Iron Man (Avenger)", 0xdc2626, 0x7f1d1d, -22),
+      createCelebrityFigure("CR7 Ronaldo (Football Legend)", 0x2563eb, 0x111827, -8),
       createCelebrityFigure("Messi (Football Legend)", 0x0284c7, 0x451a03, 6),
-      createCelebrityFigure("K-Pop Lisa (Blackpink)", 0xec4899, 0xb45309, 18),
-      createCelebrityFigure("BTS Member (K-Pop)", 0x8b5cf6, 0x1e1b4b, 30)
+      createCelebrityFigure("K-Pop Lisa (Blackpink)", 0xec4899, 0xb45309, 20),
+      createCelebrityFigure("BTS Member (K-Pop)", 0x8b5cf6, 0x1e1b4b, 32)
     ];
-    celebZone.position.set(-260, 0, 120); scene.add(celebZone);
+    celebZone.position.set(-270, 0, 130); scene.add(celebZone);
 
     // ----------------------------------------------------
-    // 🚗 4. റിയലിസ്റ്റിക് വെഹിക്കിളുകൾ & ഫ്ലൈയിംഗ് മെഷീനുകൾ
+    // 🚗 4. റിയലിസ്റ്റിക് വെഹിക്കിളുകൾ & ജീവികൾ (മാപ്പിൽ എല്ലായിടത്തും)
     // ----------------------------------------------------
     function buildRedCar(x, z) {
       const g = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.2, 5.8), new THREE.MeshStandardMaterial({ color: 0xdc2626, metalness: 0.5, roughness: 0.2 })); body.position.y = 0.8; g.add(body);
-      const cabin = new THREE.Mesh(new THREE.SphereGeometry(1.6, 16, 16), new THREE.MeshStandardMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.85 })); cabin.scale.set(0.9, 0.7, 1.2); cabin.position.set(0, 1.6, -0.2); g.add(cabin);
-      const seat = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.3, 1.2), new THREE.MeshStandardMaterial({ color: 0x1f2937 })); seat.position.set(0, 0.9, 0); g.add(seat);
+      const body = new THREE.Mesh(new THREE.BoxGeometry(3.8, 1.1, 6.0), new THREE.MeshStandardMaterial({ color: 0xdc2626, metalness: 0.5, roughness: 0.2 })); body.position.y = 0.8; g.add(body);
+      const cabin = new THREE.Mesh(new THREE.SphereGeometry(1.6, 16, 16), new THREE.MeshStandardMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.8 })); cabin.scale.set(0.9, 0.7, 1.2); cabin.position.set(0, 1.6, -0.2); g.add(cabin);
       const wGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.5, 16); const wMat = new THREE.MeshStandardMaterial({ color: 0x111827 });
-      const wPos = [ [-1.8, 0.55, 1.8], [1.8, 0.55, 1.8], [-1.8, 0.55, -1.8], [1.8, 0.55, -1.8] ];
-      wPos.forEach(p => { const w = new THREE.Mesh(wGeo, wMat); w.rotation.z = Math.PI / 2; w.position.set(...p); g.add(w); });
+      [ [-1.9, 0.55, 1.8], [1.9, 0.55, 1.8], [-1.9, 0.55, -1.8], [1.9, 0.55, -1.8] ].forEach(p => {
+        const w = new THREE.Mesh(wGeo, wMat); w.rotation.z = Math.PI / 2; w.position.set(...p); g.add(w);
+      });
       g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'car', prompt: '🚗 Drive Red Car', seatOffset: { x: 0, y: 0.8, z: 0 } };
+      return { mesh: g, type: 'car', prompt: '🚗 Drive Red Car', seatY: 0.6 };
     }
 
     function buildCruiserBike(x, z) {
@@ -414,7 +433,7 @@
       const wF = new THREE.Mesh(wGeo, wMat); wF.rotation.z = Math.PI / 2; wF.position.set(0, 0.6, 1.4); g.add(wF);
       const wB = new THREE.Mesh(wGeo, wMat); wB.rotation.z = Math.PI / 2; wB.position.set(0, 0.6, -1.4); g.add(wB);
       g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'bike', prompt: '🏍️ Ride Cruiser Bike', seatOffset: { x: 0, y: 1.0, z: -0.6 } };
+      return { mesh: g, type: 'bike', prompt: '🏍️ Ride Cruiser Bike', seatY: 0.8 };
     }
 
     function buildRedHelicopter(x, z) {
@@ -423,7 +442,7 @@
       const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.4, 5), new THREE.MeshStandardMaterial({ color: 0xffffff })); tail.rotation.x = Math.PI / 2; tail.position.set(0, 2.4, -4); g.add(tail);
       const rotor = new THREE.Mesh(new THREE.BoxGeometry(10, 0.08, 0.8), new THREE.MeshStandardMaterial({ color: 0x111827 })); rotor.position.set(0, 4.6, 0); g.add(rotor);
       g.userData = { rotor }; g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'heli', prompt: '🚁 Fly Helicopter', seatOffset: { x: 0, y: 1.8, z: 0 }, isFlying: true };
+      return { mesh: g, type: 'heli', prompt: '🚁 Fly Helicopter', isFlying: true, seatY: 1.6 };
     }
 
     function buildJetPlane(x, z) {
@@ -432,26 +451,40 @@
       const nose = new THREE.Mesh(new THREE.ConeGeometry(2.4, 5, 16), new THREE.MeshStandardMaterial({ color: 0x2563eb })); nose.rotation.x = -Math.PI / 2; nose.position.set(0, 3, 14.5); g.add(nose);
       const wings = new THREE.Mesh(new THREE.BoxGeometry(26, 0.3, 5), new THREE.MeshStandardMaterial({ color: 0xffffff })); wings.position.set(0, 3, 0); g.add(wings);
       g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'plane', prompt: '✈️ Pilot Jet Plane', seatOffset: { x: 0, y: 2.2, z: 3.5 }, isFlying: true };
+      return { mesh: g, type: 'plane', prompt: '✈️ Pilot Jet Plane', isFlying: true, seatY: 2.0 };
+    }
+
+    function buildBeast(type, name, color, scale, x, z) {
+      const g = new THREE.Group();
+      const torso = new THREE.Mesh(new THREE.CylinderGeometry(2.5 * scale, 3.5 * scale, 9 * scale, 16), new THREE.MeshStandardMaterial({ color }));
+      torso.position.y = 4.5 * scale; g.add(torso);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(2.2 * scale, 16, 16), new THREE.MeshStandardMaterial({ color }));
+      head.position.set(0, 9 * scale, 1.2 * scale); g.add(head);
+      g.position.set(x, 0, z); scene.add(g);
+      return { mesh: g, type, prompt: `🦖 Mount ${name}`, seatY: 5 * scale };
     }
 
     const worldInteractables = [
-      buildRedCar(0, 240), buildRedCar(-170, 240), buildRedCar(170, 240),
-      buildCruiserBike(60, 240), buildCruiserBike(-60, 240),
-      buildRedHelicopter(-190, -190), buildJetPlane(190, -190)
+      buildRedCar(0, 260), buildRedCar(-180, 260), buildRedCar(180, 260),
+      buildCruiserBike(70, 260), buildCruiserBike(-70, 260),
+      buildRedHelicopter(-200, -200), buildJetPlane(200, -200),
+      buildBeast('dino', 'Red T-Rex', 0xc2410c, 1.2, 50, 100),
+      buildBeast('dino', 'T-Rex Beast', 0xc2410c, 1.2, -60, 110),
+      buildBeast('kong', 'King Kong', 0x18181b, 1.3, 130, 80),
+      buildBeast('godzilla', 'Godzilla', 0x1e293b, 1.4, -130, 80)
     ];
 
     // 🎤 കോൺസേർട്ട് സ്റ്റേജും ഇരിപ്പിടങ്ങളും
     const stageG = new THREE.Group();
     const sFloor = new THREE.Mesh(new THREE.BoxGeometry(40, 2, 22), new THREE.MeshStandardMaterial({ color: 0x78350f })); sFloor.position.y = 1; stageG.add(sFloor);
     const sWall = new THREE.Mesh(new THREE.BoxGeometry(40, 15, 1), new THREE.MeshStandardMaterial({ color: 0x1e1b4b })); sWall.position.set(0, 8, -10.5); stageG.add(sWall);
-    stageG.position.set(0, 0, -300); scene.add(stageG);
+    stageG.position.set(0, 0, -320); scene.add(stageG);
 
     const chairsList = [];
     for (let r = 0; r < 4; r++) {
       for (let c = -7; c <= 7; c++) {
         const ch = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, 1.6), new THREE.MeshStandardMaterial({ color: 0xa855f7 }));
-        ch.position.set(c * 2.8, 0.6, -260 + (r * 3.5)); scene.add(ch); chairsList.push(ch);
+        ch.position.set(c * 2.8, 0.6, -280 + (r * 3.5)); scene.add(ch); chairsList.push(ch);
       }
     }
 
@@ -462,9 +495,9 @@
     goalPost.position.set(0, 3, -65); scene.add(goalPost);
 
     // 🏔️ പർവ്വതവും കൊടിയും
-    const mountain = new THREE.Mesh(new THREE.ConeGeometry(85, 110, 24), new THREE.MeshStandardMaterial({ color: 0x334155 })); mountain.position.set(-380, 50, -280); scene.add(mountain);
-    const flagPole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 10), new THREE.MeshStandardMaterial({ color: 0xffffff })); flagPole.position.set(-380, 110, -280); scene.add(flagPole);
-    const flagMesh = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2, 0.1), new THREE.MeshStandardMaterial({ color: 0xef4444 })); flagMesh.position.set(-378.2, 113, -280); scene.add(flagMesh);
+    const mountain = new THREE.Mesh(new THREE.ConeGeometry(85, 110, 24), new THREE.MeshStandardMaterial({ color: 0x334155 })); mountain.position.set(-400, 50, -300); scene.add(mountain);
+    const flagPole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 10), new THREE.MeshStandardMaterial({ color: 0xffffff })); flagPole.position.set(-400, 110, -300); scene.add(flagPole);
+    const flagMesh = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2, 0.1), new THREE.MeshStandardMaterial({ color: 0xef4444 })); flagMesh.position.set(-398.2, 113, -300); scene.add(flagMesh);
 
     // 🧑‍🤝‍🧑 പ്ലെയർ അവതാർ
     let myPlayer = new THREE.Group(); scene.add(myPlayer);
@@ -505,6 +538,34 @@
     socket.on('serverStatsUpdate', (st) => {
       document.getElementById('online-users-count').innerText = st.onlineCount;
       if (isOwner) document.getElementById('total-users-count').innerText = st.totalBotUsers;
+    });
+
+    // 💬 വർക്കിംഗ് ചാറ്റ് സിസ്റ്റം (Fixed Chat)
+    window.sendChatMessage = () => {
+      const input = document.getElementById('chat-txt');
+      const text = input.value.trim();
+      if (text) {
+        socket.emit('roomChatMessage', { text });
+        input.value = '';
+      }
+    };
+    document.getElementById('chat-txt').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendChatMessage();
+    });
+    socket.on('broadcastRoomChat', (d) => {
+      const box = document.getElementById('chat-content');
+      const msgDiv = document.createElement('div');
+      msgDiv.innerHTML = `<strong>${d.sender}:</strong> ${d.text}`;
+      box.appendChild(msgDiv);
+      box.scrollTop = box.scrollHeight;
+    });
+    socket.on('sysRoomChat', (txt) => {
+      const box = document.getElementById('chat-content');
+      const msgDiv = document.createElement('div');
+      msgDiv.style.color = '#38bdf8';
+      msgDiv.innerText = txt;
+      box.appendChild(msgDiv);
+      box.scrollTop = box.scrollHeight;
     });
 
     // 👆 360° ടച്ച് ക്യാമറ
@@ -564,15 +625,15 @@
     // 🌐 ഭാഷാ മാറ്റം
     const translations = {
       ml: { server: "🌍 സെർവർ", lang: "⚙️ ഭാഷ", prof: "👤 പ്രൊഫൈൽ", games: "🎮 മിനി ഗെയിംസ്", concert: "🎤 കോൺസേർട്ട് & സീറ്റ്", celeb: "📸 സ്റ്റാർസ് ഫോട്ടോ വിഐപി", battle: "🌊 കോങ് vs ഗോഡ്‌സില്ല", mountain: "🏔️ പർവ്വതം & പതാക", volcano: "🌋 ലാവ അഗ്നിപർവ്വതം", friends: "🤝 സുഹൃത്തുക്കൾ", group: "💬 ഗ്രൂപ്പുകൾ" },
-      en: { server: "🌍 Server", lang: "⚙️️ Lang", prof: "👤 Profile", games: "🎮 Mini Games", concert: "🎤 Concert & Seats", celeb: "📸 Stars Photo VIP", battle: "🌊 Kong vs Godzilla", mountain: "🏔️ Mountain Peak Flag", volcano: "🌋 Lava Volcano Crater", friends: "🤝 Friends & Requests", group: "💬 Group Lounges" },
+      en: { server: "🌍 Server", lang: "⚙️ Lang", prof: "👤 Profile", games: "🎮 Mini Games", concert: "🎤 Concert & Seats", celeb: "📸 Stars Photo VIP", battle: "🌊 Kong vs Godzilla", mountain: "🏔️ Mountain Peak Flag", volcano: "🌋 Lava Volcano Crater", friends: "🤝 Friends & Requests", group: "💬 Group Lounges" },
       fa: { server: "🌍 سرور", lang: "⚙️ زبان", prof: "👤 پروفایل", games: "🎮 بازی‌های کوچک", concert: "🎤 کنسرت و صندلی", celeb: "📸 عکس ستاره‌ها", battle: "🌊 نبرد کونگ و گودزیلا", mountain: "🏔️ قله کوهستان", volcano: "🌋 آتشفشان گدازه", friends: "🤝 دوستان", group: "💬 گروه‌ها" },
       tg: { server: "🌍 Сервер", lang: "⚙️ Забон", prof: "👤 Профил", games: "🎮 Бозиҳои хурд", concert: "🎤 Консерт", celeb: "📸 Акси ситораҳо", battle: "🌊 Ҷанги дарёӣ", mountain: "🏔️ Қуллаи кӯҳ", volcano: "🌋 Вулқон", friends: "🤝 Дӯстон", group: "💬 Гурӯҳҳо" },
       uz: { server: "🌍 Server", lang: "⚙️ Til", prof: "👤 Profil", games: "🎮 Mini o‘yinlar", concert: "🎤 Konsert", celeb: "📸 Yulduzlar fotosi", battle: "🌊 Dengiz jangi", mountain: "🏔️ Tog‘ cho‘qqisi", volcano: "🌋 Vulqon", friends: "🤝 Do‘stlar", group: "💬 Guruhlar" },
-      zh: { server: "🌍 服务器", lang: "⚙️ 语言", prof: "👤 个人资料", games: "🎮 迷你小游戏", concert: "🎤 音乐会与座位", celeb: "📸 VIP 名人合影", battle: "🌊 海上金刚对哥斯拉", mountain: "🏔️ 山顶红旗", volcano: "🌋 熔岩火山", friends: "🤝 好友与请求", group: "💬 群聊大厅" },
+      zh: { server: "🌍 服务器", lang: "⚙️ 语言", prof: "👤 个人资料", games: "🎮 迷你小游戏", concert: "🎤 音乐会与座位", celeb: "📸 VIP 名人合影", battle: "🌊 海上金刚对哥斯拉", mountain: "🏔️️ 山顶红旗", volcano: "🌋 熔岩火山", friends: "🤝 好友与请求", group: "💬 群聊大厅" },
       my: { server: "🌍 ဆာဗာ", lang: "⚙️ ဘာသာစကား", prof: "👤 ပရိုဖိုင်", games: "🎮 ဂိမ်းများ", concert: "🎤 ဖျော်ဖြေပွဲ", celeb: "📸 ကြယ်ပွင့်ဓာတ်ပုံ", battle: "🌊 ပင်လယ်တိုက်ပွဲ", mountain: "🏔️ တောင်ထွတ်", volcano: "🌋 မီးတောင်", friends: "🤝 သူငယ်ချင်းများ", group: "💬 အဖွဲ့များ" },
       it: { server: "🌍 Server", lang: "⚙️ Lingua", prof: "👤 Profilo", games: "🎮 Mini Giochi", concert: "🎤 Concerto & Posti", celeb: "📸 Foto VIP Star", battle: "🌊 Battaglia in Mare", mountain: "🏔️ Cima della Montagna", volcano: "🌋 Vulcano di Lava", friends: "🤝 Amici", group: "💬 Gruppi" },
-      ru: { server: "🌍 Сервер", lang: "⚙️ Язык", prof: "👤 Профиль", games: "🎮 Мини-игры", concert: "🎤 Концерт и Места", celeb: "📸 VIP Фото со Звездами", battle: "🌊 Битва в Море", mountain: "🏔️ Пик Горы", volcano: "🌋 Лавовый Вулкан", friends: "🤝 Друзья", group: "💬 Группы" },
-      ar: { server: "🌍 السيرفر", lang: "⚙️ اللغة", prof: "👤 الملف الشخصي", games: "🎮 ألعاب مصغرة", concert: "🎤 الحفل والمقاعد", celeb: "📸 صورة النجوم", battle: "🌊 معركة البحر", mountain: "🏔️ قمة الجبل", volcano: "🌋 بركان الحمم", friends: "🤝 الأصدقاء", group: "💬 المجموعات" }
+      ru: { server: "🌍 Сервер", lang: "⚙️ Язык", prof: "👤 Профиль", games: "🎮 Мини-игры", concert: "🎤 Концерт и Места", celeb: "📸 VIP Фото со Звездами", battle: "🌊 Битва в Море", mountain: "🏔️️ Пик Горы", volcano: "🌋 Лавовый Вулкан", friends: "🤝 Друзья", group: "💬 Группы" },
+      ar: { server: "🌍 السيرفر", lang: "⚙️️ اللغة", prof: "👤 الملف الشخصي", games: "🎮 ألعاب مصغرة", concert: "🎤 الحفل والمقاعد", celeb: "📸 صورة النجوم", battle: "🌊 معركة البحر", mountain: "🏔️ قمة الجبل", volcano: "🌋 بركان الحمم", friends: "🤝 الأصدقاء", group: "💬 المجموعات" }
     };
 
     window.applyLanguage = (l) => {
@@ -598,22 +659,20 @@
       alert(`🌍 Connected to ${name} server!`);
     };
 
-    // 🔗 ഗ്രൂപ്പ് റൂമുകൾ
+    // ഗ്രൂപ്പ് റൂമുകൾ
     function renderRooms(rooms) {
       const c = document.getElementById('room-buttons'); c.innerHTML = '';
       rooms.forEach(r => { c.innerHTML += `<button onclick="switchRoom('${r}')" class="btn-act">#${r}</button>`; });
     }
     socket.on('roomListUpdated', (rooms) => renderRooms(rooms));
-
     window.switchRoom = (r) => { closeBox('room-box'); socket.emit('joinChatRoom', r); };
     window.createRoomAction = () => {
       const inp = document.getElementById('new-group-name');
       if (inp.value.trim()) { socket.emit('createNewRoom', inp.value.trim()); inp.value = ''; }
     };
     window.inviteToCurrentLounge = () => {
-      const link = `${SHARE_URL}?lounge=General`;
-      navigator.clipboard.writeText(link);
-      alert("🔗 Lounge Invite link copied to clipboard! Share with friends.");
+      navigator.clipboard.writeText(SHARE_URL);
+      alert("🔗 Metaverse Lounge link copied! Share with your friends.");
     };
 
     // പ്രോക്സിമിറ്റി സിസ്റ്റം
@@ -672,7 +731,7 @@
       }
     }
 
-    // 🚗 വാഹനങ്ങളിൽ കൃത്യമായി ഇരുന്ന് ഓടിക്കുന്ന സിസ്റ്റം (Proper Boarding Fix)
+    // 🚗 വാഹനങ്ങളിൽ അകത്തിരുന്ന് ഓടിക്കുന്ന സിസ്റ്റം (Proper In-Vehicle Driving)
     window.interactWithNearbyTarget = () => {
       if (!nearbyTarget) return;
       if (nearbyTarget.type === 'celeb_photo') {
@@ -690,7 +749,7 @@
         return;
       }
       if (nearbyTarget.type === 'sing') {
-        myPlayer.position.set(0, 2.0, -300);
+        myPlayer.position.set(0, 2.0, -320);
         toggleAlwaysVoiceMic();
         document.getElementById('dismount-btn').style.display = 'block';
         alert("🎤 Standing on Stage! Mic is LIVE!");
@@ -705,24 +764,20 @@
       document.getElementById('proximity-prompt').style.display = 'none';
       document.getElementById('dismount-btn').style.display = 'block';
 
-      // വാഹനത്തിന് അകത്ത് കൃത്യമായി ഇരിക്കുന്നു
-      if (nearbyTarget.seatOffset) {
-        myPlayer.position.set(
-          nearbyTarget.mesh.position.x + nearbyTarget.seatOffset.x,
-          nearbyTarget.mesh.position.y + nearbyTarget.seatOffset.y,
-          nearbyTarget.mesh.position.z + nearbyTarget.seatOffset.z
-        );
-      }
+      // കളിക്കാരൻ വാഹനത്തിനുള്ളിൽ ഇരിക്കുന്നു
+      myPlayer.position.x = nearbyTarget.mesh.position.x;
+      myPlayer.position.z = nearbyTarget.mesh.position.z;
       if (nearbyTarget.isFlying) {
-        myPlayer.position.y = 28;
-        nearbyTarget.mesh.position.y = 26;
-        alert("✈️ Airborne! Flying through the sky!");
+        myPlayer.position.y = 35;
+        nearbyTarget.mesh.position.y = 35 - nearbyTarget.seatY;
+        alert("✈️ Flying in the sky!");
+      } else {
+        myPlayer.position.y = nearbyTarget.seatY || 0.8;
       }
     };
 
     window.dismountActiveRide = () => {
       if (nearbyTarget && nearbyTarget.isFlying) {
-        myPlayer.position.y = 0;
         nearbyTarget.mesh.position.y = 0;
       }
       activeRide = 'walk';
@@ -839,16 +894,16 @@
     };
     window.mountCarRacing = () => {
       closeBox('games-hub-box');
-      myPlayer.position.set(0, 1.2, 240);
+      myPlayer.position.set(0, 1.2, 260);
       activeRide = 'car';
       document.getElementById('dismount-btn').style.display = 'block';
       alert("🏎️ Racing started on the circular road!");
     };
 
     // ടെലിപോർട്ടുകൾ
-    window.teleportConcert = () => myPlayer.position.set(0, 0, -250);
-    window.teleportCelebZone = () => myPlayer.position.set(-260, 0, 115);
-    window.teleportSeaBattle = () => { myPlayer.position.set(0, 0, 820); alert("🌊 Watching Kong vs Godzilla Epic Sea Fight!"); };
+    window.teleportConcert = () => myPlayer.position.set(0, 0, -270);
+    window.teleportCelebZone = () => myPlayer.position.set(-270, 0, 125);
+    window.teleportSeaBattle = () => { myPlayer.position.set(0, 0, 870); alert("🌊 Watching Kong vs Godzilla Epic Sea Fight!"); };
     window.teleportMountainPeak = () => { myPlayer.position.set(mountain.position.x, 110, mountain.position.z); document.getElementById('dismount-btn').style.display = 'block'; };
     window.teleportVolcano = () => { myPlayer.position.set(volcano.position.x, 88, volcano.position.z); document.getElementById('dismount-btn').style.display = 'block'; };
 
@@ -874,7 +929,7 @@
     };
     socket.on('incomingLiveVoice', (d) => new Audio(d.audio).play().catch(() => {}));
 
-    // 🎆 റിയലിസ്റ്റിക് സ്കൈ പടക്കങ്ങൾ (Multi-Burst Fireworks)
+    // 🎆 റിയലിസ്റ്റിക് സ്കൈ പടക്കങ്ങൾ
     const fireworkParticles = [];
     function launchRocketFirework(startX, targetY, startZ, colorHex) {
       const pCount = 120;
@@ -921,14 +976,18 @@
       setTimeout(() => { b.style.display = 'none'; }, 11000);
     });
 
+    // 🎁 കോൺസേർട്ട് ഗിഫ്റ്റ് സ്ക്രീനിൽ കാണിക്കൽ
     window.sendStageGift = (title, stars) => {
       closeBox('stage-gift-box');
       socket.emit('requestStarsAction', { title, desc: `Gift ${title} on stage`, stars, type: 'stage_gift' });
     };
     socket.on('celebrateStageGift', (d) => {
-      launchRocketFirework(0, 35, -300, 0xff007f);
-      launchRocketFirework(10, 40, -300, 0xfacc15);
-      alert(`🎁 ${d.sender} gifted ${d.giftTitle} to the Stage Singer! 👏`);
+      launchRocketFirework(0, 35, -320, 0xff007f);
+      launchRocketFirework(10, 40, -320, 0xfacc15);
+      const giftEl = document.getElementById('gift-broadcast');
+      giftEl.innerText = `🎁 ${d.sender} sent ${d.giftTitle} to Stage! 🎉`;
+      giftEl.style.display = 'block';
+      setTimeout(() => { giftEl.style.display = 'none'; }, 6000);
     });
 
     window.purchaseStars = (title, type, stars) => {
@@ -948,7 +1007,7 @@
 
       checkProximity();
 
-      // വോൾക്കാനോ സ്റ്റെപ്പുകളിൽ മുങ്ങിപ്പോകാതെ ഉറച്ചുനിൽക്കാനുള്ള കൊളീഷൻ (Collision Check)
+      // വോൾക്കാനോ സ്റ്റെപ്പുകളിലെ കൊളീഷൻ പരിശോധന
       let onPlatform = false;
       for (let p of volcanoPlatforms) {
         const d = Math.hypot(myPlayer.position.x - p.x, myPlayer.position.z - p.z);
@@ -958,6 +1017,13 @@
           break;
         }
       }
+      // സോളിഡ് പാലത്തിന് മുകളിലൂടെ നടക്കൽ (Crossable Bridge)
+      const onBridge = Math.abs(myPlayer.position.x - 220) < 22 && Math.abs(myPlayer.position.z) < 8;
+      if (onBridge) {
+        currentBaseY = 1.0;
+        onPlatform = true;
+      }
+
       if (!onPlatform && !nearbyTarget?.isFlying && activeRide === 'walk') {
         currentBaseY = 0;
       }
@@ -1002,7 +1068,7 @@
 
       const distToCenter = Math.hypot(myPlayer.position.x, myPlayer.position.z);
       const swimEl = document.getElementById('swim-indicator');
-      if (distToCenter > 750 && activeRide === 'walk') {
+      if (distToCenter > 800 && activeRide === 'walk') {
         isSwimming = true; myPlayer.position.y = -2; swimEl.style.display = 'block';
       } else if (activeRide === 'walk' && !isJumping && myPlayer.position.y === -2) {
         isSwimming = false; myPlayer.position.y = 0; swimEl.style.display = 'none';
@@ -1024,15 +1090,15 @@
           myPlayer.userData.legR.rotation.x = -Math.sin(wCycle) * 0.6;
         }
 
-        // വാഹനം കൃത്യമായി കളിക്കാരനൊപ്പം ഓടുന്നു / പറക്കുന്നു
+        // കളിക്കാരൻ നീങ്ങുമ്പോൾ വാഹനം കൂടെ കൃത്യമായി നീങ്ങുന്നു
         if (nearbyTarget && activeRide !== 'walk' && nearbyTarget.mesh) {
           if (nearbyTarget.isFlying) {
-            nearbyTarget.mesh.position.set(myPlayer.position.x, myPlayer.position.y - 1.8, myPlayer.position.z);
+            nearbyTarget.mesh.position.set(myPlayer.position.x, myPlayer.position.y - nearbyTarget.seatY, myPlayer.position.z);
           } else {
-            nearbyTarget.mesh.position.set(myPlayer.position.x, 0, myPlayer.position.z);
+            nearbyTarget.mesh.position.set(myPlayer.position.x, myPlayer.position.y - nearbyTarget.seatY, myPlayer.position.z);
           }
           nearbyTarget.mesh.rotation.y = myPlayer.rotation.y;
-          if (nearbyTarget.mesh.userData?.rotor) nearbyTarget.mesh.userData.rotor.rotation.y += 0.4;
+          if (nearbyTarget.mesh.userData?.rotor) nearbyTarget.mesh.userData.rotor.rotation.y += 0.5;
         }
 
         socket.emit('updatePosition', { x: myPlayer.position.x, y: myPlayer.position.y, z: myPlayer.position.z });
