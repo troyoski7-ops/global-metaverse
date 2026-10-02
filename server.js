@@ -20,7 +20,7 @@ let allTimeUsers = new Set();
 
 bot.onText(/\/start/, (msg) => {
   allTimeUsers.add(msg.chat.id);
-  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nConcerts, 2-Player Dinosaurs & Mech, Flying Dragons, Video Calls & Telegram Stars!", {
+  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nConcerts, 2-Player Dinosaurs, Mech, Football, Video Calls & Telegram Stars!", {
     parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [[{ text: "🚀 Enter Metaverse", web_app: { url: WEB_APP_URL } }]]
@@ -58,6 +58,9 @@ io.on('connection', (socket) => {
     id: socket.id,
     telegramId: null,
     name: "Player_" + Math.floor(100 + Math.random() * 900),
+    bio: "Exploring GlobeVibe Metaverse",
+    instagram: "",
+    telegramUser: "",
     gender: 'boy',
     isOwner: false,
     unlockedBeast: false,
@@ -75,6 +78,9 @@ io.on('connection', (socket) => {
     p.telegramId = userData.telegramId ? Number(userData.telegramId) : null;
     if (p.telegramId) allTimeUsers.add(p.telegramId);
     p.gender = userData.gender || 'boy';
+    p.bio = userData.bio || p.bio;
+    p.instagram = userData.instagram || "";
+    p.telegramUser = userData.telegramUser || "";
 
     if (p.telegramId === OWNER_TELEGRAM_ID) {
       p.isOwner = true;
@@ -98,6 +104,18 @@ io.on('connection', (socket) => {
     io.emit('playerListUpdate', players);
   });
 
+  socket.on('updateProfile', (data) => {
+    const p = players[socket.id];
+    if (p) {
+      p.name = data.name || p.name;
+      p.bio = data.bio || p.bio;
+      p.instagram = data.instagram || p.instagram;
+      p.telegramUser = data.telegramUser || p.telegramUser;
+      p.gender = data.gender || p.gender;
+      io.emit('playerListUpdate', players);
+    }
+  });
+
   socket.on('sendFriendReq', (targetId) => {
     if (players[targetId]) {
       if (!pendingRequests[targetId]) pendingRequests[targetId] = [];
@@ -112,12 +130,11 @@ io.on('connection', (socket) => {
     if (p && sender) {
       if (!p.friends.includes(fromId)) p.friends.push(fromId);
       if (!sender.friends.includes(socket.id)) sender.friends.push(socket.id);
-      socket.emit('friendListUpdated', p.friends.map(id => ({ id, name: players[id]?.name || "Friend" })));
-      io.to(fromId).emit('friendListUpdated', sender.friends.map(id => ({ id, name: players[id]?.name || "Friend" })));
+      socket.emit('friendListUpdated', p.friends.map(id => ({ id, name: players[id]?.name || "Friend", ig: players[id]?.instagram, tg: players[id]?.telegramUser })));
+      io.to(fromId).emit('friendListUpdated', sender.friends.map(id => ({ id, name: players[id]?.name || "Friend", ig: players[id]?.instagram, tg: players[id]?.telegramUser })));
     }
   });
 
-  // 2-Player Passenger Sync
   socket.on('mountAsPassenger', (data) => {
     players[socket.id].activeRide = data.rideType + '_passenger';
     socket.broadcast.emit('passengerMounted', {
@@ -132,7 +149,6 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('passengerDismounted', { passengerId: socket.id });
   });
 
-  // Video Call Signal
   socket.on('startVideoCallSignal', (data) => {
     if (data.targetId && players[data.targetId]) {
       io.to(data.targetId).emit('incomingVideoCall', { fromId: socket.id, fromName: players[socket.id].name });
@@ -203,7 +219,9 @@ io.on('connection', (socket) => {
         ...pos,
         name: players[socket.id].name,
         gender: players[socket.id].gender,
-        activeRide: players[socket.id].activeRide
+        activeRide: players[socket.id].activeRide,
+        instagram: players[socket.id].instagram,
+        telegramUser: players[socket.id].telegramUser
       });
     }
   });
