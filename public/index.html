@@ -31,7 +31,6 @@
 
     #share-float-btn { position: absolute; top: 52px; right: 10px; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(45deg, #38bdf8, #6366f1); color: #fff; border: 2px solid #fff; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 14px rgba(99, 102, 241, 0.8); cursor: pointer; z-index: 20; }
 
-    /* 🦘 യഥാർത്ഥ ജമ്പ് ബട്ടൺ */
     #jump-btn { position: absolute; bottom: 85px; right: 18px; width: 62px; height: 62px; border-radius: 50%; background: linear-gradient(45deg, #0284c7, #38bdf8); color: #fff; font-weight: 900; font-size: 13px; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 16px rgba(56, 189, 248, 0.8); cursor: pointer; z-index: 25; }
 
     #proximity-prompt, #player-interact-prompt { position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #2563eb, #38bdf8); color: #fff; padding: 10px 22px; border-radius: 25px; font-weight: bold; font-size: 13px; border: 2px solid #fff; box-shadow: 0 0 20px rgba(56, 189, 248, 0.9); display: none; cursor: pointer; z-index: 30; animation: bounce 1s infinite alternate; text-align: center; }
@@ -91,11 +90,11 @@
     </div>
 
     <div class="side-dock">
-      <button class="dock-btn" onclick="openBox('games-hub-box')">🎮 Mini Games Hub</button>
+      <button class="dock-btn" onclick="openBox('games-hub-box')" id="ui-dock-games">🎮 Mini Games Hub</button>
       <button class="dock-btn" onclick="teleportConcert()" id="ui-dock-concert">🎤 Concert & Seats</button>
       <button class="dock-btn" onclick="teleportCelebZone()" id="ui-dock-celeb">📸 Stars Photo VIP</button>
       <button class="dock-btn" onclick="teleportSeaBattle()" id="ui-dock-battle">🌊 Sea: Kong vs Godzilla</button>
-      <button class="dock-btn" onclick="teleportMountainPeak()" id="ui-dock-mountain">🏔️ Mountain Climb & Flag</button>
+      <button class="dock-btn" onclick="teleportMountainPeak()" id="ui-dock-mountain">🏔️️ Mountain Climb & Flag</button>
       <button class="dock-btn" onclick="teleportVolcano()" id="ui-dock-volcano">🌋 Lava Volcano Crater</button>
       <button class="dock-btn" onclick="openBox('friends-box')" id="ui-dock-friends">🤝 Friends & Requests</button>
       <button class="dock-btn" onclick="openBox('stage-gift-box')">🎁 Concert Gift (Stars)</button>
@@ -115,7 +114,7 @@
     </div>
   </div>
 
-  <!-- 1. ഗെയിംസ് ഹബ്ബ് മോഡൽ -->
+  <!-- 1. ഗെയിംസ് ഹബ്ബ് -->
   <div id="games-hub-box" class="modal hidden">
     <div class="modal-card">
       <h3>🎮 Metaverse Mini Games</h3>
@@ -129,14 +128,14 @@
     </div>
   </div>
 
-  <!-- 2. പ്രൊഫൈൽ മോഡൽ -->
+  <!-- 2. പ്രൊഫൈൽ & സോഷ്യൽ മീഡിയ മോഡൽ -->
   <div id="profile-box" class="modal hidden">
     <div class="modal-card">
       <h3>👤 Profile & Social Links</h3>
       <input type="text" id="prof-name-input" placeholder="Your Name" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
       <input type="text" id="prof-bio-input" placeholder="Bio / Status" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
-      <input type="text" id="prof-ig-input" placeholder="Instagram ID (e.g. @username)" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
-      <input type="text" id="prof-tg-input" placeholder="Telegram Username (e.g. @handle)" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
+      <input type="text" id="prof-ig-input" placeholder="Instagram ID" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
+      <input type="text" id="prof-tg-input" placeholder="Telegram Username" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
       <p style="font-size:11px; margin-top:4px;">Select Avatar Model:</p>
       <div class="grid-2">
         <button onclick="setCharModel('boy')" class="btn-act">👦 Boy Avatar</button>
@@ -202,7 +201,7 @@
   <!-- 7. രാജ്യങ്ങൾ -->
   <div id="country-box" class="modal hidden">
     <div class="modal-card">
-      <h3>🌍 Select World Server</h3>
+      <h3 id="modal-server-title">🌍 Select World Server</h3>
       <div class="grid-2">
         <button onclick="changeServer('kerala', '🌴 Kerala')" class="btn-act">🌴 Kerala</button>
         <button onclick="changeServer('india', '🇮🇳 India')" class="btn-act">🇮🇳 India</button>
@@ -287,7 +286,7 @@
     let otherPlayers = {};
     let nearbyPlayerId = null;
 
-    // --- 🦘 ജമ്പ് ഫിസിക്സ് സിസ്റ്റം ---
+    // --- 🦘 ജമ്പ് സിസ്റ്റം ---
     let isJumping = false;
     let jumpVelocityY = 0;
     const GRAVITY = -0.016;
@@ -304,7 +303,7 @@
     scene.background = new THREE.Color(0x87ceeb);
     scene.fog = new THREE.FogExp2(0x87ceeb, 0.0006);
 
-    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 6000);
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 7000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -313,20 +312,13 @@
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.4); scene.add(hemiLight);
     const dirLight = new THREE.DirectionalLight(0xffffff, 1.2); dirLight.position.set(150, 300, 150); scene.add(dirLight);
 
-    const island = new THREE.Mesh(new THREE.CylinderGeometry(650, 700, 10, 64), new THREE.MeshStandardMaterial({ color: 0x2e7d32 }));
+    const island = new THREE.Mesh(new THREE.CylinderGeometry(700, 750, 10, 64), new THREE.MeshStandardMaterial({ color: 0x2e7d32 }));
     island.position.y = -5; scene.add(island);
 
-    const ocean = new THREE.Mesh(new THREE.PlaneGeometry(12000, 12000), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1 }));
+    const ocean = new THREE.Mesh(new THREE.PlaneGeometry(14000, 14000), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1 }));
     ocean.rotation.x = -Math.PI / 2; ocean.position.y = -3; scene.add(ocean);
 
-    const river = new THREE.Mesh(new THREE.PlaneGeometry(30, 800), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
-    river.rotation.x = -Math.PI / 2; river.position.set(220, 0.02, 0); scene.add(river);
-
-    const bridge = new THREE.Group();
-    const bridgePlank = new THREE.Mesh(new THREE.BoxGeometry(36, 1, 14), new THREE.MeshStandardMaterial({ color: 0x854d0e })); bridgePlank.position.y = 1.2; bridge.add(bridgePlank);
-    bridge.position.set(220, 0, 0); scene.add(bridge);
-
-    const road = new THREE.Mesh(new THREE.RingGeometry(180, 215, 64), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+    const road = new THREE.Mesh(new THREE.RingGeometry(200, 240, 64), new THREE.MeshStandardMaterial({ color: 0x334155 }));
     road.rotation.x = -Math.PI / 2; road.position.y = 0.05; scene.add(road);
 
     // ----------------------------------------------------
@@ -349,7 +341,7 @@
     const kgArmL = new THREE.Mesh(new THREE.BoxGeometry(3.2, 9, 3.2), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgArmL.position.set(-7, 10, 4); kgArmL.rotation.x = 0.9; seaKong.add(kgArmL);
     seaKong.position.set(30, 0, 0); seaBattleGroup.add(seaKong);
 
-    seaBattleGroup.position.set(0, -3, 750); scene.add(seaBattleGroup);
+    seaBattleGroup.position.set(0, -3, 850); scene.add(seaBattleGroup);
 
     // ----------------------------------------------------
     // 📸 2. സെലിബ്രിറ്റി ഫോട്ടോ സോൺ (BTS, Football, Lisa, Avengers)
@@ -370,10 +362,10 @@
       createCelebrityFigure("K-Pop Lisa (Blackpink)", 0xec4899, 0xb45309, 18),
       createCelebrityFigure("BTS Member (K-Pop)", 0x8b5cf6, 0x1e1b4b, 30)
     ];
-    celebZone.position.set(-220, 0, 100); scene.add(celebZone);
+    celebZone.position.set(-250, 0, 120); scene.add(celebZone);
 
     // ----------------------------------------------------
-    // 🚗 3. റിയലിസ്റ്റിക് വെഹിക്കിളുകൾ
+    // 🚗 3. റിയലിസ്റ്റിക് വെഹിക്കിളുകൾ (ബോക്സുകൾ പൂർണ്ണമായി ഒഴിവാക്കി)
     // ----------------------------------------------------
     function buildRedCar(x, z) {
       const g = new THREE.Group();
@@ -383,7 +375,7 @@
       const wPos = [ [-1.8, 0.55, 1.8], [1.8, 0.55, 1.8], [-1.8, 0.55, -1.8], [1.8, 0.55, -1.8] ];
       wPos.forEach(p => { const w = new THREE.Mesh(wGeo, wMat); w.rotation.z = Math.PI / 2; w.position.set(...p); g.add(w); });
       g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'car', prompt: '🚗 Drive Red Car (2 Seats)' };
+      return { mesh: g, type: 'car', prompt: '🚗 Drive Red Car' };
     }
 
     function buildCruiserBike(x, z) {
@@ -394,106 +386,50 @@
       const wF = new THREE.Mesh(wGeo, wMat); wF.rotation.z = Math.PI / 2; wF.position.set(0, 0.6, 1.4); g.add(wF);
       const wB = new THREE.Mesh(wGeo, wMat); wB.rotation.z = Math.PI / 2; wB.position.set(0, 0.6, -1.4); g.add(wB);
       g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'bike', prompt: '🏍️ Ride Cruiser Bike (2 Seats)' };
-    }
-
-    function buildDoubleBicycle(x, z) {
-      const g = new THREE.Group();
-      const frame = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 2.5), new THREE.MeshStandardMaterial({ color: 0xdc2626 })); frame.rotation.x = Math.PI / 4; frame.position.set(0, 0.9, 0); g.add(frame);
-      const wGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.12, 16); const wMat = new THREE.MeshStandardMaterial({ color: 0x111827 });
-      const w1 = new THREE.Mesh(wGeo, wMat); w1.rotation.z = Math.PI / 2; w1.position.set(0, 0.5, 1.3); g.add(w1);
-      const w2 = new THREE.Mesh(wGeo, wMat); w2.rotation.z = Math.PI / 2; w2.position.set(0, 0.5, -1.3); g.add(w2);
-      g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'cycle', prompt: '🚲 Ride Double Bicycle (2 Seats)' };
+      return { mesh: g, type: 'bike', prompt: '🏍️ Ride Cruiser Bike' };
     }
 
     function buildRedHelicopter(x, z) {
       const g = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.SphereGeometry(2.2, 16, 16), new THREE.MeshStandardMaterial({ color: 0xdc2626 })); body.position.y = 2.2; g.add(body);
-      const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.35, 4.5), new THREE.MeshStandardMaterial({ color: 0xffffff })); tail.rotation.x = Math.PI / 2; tail.position.set(0, 2.2, -3.8); g.add(tail);
-      const rotor = new THREE.Mesh(new THREE.BoxGeometry(9, 0.06, 0.7), new THREE.MeshStandardMaterial({ color: 0x111827 })); rotor.position.set(0, 4.2, 0); g.add(rotor);
+      const body = new THREE.Mesh(new THREE.SphereGeometry(2.4, 16, 16), new THREE.MeshStandardMaterial({ color: 0xdc2626 })); body.position.y = 2.4; g.add(body);
+      const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.4, 5), new THREE.MeshStandardMaterial({ color: 0xffffff })); tail.rotation.x = Math.PI / 2; tail.position.set(0, 2.4, -4); g.add(tail);
+      const rotor = new THREE.Mesh(new THREE.BoxGeometry(10, 0.08, 0.8), new THREE.MeshStandardMaterial({ color: 0x111827 })); rotor.position.set(0, 4.6, 0); g.add(rotor);
       g.userData = { rotor }; g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'heli', prompt: '🚁 Fly Helicopter (4 Seats)' };
+      return { mesh: g, type: 'heli', prompt: '🚁 Fly Helicopter' };
     }
 
     function buildJetPlane(x, z) {
       const g = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.2, 22, 16), new THREE.MeshStandardMaterial({ color: 0xffffff })); body.rotation.x = Math.PI / 2; body.position.y = 3; g.add(body);
-      const nose = new THREE.Mesh(new THREE.ConeGeometry(2.2, 4.5, 16), new THREE.MeshStandardMaterial({ color: 0x2563eb })); nose.rotation.x = -Math.PI / 2; nose.position.set(0, 3, 13); g.add(nose);
-      const wings = new THREE.Mesh(new THREE.BoxGeometry(24, 0.25, 4.5), new THREE.MeshStandardMaterial({ color: 0xffffff })); wings.position.set(0, 3, 0); g.add(wings);
+      const body = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.4, 24, 16), new THREE.MeshStandardMaterial({ color: 0xffffff })); body.rotation.x = Math.PI / 2; body.position.y = 3; g.add(body);
+      const nose = new THREE.Mesh(new THREE.ConeGeometry(2.4, 5, 16), new THREE.MeshStandardMaterial({ color: 0x2563eb })); nose.rotation.x = -Math.PI / 2; nose.position.set(0, 3, 14.5); g.add(nose);
+      const wings = new THREE.Mesh(new THREE.BoxGeometry(26, 0.3, 5), new THREE.MeshStandardMaterial({ color: 0xffffff })); wings.position.set(0, 3, 0); g.add(wings);
       g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'plane', prompt: '✈️ Board Jet Plane (20 Seats)' };
-    }
-
-    function buildSteamShip(x, z) {
-      const g = new THREE.Group();
-      const hullLower = new THREE.Mesh(new THREE.BoxGeometry(12, 5, 32), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 })); hullLower.position.y = 2.2; g.add(hullLower);
-      const hullUpper = new THREE.Mesh(new THREE.BoxGeometry(12.5, 2, 32.5), new THREE.MeshStandardMaterial({ color: 0xdc2626 })); hullUpper.position.y = 4.8; g.add(hullUpper);
-      for (let i = 0; i < 3; i++) {
-        const stack = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.4, 6, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b })); stack.position.set(0, 8.5, -6 + (i * 4.5)); g.add(stack);
-      }
-      g.position.set(x, -2, z); scene.add(g);
-      return { mesh: g, type: 'ship', prompt: '🚢 Board Steamship (8 Seats)' };
-    }
-
-    function buildWoodenBoat(x, z) {
-      const g = new THREE.Group();
-      const hull = new THREE.Mesh(new THREE.BoxGeometry(4.2, 1.8, 10), new THREE.MeshStandardMaterial({ color: 0x854d0e, roughness: 0.8 })); hull.position.y = 0.8; g.add(hull);
-      g.position.set(x, -2.8, z); scene.add(g);
-      return { mesh: g, type: 'boat', prompt: '🛶 Row Wooden Boat (2 Seats)' };
-    }
-
-    function buildRideableGodzilla(x, z) {
-      const g = new THREE.Group();
-      const torso = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 6, 15, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b })); torso.position.y = 7.5; g.add(torso);
-      const spikeGeo = new THREE.ConeGeometry(1.4, 4.5, 4); const spikeMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 0.9 });
-      for (let i = 0; i < 6; i++) {
-        const sp = new THREE.Mesh(spikeGeo, spikeMat); sp.rotation.x = -Math.PI / 3; sp.position.set(0, 6 + (i * 1.8), -4 - (i * 1.6)); g.add(sp);
-      }
-      g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'godzilla', prompt: '🦖 Mount Godzilla (2 Seats)' };
-    }
-
-    function buildRideableKong(x, z) {
-      const g = new THREE.Group();
-      const torso = new THREE.Mesh(new THREE.CylinderGeometry(5, 6, 13, 16), new THREE.MeshStandardMaterial({ color: 0x18181b })); torso.position.y = 6.5; g.add(torso);
-      g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'kong', prompt: '🦍 Mount King Kong (2 Seats)' };
-    }
-
-    function buildRideableDino(x, z) {
-      const g = new THREE.Group();
-      const torso = new THREE.Mesh(new THREE.SphereGeometry(3.8, 16, 16), new THREE.MeshStandardMaterial({ color: 0xc2410c })); torso.scale.set(0.9, 1.2, 1.6); torso.position.y = 5.5; g.add(torso);
-      g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'dino', prompt: '🦖 Mount Red T-Rex (2 Seats)' };
+      return { mesh: g, type: 'plane', prompt: '✈️ Board Jet Plane' };
     }
 
     const worldInteractables = [
-      buildRedCar(0, 200), buildRedCar(-150, 200), buildRedCar(150, 200),
-      buildCruiserBike(50, 200), buildCruiserBike(-50, 200),
-      buildDoubleBicycle(80, 200), buildDoubleBicycle(-80, 200),
-      buildRedHelicopter(-180, -150), buildJetPlane(180, -150),
-      buildSteamShip(350, 220), buildWoodenBoat(220, -60),
-      buildRideableGodzilla(-160, 80), buildRideableKong(160, 80), buildRideableDino(0, 110)
+      buildRedCar(0, 220), buildRedCar(-160, 220), buildRedCar(160, 220),
+      buildCruiserBike(50, 220), buildCruiserBike(-50, 220),
+      buildRedHelicopter(-180, -180), buildJetPlane(180, -180)
     ];
 
     // ----------------------------------------------------
-    // 🎤 4. ഉറച്ച കരയിലെ കോൺസേർട്ട് സ്റ്റേജ്
+    // 🎤 4. കോൺസേർട്ട് സ്റ്റേജും ഇരിപ്പിടങ്ങളും
     // ----------------------------------------------------
     const stageG = new THREE.Group();
-    const sFloor = new THREE.Mesh(new THREE.BoxGeometry(40, 2, 22), new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.6 })); sFloor.position.y = 1; stageG.add(sFloor);
+    const sFloor = new THREE.Mesh(new THREE.BoxGeometry(40, 2, 22), new THREE.MeshStandardMaterial({ color: 0x78350f })); sFloor.position.y = 1; stageG.add(sFloor);
     const sWall = new THREE.Mesh(new THREE.BoxGeometry(40, 15, 1), new THREE.MeshStandardMaterial({ color: 0x1e1b4b })); sWall.position.set(0, 8, -10.5); stageG.add(sWall);
-    stageG.position.set(0, 0, -260); scene.add(stageG);
+    stageG.position.set(0, 0, -280); scene.add(stageG);
 
     const chairsList = [];
     for (let r = 0; r < 4; r++) {
       for (let c = -7; c <= 7; c++) {
         const ch = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, 1.6), new THREE.MeshStandardMaterial({ color: 0xa855f7 }));
-        ch.position.set(c * 2.8, 0.6, -220 + (r * 3.5)); scene.add(ch); chairsList.push(ch);
+        ch.position.set(c * 2.8, 0.6, -240 + (r * 3.5)); scene.add(ch); chairsList.push(ch);
       }
     }
 
-    // ⚽ ഫുട്ബോൾ & 🌋 ലാവ പാർക്കൂർ
+    // ⚽ ഫുട്ബോൾ & 🌋 ലാവ പാർക്കൂർ (അകലം പാലിച്ച് ക്രമീകരിച്ച പ്ലാറ്റ്‌ഫോമുകൾ)
     const football = new THREE.Mesh(new THREE.SphereGeometry(0.7, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }));
     football.position.set(0, 0.7, -40); scene.add(football);
 
@@ -502,18 +438,18 @@
 
     for (let i = 0; i < 7; i++) {
       const plat = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.8, 0.8, 16), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xe11d48, emissiveIntensity: 0.5 }));
-      plat.position.set(120 + (i * 7), 2 + (i * 2.5), -120 - (i * 6)); scene.add(plat);
+      plat.position.set(130 + (i * 12), 2 + (i * 2.5), -140 - (i * 10)); scene.add(plat);
     }
 
     // 🏔️ പർവ്വതവും കൊടിയും & 🌋 ലാവ അഗ്നിപർവ്വതം
-    const mountain = new THREE.Mesh(new THREE.ConeGeometry(75, 95, 24), new THREE.MeshStandardMaterial({ color: 0x334155 })); mountain.position.set(-320, 45, -230); scene.add(mountain);
-    const flagPole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 9), new THREE.MeshStandardMaterial({ color: 0xffffff })); flagPole.position.set(-320, 96, -230); scene.add(flagPole);
-    const flagMesh = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2, 0.1), new THREE.MeshStandardMaterial({ color: 0xef4444 })); flagMesh.position.set(-318.2, 99, -230); scene.add(flagMesh);
+    const mountain = new THREE.Mesh(new THREE.ConeGeometry(85, 110, 24), new THREE.MeshStandardMaterial({ color: 0x334155 })); mountain.position.set(-360, 50, -260); scene.add(mountain);
+    const flagPole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 10), new THREE.MeshStandardMaterial({ color: 0xffffff })); flagPole.position.set(-360, 110, -260); scene.add(flagPole);
+    const flagMesh = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2, 0.1), new THREE.MeshStandardMaterial({ color: 0xef4444 })); flagMesh.position.set(-358.2, 113, -260); scene.add(flagMesh);
 
     const volcano = new THREE.Group();
-    const vBase = new THREE.Mesh(new THREE.ConeGeometry(75, 70, 24), new THREE.MeshStandardMaterial({ color: 0x451a03 })); vBase.position.y = 30; volcano.add(vBase);
-    const vCrater = new THREE.Mesh(new THREE.CylinderGeometry(18, 22, 4, 24), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xf97316, emissiveIntensity: 1.0 })); vCrater.position.y = 66; volcano.add(vCrater);
-    volcano.position.set(320, 0, -230); scene.add(volcano);
+    const vBase = new THREE.Mesh(new THREE.ConeGeometry(85, 80, 24), new THREE.MeshStandardMaterial({ color: 0x451a03 })); vBase.position.y = 35; volcano.add(vBase);
+    const vCrater = new THREE.Mesh(new THREE.CylinderGeometry(20, 24, 4, 24), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xf97316, emissiveIntensity: 1.0 })); vCrater.position.y = 76; volcano.add(vCrater);
+    volcano.position.set(360, 0, -260); scene.add(volcano);
 
     // 🧑‍🤝‍🧑 പ്ലെയർ അവതാർ
     let myPlayer = new THREE.Group(); scene.add(myPlayer);
@@ -546,7 +482,7 @@
       renderRooms(d.rooms);
     });
 
-    // 👆 360° ടച്ച് ക്യാമറ
+    // 👆 360° ടച്ച് ക്യാമറ (ആകാശം മുകളിലേക്ക് കാണാൻ)
     let isDragging = false, prevX = 0, prevY = 0, cameraAngleX = 0, cameraAngleY = 0.35;
     window.addEventListener('touchstart', (e) => {
       if (e.target.closest('#joystick-base') || e.target.closest('#ui-layer') || e.target.closest('button')) return;
@@ -597,7 +533,44 @@
       const telegramUser = document.getElementById('prof-tg-input').value.trim();
       socket.emit('updateProfile', { name, bio, instagram, telegramUser, gender: userGender, shirtColor: userColor });
       closeBox('profile-box');
-      alert("✅ Profile & Social Links updated!");
+      alert("✅ Profile updated!");
+    };
+
+    // 🌐 ലാംഗ്വേജും സെർവറും മാറ്റുന്ന ലോജിക്
+    const translations = {
+      ml: { server: "🌍 സെർവർ", lang: "⚙️ ഭാഷ", prof: "👤 പ്രൊഫൈൽ", games: "🎮 മിനി ഗെയിംസ്", concert: "🎤 കോൺസേർട്ട് & സീറ്റ്", celeb: "📸 സ്റ്റാർസ് ഫോട്ടോ വിഐപി", battle: "🌊 കോങ് vs ഗോഡ്‌സില്ല", mountain: "🏔️ പർവ്വതം & പതാക", volcano: "🌋 ലാവ അഗ്നിപർവ്വതം", friends: "🤝 സുഹൃത്തുക്കൾ", group: "💬 ഗ്രൂപ്പുകൾ" },
+      en: { server: "🌍 Server", lang: "⚙️ Lang", prof: "👤 Profile", games: "🎮 Mini Games", concert: "🎤 Concert & Seats", celeb: "📸 Stars Photo VIP", battle: "🌊 Kong vs Godzilla", mountain: "🏔️ Mountain Peak Flag", volcano: "🌋 Lava Volcano Crater", friends: "🤝 Friends & Requests", group: "💬 Group Lounges" },
+      fa: { server: "🌍 سرور", lang: "⚙️ زبان", prof: "👤 پروفایل", games: "🎮 بازی‌های کوچک", concert: "🎤 کنسرت و صندلی", celeb: "📸 عکس ستاره‌ها", battle: "🌊 نبرد کونگ و گودزیلا", mountain: "🏔️ قله کوهستان", volcano: "🌋 آتشفشان گدازه", friends: "🤝 دوستان", group: "💬 گروه‌ها" },
+      tg: { server: "🌍 Сервер", lang: "⚙️ Забон", prof: "👤 Профил", games: "🎮 Бозиҳои хурд", concert: "🎤 Консерт", celeb: "📸 Акси ситораҳо", battle: "🌊 Ҷанги дарёӣ", mountain: "🏔️ Қуллаи кӯҳ", volcano: "🌋 Вулқон", friends: "🤝 Дӯстон", group: "💬 Гурӯҳҳо" },
+      uz: { server: "🌍 Server", lang: "⚙️ Til", prof: "👤 Profil", games: "🎮 Mini o‘yinlar", concert: "🎤 Konsert", celeb: "📸 Yulduzlar fotosi", battle: "🌊 Dengiz jangi", mountain: "🏔️ Tog‘ cho‘qqisi", volcano: "🌋 Vulqon", friends: "🤝 Do‘stlar", group: "💬 Guruhlar" },
+      zh: { server: "🌍 服务器", lang: "⚙️ 语言", prof: "👤 个人资料", games: "🎮 迷你小游戏", concert: "🎤 音乐会与座位", celeb: "📸 VIP 名人合影", battle: "🌊 海上金刚对哥斯拉", mountain: "🏔️ 山顶红旗", volcano: "🌋 熔岩火山", friends: "🤝 好友与请求", group: "💬 群聊大厅" },
+      my: { server: "🌍 ဆာဗာ", lang: "⚙️ ဘာသာစကား", prof: "👤 ပရိုဖိုင်", games: "🎮 ဂိမ်းများ", concert: "🎤 ဖျော်ဖြေပွဲ", celeb: "📸 ကြယ်ပွင့်ဓာတ်ပုံ", battle: "🌊 ပင်လယ်တိုက်ပွဲ", mountain: "🏔️ တောင်ထွတ်", volcano: "🌋 မီးတောင်", friends: "🤝 သူငယ်ချင်းများ", group: "💬 အဖွဲ့များ" },
+      it: { server: "🌍 Server", lang: "⚙️ Lingua", prof: "👤 Profilo", games: "🎮 Mini Giochi", concert: "🎤 Concerto & Posti", celeb: "📸 Foto VIP Star", battle: "🌊 Battaglia in Mare", mountain: "🏔️ Cima della Montagna", volcano: "🌋 Vulcano di Lava", friends: "🤝 Amici", group: "💬 Gruppi" },
+      ru: { server: "🌍 Сервер", lang: "⚙️ Язык", prof: "👤 Профиль", games: "🎮 Мини-игры", concert: "🎤 Концерт и Места", celeb: "📸 VIP Фото со Звездами", battle: "🌊 Битва в Море", mountain: "🏔️ Пик Горы", volcano: "🌋 Лавовый Вулкан", friends: "🤝 Друзья", group: "💬 Группы" },
+      ar: { server: "🌍 السيرفر", lang: "⚙️ اللغة", prof: "👤 الملف الشخصي", games: "🎮 ألعاب مصغرة", concert: "🎤 الحفل والمقاعد", celeb: "📸 صورة النجوم", battle: "🌊 معركة البحر", mountain: "🏔️ قمة الجبل", volcano: "🌋 بركان الحمم", friends: "🤝 الأصدقاء", group: "💬 المجموعات" }
+    };
+
+    window.applyLanguage = (l) => {
+      closeBox('lang-box');
+      const t = translations[l] || translations.en;
+      document.getElementById('ui-server-btn').innerText = t.server;
+      document.getElementById('ui-lang-btn').innerText = t.lang;
+      document.getElementById('ui-prof-btn').innerText = t.prof;
+      document.getElementById('ui-dock-games').innerText = t.games;
+      document.getElementById('ui-dock-concert').innerText = t.concert;
+      document.getElementById('ui-dock-celeb').innerText = t.celeb;
+      document.getElementById('ui-dock-battle').innerText = t.battle;
+      document.getElementById('ui-dock-mountain').innerText = t.mountain;
+      document.getElementById('ui-dock-volcano').innerText = t.volcano;
+      document.getElementById('ui-dock-friends').innerText = t.friends;
+      document.getElementById('ui-dock-group').innerText = t.group;
+      alert(`Language updated to ${l.toUpperCase()}!`);
+    };
+
+    window.changeServer = (k, name) => {
+      closeBox('country-box');
+      document.getElementById('ui-server-btn').innerText = `🌍 ${name}`;
+      alert(`🌍 Connected to ${name} server!`);
     };
 
     // പ്രോക്സിമിറ്റി സിസ്റ്റം
@@ -674,7 +647,7 @@
         return;
       }
       if (nearbyTarget.type === 'sing') {
-        myPlayer.position.set(0, 2.0, -260);
+        myPlayer.position.set(0, 2.0, -280);
         toggleAlwaysVoiceMic();
         document.getElementById('dismount-btn').style.display = 'block';
         alert("🎤 Standing on Stage! Mic is LIVE!");
@@ -684,9 +657,6 @@
         myPlayer.position.set(nearbyTarget.pos.x, 1, nearbyTarget.pos.z);
         document.getElementById('dismount-btn').style.display = 'block'; return;
       }
-      if (['godzilla', 'kong', 'dino'].includes(nearbyTarget.type) && !unlockedBeast && !isOwner) {
-        openBox('stars-box'); alert("⭐ Giants require Beast Pass!"); return;
-      }
 
       activeRide = nearbyTarget.type;
       document.getElementById('proximity-prompt').style.display = 'none';
@@ -694,14 +664,8 @@
 
       if (activeRide === 'car') myPlayer.position.set(nearbyTarget.mesh.position.x, 1.2, nearbyTarget.mesh.position.z);
       if (activeRide === 'bike') myPlayer.position.set(nearbyTarget.mesh.position.x, 1, nearbyTarget.mesh.position.z);
-      if (activeRide === 'cycle') myPlayer.position.set(nearbyTarget.mesh.position.x, 0.8, nearbyTarget.mesh.position.z);
       if (activeRide === 'heli') myPlayer.position.set(nearbyTarget.mesh.position.x, 24, nearbyTarget.mesh.position.z);
       if (activeRide === 'plane') myPlayer.position.set(nearbyTarget.mesh.position.x, 38, nearbyTarget.mesh.position.z);
-      if (activeRide === 'ship') myPlayer.position.set(nearbyTarget.mesh.position.x, 3, nearbyTarget.mesh.position.z);
-      if (activeRide === 'boat') myPlayer.position.set(nearbyTarget.mesh.position.x, -1.8, nearbyTarget.mesh.position.z);
-      if (activeRide === 'godzilla') myPlayer.position.set(nearbyTarget.mesh.position.x, 14, nearbyTarget.mesh.position.z);
-      if (activeRide === 'kong') myPlayer.position.set(nearbyTarget.mesh.position.x, 12, nearbyTarget.mesh.position.z);
-      if (activeRide === 'dino') myPlayer.position.set(nearbyTarget.mesh.position.x, 8, nearbyTarget.mesh.position.z);
     };
 
     window.openPlayerInteractModal = () => {
@@ -800,7 +764,7 @@
 
     // ഗെയിംസ് ഹാൻഡ്‌ലറുകൾ
     window.teleportFootballZone = () => { closeBox('games-hub-box'); myPlayer.position.set(0, 0, -32); alert("⚽ Walk to the ball & press KICK!"); };
-    window.teleportParkourZone = () => { closeBox('games-hub-box'); myPlayer.position.set(118, 2, -118); alert("🌋 Lava Parkour started! Use JUMP button to cross!"); };
+    window.teleportParkourZone = () => { closeBox('games-hub-box'); myPlayer.position.set(130, 2, -135); alert("🌋 Lava Parkour started! Use JUMP button to cross!"); };
     window.playDiceGame = () => {
       closeBox('games-hub-box');
       const rolled = Math.floor(Math.random() * 6) + 1;
@@ -808,14 +772,14 @@
       document.getElementById('pts').innerText = userPts;
       alert(`🎲 Rolled number: ${rolled}! +${rolled * 10} Points added!`);
     };
-    window.mountCarRacing = () => { closeBox('games-hub-box'); myPlayer.position.set(0, 1.2, 200); activeRide = 'car'; document.getElementById('dismount-btn').style.display = 'block'; alert("🏎️ Racing started on the circular road!"); };
+    window.mountCarRacing = () => { closeBox('games-hub-box'); myPlayer.position.set(0, 1.2, 220); activeRide = 'car'; document.getElementById('dismount-btn').style.display = 'block'; alert("🏎️ Racing started on the circular road!"); };
 
     // ടെലിപോർട്ടുകൾ
-    window.teleportConcert = () => myPlayer.position.set(0, 0, -210);
-    window.teleportCelebZone = () => myPlayer.position.set(-220, 0, 95);
-    window.teleportSeaBattle = () => { myPlayer.position.set(0, 0, 680); alert("🌊 Watching Kong vs Godzilla Epic Sea Fight!"); };
-    window.teleportMountainPeak = () => { myPlayer.position.set(mountain.position.x, 96, mountain.position.z); document.getElementById('dismount-btn').style.display = 'block'; };
-    window.teleportVolcano = () => { myPlayer.position.set(volcano.position.x, 68, volcano.position.z); document.getElementById('dismount-btn').style.display = 'block'; };
+    window.teleportConcert = () => myPlayer.position.set(0, 0, -230);
+    window.teleportCelebZone = () => myPlayer.position.set(-250, 0, 115);
+    window.teleportSeaBattle = () => { myPlayer.position.set(0, 0, 780); alert("🌊 Watching Kong vs Godzilla Epic Sea Fight!"); };
+    window.teleportMountainPeak = () => { myPlayer.position.set(mountain.position.x, 110, mountain.position.z); document.getElementById('dismount-btn').style.display = 'block'; };
+    window.teleportVolcano = () => { myPlayer.position.set(volcano.position.x, 78, volcano.position.z); document.getElementById('dismount-btn').style.display = 'block'; };
 
     // ലൈവ് മൈക്ക്
     let isVoiceActive = false, voiceRec = null, voiceStr = null;
@@ -879,7 +843,6 @@
       b.style.display = 'block';
       const px = myPlayer.position.x;
       const pz = myPlayer.position.z;
-      // വ്യത്യസ്ത ഉയരങ്ങളിലും നിറങ്ങളിലുമുള്ള വലിയ പടക്കങ്ങൾ
       launchRocketFirework(px, 75, pz - 25, 0xff007f);
       setTimeout(() => launchRocketFirework(px - 20, 85, pz - 35, 0x38bdf8), 300);
       setTimeout(() => launchRocketFirework(px + 20, 80, pz - 30, 0xfacc15), 600);
@@ -892,8 +855,8 @@
       socket.emit('requestStarsAction', { title, desc: `Gift ${title} on stage`, stars, type: 'stage_gift' });
     };
     socket.on('celebrateStageGift', (d) => {
-      launchRocketFirework(0, 35, -260, 0xff007f);
-      launchRocketFirework(10, 40, -260, 0xfacc15);
+      launchRocketFirework(0, 35, -280, 0xff007f);
+      launchRocketFirework(10, 40, -280, 0xfacc15);
       alert(`🎁 ${d.sender} gifted ${d.giftTitle} to the Stage Singer! 👏`);
     });
 
@@ -914,7 +877,7 @@
 
       checkProximity();
 
-      // 🦘 ജമ്പ് ഫിസിക്സ് കണക്കുകൂട്ടൽ
+      // 🦘 ജമ്പ് ഫിസിക്സ്
       if (isJumping) {
         myPlayer.position.y += jumpVelocityY;
         jumpVelocityY += GRAVITY;
@@ -925,7 +888,7 @@
         }
       }
 
-      // 🎆 പടക്കങ്ങളുടെ പാർട്ടിക്കിൾസ് അപ്‌ഡേറ്റ്
+      // 🎆 പടക്കങ്ങളുടെ പാർട്ടിക്കിൾസ്
       for (let i = fireworkParticles.length - 1; i >= 0; i--) {
         const fp = fireworkParticles[i];
         const pos = fp.pts.geometry.attributes.position.array;
@@ -933,7 +896,7 @@
           pos[j * 3] += fp.vel[j].x;
           pos[j * 3 + 1] += fp.vel[j].y;
           pos[j * 3 + 2] += fp.vel[j].z;
-          fp.vel[j].y -= 0.012; // സ്പാർക്കുകൾ താഴേക്ക് വീഴുന്നു
+          fp.vel[j].y -= 0.012;
         }
         fp.pts.geometry.attributes.position.needsUpdate = true;
         fp.pts.material.opacity = fp.life / 120;
@@ -952,13 +915,13 @@
 
       const distToCenter = Math.hypot(myPlayer.position.x, myPlayer.position.z);
       const swimEl = document.getElementById('swim-indicator');
-      if (distToCenter > 650 && activeRide === 'walk') {
+      if (distToCenter > 700 && activeRide === 'walk') {
         isSwimming = true; myPlayer.position.y = -2; swimEl.style.display = 'block';
       } else if (activeRide === 'walk' && !isJumping && myPlayer.position.y === -2) {
         isSwimming = false; myPlayer.position.y = 0; swimEl.style.display = 'none';
       }
 
-      const spd = isSwimming ? 0.25 : (['plane'].includes(activeRide) ? 1.4 : (['heli', 'car', 'bike'].includes(activeRide) ? 0.95 : 0.45));
+      const spd = isSwimming ? 0.25 : (['plane'].includes(activeRide) ? 1.5 : (['heli', 'car', 'bike'].includes(activeRide) ? 1.0 : 0.45));
 
       if (moveX !== 0 || moveZ !== 0) {
         const forwardX = moveX * Math.cos(cameraAngleX) + moveZ * Math.sin(cameraAngleX);
@@ -974,8 +937,9 @@
           myPlayer.userData.legR.rotation.x = -Math.sin(wCycle) * 0.6;
         }
 
+        // വാഹനം പറക്കുമ്പോഴും ഓടുമ്പോഴും ക്യാരക്ടറും ഒപ്പം നീങ്ങുന്നു
         if (nearbyTarget && activeRide !== 'walk' && nearbyTarget.mesh) {
-          nearbyTarget.mesh.position.set(myPlayer.position.x, 0, myPlayer.position.z);
+          nearbyTarget.mesh.position.set(myPlayer.position.x, ['heli', 'plane'].includes(activeRide) ? myPlayer.position.y - 2 : 0, myPlayer.position.z);
           nearbyTarget.mesh.rotation.y = myPlayer.rotation.y;
         }
 
