@@ -15,7 +15,7 @@ let players = {};
 let customChatRooms = ["General", "Kerala Hub", "Dubai Lounge", "Global Arena"];
 
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nExperience Realistic Rides, Live Concerts, Weather Changes & Global Servers!", {
+  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nExperience Sea Battles, Celebrities, Realistic Vehicles & Global Community!", {
     parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [[{ text: "🚀 Enter Metaverse", web_app: { url: WEB_APP_URL } }]]
@@ -39,7 +39,7 @@ bot.on('successful_payment', (msg) => {
         players[id].hasVideoPass = true;
         io.to(id).emit('unlockVideoCall');
       }
-      bot.sendMessage(msg.chat.id, "⭐ **Telegram Stars Verified!**");
+      bot.sendMessage(msg.chat.id, "⭐ **Telegram Stars Verified!** Perks active in Metaverse.");
       break;
     }
   }
@@ -49,13 +49,15 @@ io.on('connection', (socket) => {
   players[socket.id] = {
     id: socket.id,
     telegramId: null,
-    name: "Player",
+    name: "Player_" + Math.floor(100 + Math.random() * 900),
+    bio: "Exploring GlobeVibe Metaverse",
     gender: 'boy',
     shirtColor: '#2563eb',
     isOwner: false,
     unlockedBeast: false,
     hasVideoPass: false,
     activeRoom: "General",
+    friends: [],
     x: 0, y: 0, z: 0
   };
 
@@ -66,6 +68,7 @@ io.on('connection', (socket) => {
     p.telegramId = userData.telegramId ? Number(userData.telegramId) : null;
     p.gender = userData.gender || 'boy';
     p.shirtColor = userData.shirtColor || '#2563eb';
+    p.bio = userData.bio || p.bio;
 
     if (p.telegramId === OWNER_TELEGRAM_ID) {
       p.isOwner = true;
@@ -73,8 +76,41 @@ io.on('connection', (socket) => {
       p.hasVideoPass = true;
     }
     socket.join(p.activeRoom);
-    socket.emit('ownerVerified', { isOwner: p.isOwner, unlockedBeast: p.unlockedBeast, rooms: customChatRooms });
+    socket.emit('ownerVerified', { isOwner: p.isOwner, unlockedBeast: p.unlockedBeast, rooms: customChatRooms, profile: p });
     io.emit('playerListUpdate', players);
+  });
+
+  socket.on('updateProfile', (data) => {
+    const p = players[socket.id];
+    if (p) {
+      p.name = data.name || p.name;
+      p.bio = data.bio || p.bio;
+      io.emit('playerListUpdate', players);
+    }
+  });
+
+  socket.on('sendFriendReq', (targetId) => {
+    if (players[targetId]) {
+      io.to(targetId).emit('incomingFriendReq', { fromId: socket.id, fromName: players[socket.id].name });
+    }
+  });
+
+  socket.on('acceptFriendReq', (fromId) => {
+    const p = players[socket.id];
+    const sender = players[fromId];
+    if (p && sender) {
+      if (!p.friends.includes(fromId)) p.friends.push(fromId);
+      if (!sender.friends.includes(socket.id)) sender.friends.push(socket.id);
+      socket.emit('friendListUpdated', p.friends.map(id => players[id]?.name || "Friend"));
+      io.to(fromId).emit('friendListUpdated', sender.friends.map(id => players[id]?.name || "Friend"));
+      socket.emit('sysRoomChat', `🤝 You and ${sender.name} are now friends!`);
+    }
+  });
+
+  socket.on('sendPrivateMsg', (data) => {
+    if (players[data.targetId]) {
+      io.to(data.targetId).emit('receivePrivateMsg', { from: players[socket.id].name, text: data.text });
+    }
   });
 
   socket.on('requestStarsAction', async (data) => {
@@ -137,7 +173,7 @@ io.on('connection', (socket) => {
   socket.on('updatePosition', (pos) => {
     if (players[socket.id]) {
       Object.assign(players[socket.id], pos);
-      socket.broadcast.emit('playerMoved', { id: socket.id, ...pos });
+      socket.broadcast.emit('playerMoved', { id: socket.id, ...pos, name: players[socket.id].name });
     }
   });
 
@@ -148,4 +184,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-http.listen(PORT, '0.0.0.0', () => console.log(`Engine running on port ${PORT}`));
+http.listen(PORT, '0.0.0.0', () => console.log(`GlobeVibe Engine running on port ${PORT}`));
