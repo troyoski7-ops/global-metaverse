@@ -15,10 +15,10 @@ let players = {};
 let customChatRooms = ["General", "Kerala Hub", "Dubai Lounge", "Global Arena"];
 
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nDrive Realistic Vehicles, Play Mini-Games, Sing Live, Climb Mountains & Explore Lava Volcano!", {
+  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nExperience Realistic Rides, Live Concerts, Weather Changes & Global Servers!", {
     parse_mode: "Markdown",
     reply_markup: {
-      inline_keyboard: [[{ text: "🚀 Play Metaverse", web_app: { url: WEB_APP_URL } }]]
+      inline_keyboard: [[{ text: "🚀 Enter Metaverse", web_app: { url: WEB_APP_URL } }]]
     }
   });
 });
@@ -30,7 +30,7 @@ bot.on('successful_payment', (msg) => {
   for (let id in players) {
     if (players[id].telegramId === msg.chat.id) {
       if (payload.startsWith('sky_wish')) {
-        const text = payload.split('__')[1] || "Celebrations!";
+        const text = payload.split('__')[1] || "Happy Metaverse!";
         io.emit('displaySkyBanner', { text, sender: players[id].name });
       } else if (payload.startsWith('beast_ride')) {
         players[id].unlockedBeast = true;
@@ -39,7 +39,7 @@ bot.on('successful_payment', (msg) => {
         players[id].hasVideoPass = true;
         io.to(id).emit('unlockVideoCall');
       }
-      bot.sendMessage(msg.chat.id, "⭐ **Telegram Stars Verified!** Perks active in Metaverse.");
+      bot.sendMessage(msg.chat.id, "⭐ **Telegram Stars Verified!**");
       break;
     }
   }
@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
       );
       socket.emit('openOfficialInvoice', { invoiceUrl: link });
     } catch (err) {
-      console.error("Stars Error:", err.message);
+      console.error("Invoice Error:", err.message);
     }
   });
 
