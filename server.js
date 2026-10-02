@@ -4,17 +4,19 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http, { cors: { origin: "*" } });
 const TelegramBot = require('node-telegram-bot-api');
 
-// ⭐️ നൽകിയ ബോട്ട് ടോക്കണും ഓണർ ഐഡിയും
+// ⭐️ Bot Token & Owner ID
 const BOT_TOKEN = '8592382374:AAGB2NTv2bU1-99i95d5_sd_rkcM_QbfVc4';
 const OWNER_TELEGRAM_ID = 1689374364;
+
+// ⭐️ നിങ്ങളുടെ കൃത്യമായ Render ലൈവ് URL
+const WEB_APP_URL = 'https://global-vibe-metaverse.onrender.com';
 
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 app.use(express.static('public'));
 
 let players = {};
-let reports = [];
 
-// ബോട്ടിൽ /start അമർത്തുമ്പോൾ
+// ടെലിഗ്രാം ബോട്ട് /start ഹാൻഡ്‌ലർ
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const isOwner = chatId === OWNER_TELEGRAM_ID;
@@ -22,13 +24,13 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(
     chatId,
     isOwner 
-      ? "👑 **Welcome Owner!** You have unlimited, 100% free access to all rides, video calls & godzilla features."
-      : "🌍 **Welcome to Global Vibe Metaverse!**\n\nPlay games, earn Points, meet BTS & Avengers, hang out with friends for FREE!",
+      ? "👑 **Welcome Owner!** You have full unlimited free access to all features." 
+      : "🌍 **Welcome to Global Vibe Metaverse!**\n\nPlay games, meet BTS & Avengers, hang out with friends for FREE!",
     {
       parse_mode: "Markdown",
       reply_markup: {
         inline_keyboard: [
-          [{ text: "🚀 Play / Enter Metaverse", web_app: { url: "https://your-metaverse.up.railway.app" } }]
+          [{ text: "🚀 Play / Enter Metaverse", web_app: { url: WEB_APP_URL } }]
         ]
       }
     }
@@ -61,14 +63,14 @@ bot.on('successful_payment', (msg) => {
   }
 });
 
-// മൾട്ടിപ്ലെയർ സോക്കറ്റ് ഇവന്റുകൾ
+// മൾട്ടിപ്ലെയർ സോക്കറ്റ് കണക്ഷൻ
 io.on('connection', (socket) => {
   players[socket.id] = {
     id: socket.id,
     telegramId: null,
     name: "Player_" + Math.floor(1000 + Math.random() * 9000),
     color: "#ffcc00",
-    points: 100, // തുടക്കത്തിൽ സൗജന്യ പോയിന്റുകൾ
+    points: 100,
     isOwner: false,
     unlockedBeast: false,
     hasVideoPass: false,
@@ -108,7 +110,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // ഗെയിമുകൾ കളിച്ച് പോയിന്റ് കൂട്ടൽ (ലൂഡോ, ഫുട്ബോൾ, പാർക്കൂർ)
   socket.on('addGamePoints', (amount) => {
     const p = players[socket.id];
     if (p) {
@@ -117,7 +118,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // പോയിന്റ് വെച്ച് Beast Ride റിഡീം ചെയ്യൽ
   socket.on('redeemBeastWithPoints', () => {
     const p = players[socket.id];
     if (!p) return;
@@ -131,7 +131,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // സ്റ്റാർസ് വെച്ച് Beast Ride വാങ്ങൽ (50 Stars)
   socket.on('buyBeastStars', () => {
     const p = players[socket.id];
     if (!p) return;
@@ -142,13 +141,11 @@ io.on('connection', (socket) => {
     }
   });
 
-  // ചാറ്റ്
   socket.on('sendChat', (data) => {
     const p = players[socket.id];
     if (p) io.emit('newChat', { sender: p.name, isOwner: p.isOwner, text: data.text });
   });
 
-  // സോഷ്യൽ സിസ്റ്റം
   socket.on('sendFriendRequest', (targetId) => {
     const p = players[socket.id];
     if (p && players[targetId]) io.to(targetId).emit('receiveFriendRequest', { fromId: socket.id, fromName: p.name });
@@ -167,7 +164,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // വീഡിയോ കോൾ
   socket.on('checkVideoCallEligibility', () => {
     const p = players[socket.id];
     if (!p) return;
@@ -185,5 +181,8 @@ io.on('connection', (socket) => {
   });
 });
 
+// Render-ൽ പോർട്ട് എറർ വരാതിരിക്കാൻ '0.0.0.0'
 const PORT = process.env.PORT || 3000;
-http.listen(PORT, () => console.log(`Server online on port ${PORT}`));
+http.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server online and listening on port ${PORT}`);
+});
