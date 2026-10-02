@@ -14,7 +14,7 @@
     #canvas-container { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
     #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 8px; }
-    .top-bar, .side-dock, .chat-box, .modal-card, #joystick-base, #proximity-prompt, #player-interact-prompt, #jump-btn, #dismount-btn, #mic-float-btn, #share-float-btn, #sky-banner, #gift-broadcast, #video-call-window, #pts-popup { pointer-events: auto; }
+    .top-bar, .side-dock, .right-action-stack, .chat-box, .modal-card, #joystick-base, #proximity-prompt, #player-interact-prompt, #jump-btn, #kick-ball-btn, #dismount-btn, #mic-float-btn, #sky-banner, #gift-broadcast, #video-call-window, #pts-popup { pointer-events: auto; }
 
     #sky-banner { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, #ff007f, #7928ca); color: #fff; font-weight: 900; font-size: 16px; padding: 12px 30px; border-radius: 35px; box-shadow: 0 0 35px #ff007f; display: none; text-shadow: 0 0 12px #fff; z-index: 35; text-align: center; }
     #gift-broadcast { position: absolute; top: 110px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #eab308, #ca8a04); color: #000; font-weight: 900; font-size: 14px; padding: 10px 24px; border-radius: 25px; box-shadow: 0 0 25px #eab308; display: none; z-index: 35; text-align: center; border: 2px solid #fff; }
@@ -35,20 +35,24 @@
     
     .top-btns { display: flex; gap: 4px; }
     .btn-top { background: rgba(15, 23, 42, 0.85); color: #fff; border: 1px solid rgba(255, 255, 255, 0.25); padding: 5px 8px; border-radius: 12px; font-size: 11px; backdrop-filter: blur(8px); cursor: pointer; }
-    .star-btn { background: linear-gradient(45deg, #eab308, #ca8a04); color: #000; font-weight: bold; border: none; }
+
+    /* വലതുവശത്ത് മുകളിലായി Stars, Share, Concert Gift അടുക്കിവെച്ചിരിക്കുന്നു */
+    .right-action-stack { position: absolute; right: 10px; top: 50px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; z-index: 25; }
+    .star-float-btn { background: linear-gradient(45deg, #eab308, #ca8a04); color: #000; font-weight: 900; font-size: 12px; border: 2px solid #fff; padding: 8px 12px; border-radius: 20px; box-shadow: 0 0 15px #eab308; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+    .share-round-btn { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(45deg, #38bdf8, #6366f1); color: #fff; border: 2px solid #fff; font-size: 16px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(99, 102, 241, 0.8); cursor: pointer; }
+    .gift-stage-btn { background: linear-gradient(45deg, #ec4899, #8b5cf6); color: #fff; font-size: 11px; font-weight: bold; padding: 6px 12px; border-radius: 16px; border: 1px solid #fff; box-shadow: 0 0 12px rgba(236, 72, 153, 0.8); cursor: pointer; }
 
     #mic-float-btn { position: absolute; top: 52px; left: 10px; width: 44px; height: 44px; border-radius: 50%; background: #22c55e; color: #fff; border: 2px solid #fff; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(34, 197, 94, 0.8); cursor: pointer; z-index: 20; }
     #mic-float-btn.muted { background: #ef4444; box-shadow: 0 0 12px rgba(239, 68, 68, 0.8); }
 
-    #share-float-btn { position: absolute; top: 52px; right: 10px; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(45deg, #38bdf8, #6366f1); color: #fff; border: 2px solid #fff; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 14px rgba(99, 102, 241, 0.8); cursor: pointer; z-index: 20; }
-
     #jump-btn { position: absolute; bottom: 85px; right: 18px; width: 62px; height: 62px; border-radius: 50%; background: linear-gradient(45deg, #0284c7, #38bdf8); color: #fff; font-weight: 900; font-size: 13px; border: 2px solid #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 16px rgba(56, 189, 248, 0.8); cursor: pointer; z-index: 25; }
+    #kick-ball-btn { position: absolute; bottom: 85px; right: 90px; width: 60px; height: 60px; border-radius: 50%; background: #eab308; color: #000; font-weight: 900; font-size: 13px; border: 2px solid #fff; display: none; align-items: center; justify-content: center; box-shadow: 0 0 18px #eab308; cursor: pointer; z-index: 25; }
 
     #proximity-prompt, #player-interact-prompt { position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #2563eb, #38bdf8); color: #fff; padding: 10px 22px; border-radius: 25px; font-weight: bold; font-size: 13px; border: 2px solid #fff; box-shadow: 0 0 20px rgba(56, 189, 248, 0.9); display: none; cursor: pointer; z-index: 30; text-align: center; }
     #player-interact-prompt { bottom: 195px; background: linear-gradient(45deg, #ec4899, #8b5cf6); }
     #dismount-btn { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: #ef4444; color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: bold; font-size: 12px; border: 2px solid #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.9); display: none; cursor: pointer; z-index: 20; }
 
-    .side-dock { position: absolute; right: 8px; top: 105px; display: flex; flex-direction: column; gap: 5px; }
+    .side-dock { position: absolute; right: 8px; top: 160px; display: flex; flex-direction: column; gap: 5px; }
     .dock-btn { background: rgba(15, 23, 42, 0.85); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); padding: 7px 10px; border-radius: 12px; font-size: 10px; backdrop-filter: blur(8px); text-align: left; cursor: pointer; }
 
     #joystick-base { position: absolute; left: 16px; bottom: 20px; width: 110px; height: 110px; background: rgba(0, 0, 0, 0.35); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.4); touch-action: none; }
@@ -80,11 +84,18 @@
   </div>
 
   <button id="mic-float-btn" onclick="toggleAlwaysVoiceMic()" title="Voice Mic">🎙️</button>
-  <button id="share-float-btn" onclick="openBox('share-box')" title="Share Bot">📤</button>
+
+  <!-- വലതുവശത്തെ സ്റ്റാക്ക്: Stars, Share, Gift -->
+  <div class="right-action-stack">
+    <button class="star-float-btn" onclick="openBox('stars-box')">⭐ Stars</button>
+    <button class="share-round-btn" onclick="openBox('share-box')" title="Share Bot">📤</button>
+    <button class="gift-stage-btn" onclick="openBox('stage-gift-box')">🎁 Gift (Stars)</button>
+  </div>
 
   <button id="proximity-prompt" onclick="interactWithNearbyTarget()"></button>
   <button id="player-interact-prompt" onclick="openPlayerInteractModal()"></button>
   <button id="jump-btn" onclick="triggerPlayerJump()">🦘 JUMP</button>
+  <button id="kick-ball-btn" onclick="triggerBallKick()">⚽ KICK</button>
   <button id="dismount-btn" onclick="dismountActiveRide()">🚪 Dismount</button>
 
   <div id="ui-layer">
@@ -97,21 +108,21 @@
       </div>
       <div class="top-btns">
         <button class="btn-top" onclick="openBox('country-box')" id="ui-server-btn">🌍 Server</button>
+        <button class="btn-top" onclick="openBox('climate-box')">⛅ Weather</button>
         <button class="btn-top" onclick="openBox('lang-box')" id="ui-lang-btn">⚙️ Lang</button>
         <button class="btn-top" onclick="openBox('profile-box')" id="ui-prof-btn">👤 Profile</button>
-        <button class="btn-top star-btn" onclick="openBox('stars-box')">⭐ Stars</button>
       </div>
     </div>
 
     <div class="side-dock">
       <button class="dock-btn" onclick="teleportParkourZone()" id="ui-dock-parkour">🌋 Volcano Top Climb</button>
       <button class="dock-btn" onclick="teleportConcert()" id="ui-dock-concert">🎤 Concert & Audience</button>
+      <button class="dock-btn" onclick="teleportFootballField()">⚽ Football Ground</button>
       <button class="dock-btn" onclick="teleportDragonArea()" id="ui-dock-dragon">🐉 Flying Dragon</button>
       <button class="dock-btn" onclick="teleportMechArea()" id="ui-dock-mech">🤖 2-Player Mech Mount</button>
       <button class="dock-btn" onclick="teleportDinoArea()" id="ui-dock-dino">🦖 2-Player Dinosaur</button>
       <button class="dock-btn" onclick="teleportSeaBattle()" id="ui-dock-whale">🐋 Oceanic Blue Whale</button>
       <button class="dock-btn" onclick="openBox('friends-box')" id="ui-dock-friends">🤝 Friends & Requests</button>
-      <button class="dock-btn" onclick="openBox('stage-gift-box')">🎁 Concert Gift (Stars)</button>
       <button class="dock-btn" onclick="openBox('room-box')" id="ui-dock-group">💬 Group Lounges</button>
     </div>
 
@@ -128,7 +139,21 @@
     </div>
   </div>
 
-  <!-- 1. 10 ഭാഷകൾ -->
+  <!-- 1. കാലാവസ്ഥ മാറ്റം (Weather Change Option) -->
+  <div id="climate-box" class="modal hidden">
+    <div class="modal-card">
+      <h3>⛅ Climate & Weather System</h3>
+      <div class="grid-2">
+        <button onclick="changeWeatherMode('day')" class="btn-act" style="background:#0284c7;">☀️ Bright Day</button>
+        <button onclick="changeWeatherMode('night')" class="btn-act" style="background:#0f172a;">🌙 Night Stars</button>
+        <button onclick="changeWeatherMode('rain')" class="btn-act" style="background:#0369a1;">🌧️ Heavy Rain</button>
+        <button onclick="changeWeatherMode('snow')" class="btn-act" style="background:#38bdf8; color:#000;">❄️ Falling Snow</button>
+      </div>
+      <button onclick="closeBox('climate-box')" class="btn-close">Close</button>
+    </div>
+  </div>
+
+  <!-- 2. 10 ഭാഷകൾ -->
   <div id="lang-box" class="modal hidden">
     <div class="modal-card">
       <h3>⚙️ Select Language</h3>
@@ -149,22 +174,25 @@
     </div>
   </div>
 
-  <!-- 2. പ്രൊഫൈൽ -->
+  <!-- 3. പ്രൊഫൈൽ: Instagram & Telegram ID ഉൾപ്പെടെ -->
   <div id="profile-box" class="modal hidden">
     <div class="modal-card">
-      <h3>👤 Profile Settings</h3>
+      <h3>👤 Profile & Social Links</h3>
       <input type="text" id="prof-name-input" placeholder="Your Name" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
-      <p style="font-size:11px; margin-top:4px;">Select Character Gender:</p>
+      <input type="text" id="prof-bio-input" placeholder="Bio / Status" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
+      <input type="text" id="prof-ig-input" placeholder="Instagram Username (e.g. gokul_vibe)" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
+      <input type="text" id="prof-tg-input" placeholder="Telegram ID / Username (e.g. @gokul)" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
+      <p style="font-size:11px; margin-top:4px;">Select 3D Character Avatar:</p>
       <div class="grid-2">
-        <button onclick="setCharModel('boy')" class="btn-act">👦 Realistic Boy</button>
-        <button onclick="setCharModel('girl')" class="btn-act" style="background:#ec4899;">👧 Realistic Girl</button>
+        <button onclick="setCharModel('boy')" class="btn-act">👦 Realistic Boy (man.glb)</button>
+        <button onclick="setCharModel('girl')" class="btn-act" style="background:#ec4899;">👧 Realistic Girl (suit.glb)</button>
       </div>
       <button onclick="saveUserProfile()" class="btn-act" style="background:#22c55e;">Save Profile</button>
       <button onclick="closeBox('profile-box')" class="btn-close">Close</button>
     </div>
   </div>
 
-  <!-- 3. ഫ്രണ്ട്സ് ലിസ്റ്റ് -->
+  <!-- 4. ഫ്രണ്ട്സ് ലിസ്റ്റ് -->
   <div id="friends-box" class="modal hidden">
     <div class="modal-card">
       <h3>🤝 Friends List (<span id="friends-count">0</span>)</h3>
@@ -175,10 +203,11 @@
     </div>
   </div>
 
-  <!-- 4. പ്ലെയർ ഇന്ററാക്ട് & വീഡിയോ കോൾ -->
+  <!-- 5. പ്ലെയർ ഇന്ററാക്ട് & വീഡിയോ കോൾ -->
   <div id="player-modal" class="modal hidden">
     <div class="modal-card">
       <h3 id="target-player-title">Player Interaction</h3>
+      <div id="target-player-social" style="font-size:11px; color:#38bdf8; margin-bottom:6px;"></div>
       <div class="grid-2">
         <button id="send-fr-btn" onclick="sendFriendRequestToNearby()" class="btn-act" style="background:#22c55e;">🤝 Add Friend</button>
         <button onclick="startFriendVideoCall()" class="btn-act" style="background:#ca8a04;">📹 1-on-1 Video Call (Stars)</button>
@@ -187,7 +216,7 @@
     </div>
   </div>
 
-  <!-- 5. കോൺസേർട്ട് സ്റ്റേജ് ഗിഫ്റ്റുകൾ -->
+  <!-- 6. കോൺസേർട്ട് സ്റ്റേജ് ഗിഫ്റ്റുകൾ (Telegram Stars) -->
   <div id="stage-gift-box" class="modal hidden">
     <div class="modal-card">
       <h3>🎁 Concert Live Stage Gifts</h3>
@@ -198,20 +227,21 @@
     </div>
   </div>
 
-  <!-- 6. ഷെയർ & ഇൻവൈറ്റ് -->
+  <!-- 7. ഷെയർ & ഇൻവൈറ്റ് -->
   <div id="share-box" class="modal hidden">
     <div class="modal-card">
       <h3>🚀 Invite & Share Settings</h3>
       <div class="grid-2">
         <button onclick="shareToTelegram()" class="btn-act" style="background:#0284c7;">✈️ Telegram Share</button>
         <button onclick="shareToWhatsApp()" class="btn-act" style="background:#22c55e;">💬 WhatsApp</button>
+        <button onclick="shareToInstagram()" class="btn-act" style="background:#e11d48;">📸 Instagram</button>
         <button onclick="copyMetaverseLink()" class="btn-act" style="background:#8b5cf6;">📋 Copy Bot Link</button>
       </div>
       <button onclick="closeBox('share-box')" class="btn-close">Close</button>
     </div>
   </div>
 
-  <!-- 7. രാജ്യങ്ങൾ -->
+  <!-- 8. മുഴുവൻ രാജ്യങ്ങളും / സെർവറുകളും -->
   <div id="country-box" class="modal hidden">
     <div class="modal-card">
       <h3>🌍 Select World Server</h3>
@@ -222,12 +252,18 @@
         <button onclick="changeServer('iran', '🇮🇷 Iran')" class="btn-act">🇮🇷 Iran</button>
         <button onclick="changeServer('tajikistan', '🇹🇯 Tajikistan')" class="btn-act">🇹🇯 Tajikistan</button>
         <button onclick="changeServer('uzbekistan', '🇺🇿 Uzbekistan')" class="btn-act">🇺🇿 Uzbekistan</button>
+        <button onclick="changeServer('indonesia', '🇮🇩 Indonesia')" class="btn-act">🇮🇩 Indonesia</button>
+        <button onclick="changeServer('italy', '🇮🇹 Italy')" class="btn-act">🇮🇹 Italy</button>
+        <button onclick="changeServer('china', '🇨🇳 China')" class="btn-act">🇨🇳 China</button>
+        <button onclick="changeServer('russia', '🇷🇺 Russia')" class="btn-act">🇷🇺 Russia</button>
+        <button onclick="changeServer('myanmar', '🇲🇲 Myanmar')" class="btn-act">🇲🇲 Myanmar</button>
+        <button onclick="changeServer('usa', '🇺🇸 America (USA)')" class="btn-act" style="background:#2563eb;">🇺🇸 America</button>
       </div>
       <button onclick="closeBox('country-box')" class="btn-close">Close</button>
     </div>
   </div>
 
-  <!-- 8. ഗ്രൂപ്പ് റൂമുകൾ -->
+  <!-- 9. ഗ്രൂപ്പ് റൂമുകൾ -->
   <div id="room-box" class="modal hidden">
     <div class="modal-card">
       <h3>💬 Custom Group Lounges</h3>
@@ -242,7 +278,7 @@
     </div>
   </div>
 
-  <!-- 9. Telegram Stars സ്റ്റോർ -->
+  <!-- 10. Telegram Stars സ്റ്റോർ -->
   <div id="stars-box" class="modal hidden">
     <div class="modal-card">
       <h3>⭐ Telegram Stars Official Store</h3>
@@ -253,7 +289,7 @@
     </div>
   </div>
 
-  <!-- 10. ആകാശത്ത് വിഷ് & പടക്കങ്ങൾ -->
+  <!-- 11. ആകാശത്ത് വിഷ് & പടക്കങ്ങൾ -->
   <div id="sky-wish-box" class="modal hidden">
     <div class="modal-card">
       <h3>🎆 Sky Wish Broadcast</h3>
@@ -276,19 +312,13 @@
     let nearbyPlayerId = null;
     let currentHostVehicleId = null;
 
-    // 2-Player Seat Layouts
+    // 2-Player Seat Layouts (എല്ലാ ദിനോസറിലും മെക്കിലും 2 പേർക്ക് ഇരിക്കാൻ)
     const VEHICLE_SEATS = {
-      dino: {
-        driver: { x: 0, y: 3.5, z: 0.8 },
-        passenger: { x: 0, y: 3.6, z: -1.2 }
-      },
-      mech: {
-        driver: { x: 0, y: 4.5, z: 0.6 },
-        passenger: { x: 0, y: 4.8, z: -1.0 }
-      }
+      dino: { driver: { x: 0, y: 3.5, z: 0.8 }, passenger: { x: 0, y: 3.6, z: -1.2 } },
+      mech: { driver: { x: 0, y: 4.5, z: 0.6 }, passenger: { x: 0, y: 4.8, z: -1.0 } }
     };
 
-    // 🦘 വോൾക്കാനോ ക്രെയ്റ്റർ ടോപ്പ് വരെയുള്ള ഈസി ജമ്പ് സിസ്റ്റം
+    // 🦘 വോൾക്കാനോ ഈസി ജമ്പ് സിസ്റ്റം
     let isJumping = false;
     let jumpVelocityY = 0;
     const GRAVITY = -0.016;
@@ -338,7 +368,32 @@
     const ocean = new THREE.Mesh(new THREE.PlaneGeometry(18000, 18000), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1 }));
     ocean.rotation.x = -Math.PI / 2; ocean.position.y = -3; scene.add(ocean);
 
-    // 🌸 ദ്വീപിൽ എല്ലായിടത്തും പോയിന്റ് പൂക്കൾ
+    // ----------------------------------------------------
+    // ⛅ കാലാവസ്ഥ മാറ്റം (Weather Change Particles)
+    // ----------------------------------------------------
+    let weatherMode = 'day';
+    const pCount = 1400;
+    const pGeo = new THREE.BufferGeometry();
+    const pPos = new Float32Array(pCount * 3);
+    for (let i = 0; i < pCount * 3; i += 3) {
+      pPos[i] = (Math.random() - 0.5) * 600;
+      pPos[i + 1] = Math.random() * 120;
+      pPos[i + 2] = (Math.random() - 0.5) * 600;
+    }
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    const pMat = new THREE.PointsMaterial({ color: 0x38bdf8, size: 0.45, transparent: true });
+    const weatherMesh = new THREE.Points(pGeo, pMat); weatherMesh.visible = false; scene.add(weatherMesh);
+
+    window.changeWeatherMode = function(type) {
+      weatherMode = type; closeBox('climate-box');
+      if (type === 'day') { scene.background.set(0x87ceeb); scene.fog.color.set(0x87ceeb); dirLight.intensity = 1.2; weatherMesh.visible = false; }
+      if (type === 'night') { scene.background.set(0x020617); scene.fog.color.set(0x020617); dirLight.intensity = 0.2; weatherMesh.visible = false; }
+      if (type === 'rain') { scene.background.set(0x334155); scene.fog.color.set(0x334155); pMat.color.set(0x38bdf8); weatherMesh.visible = true; }
+      if (type === 'snow') { scene.background.set(0xe2e8f0); scene.fog.color.set(0xe2e8f0); pMat.color.set(0xffffff); weatherMesh.visible = true; }
+      alert(`⛅ Weather changed to ${type.toUpperCase()}!`);
+    };
+
+    // 🌸 ദ്വീപിൽ എല്ലായിടത്തും തിളങ്ങുന്ന പോയിന്റ് പൂക്കൾ
     const collectibleFlowers = [];
     const flowerColors = [0xff007f, 0xfacc15, 0x38bdf8, 0xa855f7, 0xef4444, 0x10b981];
     function createFlowerMesh(color) {
@@ -355,7 +410,7 @@
       }
       return g;
     }
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < 160; i++) {
       const angle = Math.random() * Math.PI * 2;
       const radius = 30 + Math.random() * 680;
       const fx = Math.cos(angle) * radius;
@@ -391,6 +446,14 @@
       setTimeout(() => { pop.style.display = 'none'; }, 800);
     }
 
+    // ⚽ ഫുട്ബോൾ ഗ്രൗണ്ട് & ഗെയിം
+    const football = new THREE.Mesh(new THREE.SphereGeometry(0.7, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }));
+    football.position.set(0, 0.7, -40); scene.add(football);
+    const goalPost = new THREE.Mesh(new THREE.BoxGeometry(12, 6, 0.5), new THREE.MeshStandardMaterial({ color: 0xffffff, wireframe: true }));
+    goalPost.position.set(0, 3, -65); scene.add(goalPost);
+    let ballSpeedZ = 0;
+    window.triggerBallKick = () => { ballSpeedZ = 1.3; };
+
     // 🌋 വോൾക്കാനോയും 18 സ്റ്റെപ്പുകളും
     const volcano = new THREE.Group();
     const vBase = new THREE.Mesh(new THREE.ConeGeometry(95, 90, 24), new THREE.MeshStandardMaterial({ color: 0x451a03 })); vBase.position.y = 40; volcano.add(vBase);
@@ -421,7 +484,7 @@
       }
     }
 
-    // 📦 .GLB മോഡലുകൾ
+    // 📦 അപ്‌ലോഡ് ചെയ്ത മുഴുവൻ .GLB മോഡലുകളും ലോഡ് ചെയ്യുന്നു
     const gltfLoader = new THREE.GLTFLoader();
     const worldInteractables = [];
 
@@ -431,17 +494,23 @@
       worldInteractables.push({ mesh: dragonMesh, type: 'dragon', prompt: '🐉 Ride Flying Dragon', isFlying: true, seatY: 3.5 });
     }, undefined, (e) => console.log('Dragon load error', e));
 
-    let mechMesh = null;
-    gltfLoader.load('/mech.glb', (gltf) => {
-      mechMesh = gltf.scene; mechMesh.scale.set(2.8, 2.8, 2.8); mechMesh.position.set(70, 0, 80); scene.add(mechMesh);
-      worldInteractables.push({ mesh: mechMesh, type: 'mech', prompt: '🤖 Mount Mech (Driver Seat)', seatY: 4.5 });
-    }, undefined, (e) => console.log('Mech load error', e));
+    // മെക്ക് റോബോട്ടുകൾ (ദ്വീപിൽ പലയിടങ്ങളിലായി)
+    function loadMech(x, z) {
+      gltfLoader.load('/mech.glb', (gltf) => {
+        const m = gltf.scene; m.scale.set(2.8, 2.8, 2.8); m.position.set(x, 0, z); scene.add(m);
+        worldInteractables.push({ mesh: m, type: 'mech', prompt: '🤖 Mount Giant Mech (Seat 1)', seatY: 4.5 });
+      }, undefined, (e) => console.log('Mech load error', e));
+    }
+    loadMech(70, 80);
+    loadMech(-140, -60);
+    loadMech(160, -120);
 
     let whaleMesh = null;
     gltfLoader.load('/Whale.glb', (gltf) => {
       whaleMesh = gltf.scene; whaleMesh.scale.set(4, 4, 4); whaleMesh.position.set(0, -2, 700); scene.add(whaleMesh);
     }, undefined, (e) => console.log('Whale load error', e));
 
+    // എല്ലാ ദിനോസറുകളും (2-Player Mount)
     function loadDino(file, scale, x, z, prompt) {
       gltfLoader.load(file, (gltf) => {
         const m = gltf.scene; m.scale.set(scale, scale, scale); m.position.set(x, 0, z); scene.add(m);
@@ -449,38 +518,57 @@
       }, undefined, (e) => console.log('Dino load error', file, e));
     }
     loadDino('/Trex.glb', 1.8, 50, 100, '🦖 Mount T-Rex (Seat 1)');
+    loadDino('/Trex.glb', 1.8, -100, 160, '🦖 Mount T-Rex (Seat 1)');
     loadDino('/Triceratops.glb', 1.6, -80, 110, '🦏 Mount Triceratops (Seat 1)');
     loadDino('/Stegosaurus.glb', 1.6, 120, -80, '🦕 Mount Stegosaurus (Seat 1)');
+    loadDino('/Ankylosaurus.glb', 1.5, -120, -70, '🐢 Mount Ankylosaurus (Seat 1)');
+    loadDino('/Pterodactylus.glb', 1.7, -40, 220, '🦅 Mount Pterodactylus (Seat 1)');
+    loadDino('/Oviraptor.glb', 1.4, 90, 60, '🦎 Mount Oviraptor (Seat 1)');
+    loadDino('/Pachycephalosaurus.glb', 1.5, 130, 140, '🦬 Mount Pachycephalo (Seat 1)');
+    loadDino('/Goblin_L_Slate_Sword.glb', 1.6, -160, 40, '⚔️ Mount Goblin Warrior (Seat 1)');
 
+    // പൈൻ മരങ്ങൾ (Trees ധാരാളമായി വിന്യസിച്ചു)
     gltfLoader.load('/tree.glb', (gltf) => {
-      for (let i = 0; i < 15; i++) {
+      for (let i = 0; i < 35; i++) {
         const tr = gltf.scene.clone(); tr.scale.set(1.8, 1.8, 1.8);
-        const ang = (i / 15) * Math.PI * 2;
-        tr.position.set(Math.cos(ang) * 220, 0, Math.sin(ang) * 220);
+        const ang = (i / 35) * Math.PI * 2;
+        const dist = 180 + (i % 3) * 60;
+        tr.position.set(Math.cos(ang) * dist, 0, Math.sin(ang) * dist);
         scene.add(tr);
       }
     }, undefined, (e) => console.log('Tree load error', e));
 
-    // 🧑‍🤝‍🧑 ബോക്സ് മാറ്റി റിയലിസ്റ്റിക് 3D ക്യാരക്ടർ രൂപങ്ങൾ
-    let myPlayer = new THREE.Group(); scene.add(myPlayer);
-    function buildRealisticCharacter() {
-      while(myPlayer.children.length > 0) myPlayer.remove(myPlayer.children[0]);
-      
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffd166 })); head.position.y = 2.45; myPlayer.add(head);
-      const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.65, 1.5, 16), new THREE.MeshStandardMaterial({ color: userGender === 'girl' ? 0xec4899 : 0x2563eb })); torso.position.y = 1.45; myPlayer.add(torso);
-      
-      if (userGender === 'girl') {
-        const hair = new THREE.Mesh(new THREE.SphereGeometry(0.58, 16, 16), new THREE.MeshStandardMaterial({ color: 0x7c2d12 })); hair.position.set(0, 2.5, -0.1); myPlayer.add(hair);
-      } else {
-        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.55, 0.25, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b })); cap.position.y = 2.9; myPlayer.add(cap);
+    // അലങ്കാര ചെടികൾ
+    gltfLoader.load('/plant.glb', (gltf) => {
+      for (let i = 0; i < 15; i++) {
+        const p = gltf.scene.clone(); p.scale.set(1.5, 1.5, 1.5);
+        p.position.set(-90 + (i * 12), 0, -40 + Math.sin(i) * 15);
+        scene.add(p);
       }
+    }, undefined, (e) => console.log('Plant load error', e));
 
-      const legMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
-      const legL = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.22, 1.0, 12), legMat); legL.position.set(-0.3, 0.5, 0); myPlayer.add(legL);
-      const legR = legL.clone(); legR.position.set(0.3, 0.5, 0); myPlayer.add(legR);
-      myPlayer.userData = { legL, legR };
+    // 🧑‍🤝‍🧑 ബോക്സ് ഒഴിവാക്കി: യഥാർത്ഥ GLB മോഡലുകൾ (man.glb & suit.glb)
+    let myPlayer = new THREE.Group(); 
+    scene.add(myPlayer);
+
+    function loadAvatarGLB(gender) {
+      while(myPlayer.children.length > 0) myPlayer.remove(myPlayer.children[0]);
+      const modelFile = (gender === 'girl') ? '/suit.glb' : '/man.glb';
+      gltfLoader.load(modelFile, (gltf) => {
+        const charMesh = gltf.scene;
+        charMesh.scale.set(1.8, 1.8, 1.8);
+        charMesh.position.set(0, 0, 0);
+        charMesh.rotation.y = Math.PI;
+        myPlayer.add(charMesh);
+      }, undefined, (error) => { console.error("Avatar Load Error:", error); });
     }
-    buildRealisticCharacter();
+    loadAvatarGLB(userGender);
+
+    window.setCharModel = (g) => {
+      userGender = g;
+      loadAvatarGLB(userGender);
+      alert(`Avatar set to Realistic ${g.toUpperCase()}!`);
+    };
 
     socket.emit('registerUser', {
       name: tg?.initDataUnsafe?.user?.first_name || "Gokul",
@@ -503,16 +591,31 @@
       if (isOwner) document.getElementById('total-users-count').innerText = st.totalBotUsers;
     });
 
-    // 🌐 10 ഭാഷകളിലേക്കുള്ള ക്രമീകരണം
+    // 👆 360° ടച്ച് ക്യാമറ: സ്ക്രീനിലോ ആകാശത്തോ എവിടെ തൊട്ട് തിരിച്ചാലും കാണാം
+    let isDragging = false, prevX = 0, prevY = 0, cameraAngleX = 0, cameraAngleY = 0.25;
+    window.addEventListener('touchstart', (e) => {
+      if (e.target.closest('#joystick-base') || e.target.closest('#ui-layer') || e.target.closest('.modal') || e.target.closest('button')) return;
+      isDragging = true; prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
+    });
+    window.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      cameraAngleX -= (e.touches[0].clientX - prevX) * 0.007;
+      cameraAngleY += (e.touches[0].clientY - prevY) * 0.005;
+      cameraAngleY = Math.max(-0.6, Math.min(1.4, cameraAngleY)); // ആകാശവും നിലവും പൂർണ്ണമായി കാണാൻ
+      prevX = e.touches[0].clientX; prevY = e.touches[0].clientY;
+    });
+    window.addEventListener('touchend', () => { isDragging = false; });
+
+    // 🌐 10 ഭാഷകൾ
     const multiLangDict = {
-      ml: { server: "🌍 സെർവർ", lang: "⚙️️ ഭാഷ", prof: "👤 പ്രൊഫൈൽ", parkour: "🌋 വോൾക്കാനോ ടോപ്പ്", concert: "🎤 കോൺസേർട്ട് & സീറ്റ്", dragon: "🐉 പറക്കുന്ന ഡ്രാഗൺ", mech: "🤖 2-Player മെക്ക്", dino: "🦖 2-Player ദിനോസർ", whale: "🐋 നീലത്തിമിംഗലം", friends: "🤝 സുഹൃത്തുക്കൾ", group: "💬 ഗ്രൂപ്പുകൾ" },
+      ml: { server: "🌍 സെർവർ", lang: "⚙️ ഭാഷ", prof: "👤 പ്രൊഫൈൽ", parkour: "🌋 വോൾക്കാനോ ടോപ്പ്", concert: "🎤 കോൺസേർട്ട് & സീറ്റ്", dragon: "🐉 പറക്കുന്ന ഡ്രാഗൺ", mech: "🤖 2-Player മെക്ക്", dino: "🦖 2-Player ദിനോസർ", whale: "🐋 നീലത്തിമിംഗലം", friends: "🤝 സുഹൃത്തുക്കൾ", group: "💬 ഗ്രൂപ്പുകൾ" },
       en: { server: "🌍 Server", lang: "⚙️ Lang", prof: "👤 Profile", parkour: "🌋 Volcano Top", concert: "🎤 Concert & Seats", dragon: "🐉 Flying Dragon", mech: "🤖 2-Player Mech", dino: "🦖 2-Player Dino", whale: "🐋 Blue Whale", friends: "🤝 Friends", group: "💬 Lounges" },
       hi: { server: "🌍 सर्वर", lang: "⚙️ भाषा", prof: "👤 प्रोफाइल", parkour: "🌋 ज्वालामुखी शीर्ष", concert: "🎤 कॉन्सर्ट", dragon: "🐉 उड़ने वाला ड्रैगन", mech: "🤖 2-प्लेयर मेक", dino: "🦖 2-प्लेयर डायनासोर", whale: "🐋 ब्लू व्हेल", friends: "🤝 दोस्त", group: "💬 समूह" },
       fa: { server: "🌍 سرور", lang: "⚙️ زبان", prof: "👤 پروفایل", parkour: "🌋 قله آتشفشان", concert: "🎤 کنسرت", dragon: "🐉 اژدهای پرنده", mech: "🤖 مک دو نفره", dino: "🦖 دایناسور دو نفره", whale: "🐋 نهنگ آبی", friends: "🤝 دوستان", group: "💬 گروه‌ها" },
       tg: { server: "🌍 Сервер", lang: "⚙️ Забон", prof: "👤 Профил", parkour: "🌋 Қуллаи вулқон", concert: "🎤 Консерт", dragon: "🐉 Аждаҳо", mech: "🤖 Мех 2-нафара", dino: "🦖 Динозавр", whale: "🐋 Наҳанг", friends: "🤝 Дӯстон", group: "💬 Гурӯҳҳо" },
       uz: { server: "🌍 Server", lang: "⚙️ Til", prof: "👤 Profil", parkour: "🌋 Vulqon cho‘qqisi", concert: "🎤 Konsert", dragon: "🐉 Ajdaho", mech: "🤖 2 kishilik Mex", dino: "🦖 Dinozavr", whale: "🐋 Kit", friends: "🤝 Do‘stlar", group: "💬 Guruhlar" },
       ru: { server: "🌍 Сервер", lang: "⚙️ Язык", prof: "👤 Профиль", parkour: "🌋 Вершина вулкана", concert: "🎤 Концерт", dragon: "🐉 Дракон", mech: "🤖 2-местный Мех", dino: "🦖 Динозавр", whale: "🐋 Синий кит", friends: "🤝 Друзья", group: "💬 Группы" },
-      zh: { server: "🌍 服务器", lang: "⚙️ 语言", prof: "👤 个人资料", parkour: "🌋 火山之巅", concert: "🎤 音乐会", dragon: "🐉 飞龙", mech: "🤖 双人机甲", dino: "🦖 双人恐龙", whale: "🐋 蓝鲸", friends: "🤝 好友", group: "💬 休息室" },
+      zh: { server: "🌍 服务器", lang: "⚙️️ 语言", prof: "👤 个人资料", parkour: "🌋 火山之巅", concert: "🎤 音乐会", dragon: "🐉 飞龙", mech: "🤖 双人机甲", dino: "🦖 双人恐龙", whale: "🐋 蓝鲸", friends: "🤝 好友", group: "💬 休息室" },
       it: { server: "🌍 Server", lang: "⚙️ Lingua", prof: "👤 Profilo", parkour: "🌋 Cima Vulcano", concert: "🎤 Concerto", dragon: "🐉 Drago Volante", mech: "🤖 Mech 2 Giocatori", dino: "🦖 Dinosauro", whale: "🐋 Balenottera", friends: "🤝 Amici", group: "💬 Gruppi" },
       my: { server: "🌍 ဆာဗာ", lang: "⚙️ ဘာသာစကား", prof: "👤 ပရိုဖိုင်", parkour: "🌋 မီးတောင်ထိပ်", concert: "🎤 ဖျော်ဖြေပွဲ", dragon: "🐉 နဂါး", mech: "🤖 ၂ ယောက်စီး စက်ရုပ်", dino: "🦖 ဒိုင်နိုဆော", whale: "🐋 ဝေလငါး", friends: "🤝 သူငယ်ချင်းများ", group: "💬 အဖွဲ့များ" },
       id: { server: "🌍 Server", lang: "⚙️ Bahasa", prof: "👤 Profil", parkour: "🌋 Puncak Gunung", concert: "🎤 Konser", dragon: "🐉 Naga Terbang", mech: "🤖 Mech 2 Pemain", dino: "🦖 Dinosaurus", whale: "🐋 Paus Biru", friends: "🤝 Teman", group: "💬 Grup" }
@@ -541,7 +644,7 @@
       alert(`🌍 Connected to ${name} server!`);
     };
 
-    // 📹 ഫ്രണ്ട്സ് & ഗ്രൂപ്പ് വീഡിയോ കോളിംഗ് (Stars Feature)
+    // 📹 വീഡിയോ കോളിംഗ്
     let localStream = null;
     window.startFriendVideoCall = async () => {
       closeBox('player-modal');
@@ -630,13 +733,16 @@
 
     window.shareToTelegram = () => window.open(`https://t.me/share/url?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent("Join me on GlobeVibe 3D Metaverse!")}`);
     window.shareToWhatsApp = () => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent("Join GlobeVibe 3D Metaverse: " + SHARE_URL)}`);
+    window.shareToInstagram = () => { navigator.clipboard.writeText(SHARE_URL); alert("📋 Bot Link copied to clipboard! Paste on Instagram Bio or Story."); };
     window.copyMetaverseLink = () => { navigator.clipboard.writeText(SHARE_URL); alert("📋 Bot Link copied to clipboard!"); };
 
-    window.setCharModel = (g) => { userGender = g; buildRealisticCharacter(); alert(`Avatar set to ${g.toUpperCase()}!`); };
     window.saveUserProfile = () => {
       const name = document.getElementById('prof-name-input').value.trim();
-      socket.emit('updateProfile', { name, gender: userGender });
-      closeBox('profile-box'); alert("✅ Profile updated!");
+      const bio = document.getElementById('prof-bio-input').value.trim();
+      const instagram = document.getElementById('prof-ig-input').value.trim();
+      const telegramUser = document.getElementById('prof-tg-input').value.trim();
+      socket.emit('updateProfile', { name, bio, instagram, telegramUser, gender: userGender });
+      closeBox('profile-box'); alert("✅ Profile updated with Social Links!");
     };
 
     function renderRooms(rooms) {
@@ -652,22 +758,25 @@
 
     // 2-Player & Proximity Check
     function checkProximity() {
+      const dBall = myPlayer.position.distanceTo(football.position);
+      const kickBtn = document.getElementById('kick-ball-btn');
+      if (dBall < 4.5) { kickBtn.style.display = 'flex'; } else { kickBtn.style.display = 'none'; }
+
       // 2-Player Passenger Detection (മറ്റൊരു പ്ലെയർ ദിനോസറിലോ റോബോട്ടിലോ ഇരിക്കുമ്പോൾ)
       for (let id in otherPlayers) {
         const p = otherPlayers[id];
         if (p.activeRide === 'dino' || p.activeRide === 'mech') {
           const d = myPlayer.position.distanceTo(new THREE.Vector3(p.x, p.y, p.z));
-          if (d < 5.0 && activeRide === 'walk') {
+          if (d < 5.5 && activeRide === 'walk') {
             nearbyTarget = { type: p.activeRide + '_passenger', hostId: id, name: p.name, rideType: p.activeRide };
             const pBtn = document.getElementById('proximity-prompt');
-            pBtn.innerText = p.activeRide === 'dino' ? `🦖 Ride Dino with ${p.name} (Seat 2)` : `🤖 Ride Mech as Co-Pilot with ${p.name}`;
+            pBtn.innerText = p.activeRide === 'dino' ? `🦖 Ride Dino with ${p.name} (Seat 2)` : `🤖 Ride Mech with ${p.name} (Seat 2)`;
             pBtn.style.display = 'block';
             return;
           }
         }
       }
 
-      // സ്റ്റേജ് പാട്ടുപാടാൻ
       if (myPlayer.position.distanceTo(stageG.position) < 25) {
         nearbyTarget = { type: 'sing' };
         const pBtn = document.getElementById('proximity-prompt');
@@ -675,7 +784,6 @@
         pBtn.style.display = 'block';
         return;
       }
-      // ഇരിപ്പിടങ്ങൾ
       for (let ch of chairsList) {
         if (myPlayer.position.distanceTo(ch.position) < 3.2) {
           nearbyTarget = { type: 'seat', pos: ch.position };
@@ -686,7 +794,6 @@
         }
       }
 
-      // സാധാരണ മൗണ്ട്
       if (activeRide === 'walk') {
         let found = null;
         for (let item of worldInteractables) {
@@ -696,12 +803,27 @@
         if (found) { nearbyTarget = found; pBtn.innerText = found.prompt; pBtn.style.display = 'block'; return; }
         else { nearbyTarget = null; pBtn.style.display = 'none'; }
       }
+
+      let nearP = null;
+      for (let id in otherPlayers) {
+        if (id !== socket.id) {
+          const dist = myPlayer.position.distanceTo(new THREE.Vector3(otherPlayers[id].x, otherPlayers[id].y, otherPlayers[id].z));
+          if (dist < 5) { nearP = otherPlayers[id]; break; }
+        }
+      }
+      const pPrompt = document.getElementById('player-interact-prompt');
+      if (nearP) {
+        nearbyPlayerId = nearP.id;
+        pPrompt.innerText = `👤 Interact with ${nearP.name} (Tap)`;
+        pPrompt.style.display = 'block';
+      } else {
+        nearbyPlayerId = null; pPrompt.style.display = 'none';
+      }
     }
 
     window.interactWithNearbyTarget = () => {
       if (!nearbyTarget) return;
 
-      // 2-Player Passenger Boarding
       if (nearbyTarget.type.endsWith('_passenger')) {
         currentHostVehicleId = nearbyTarget.hostId;
         activeRide = nearbyTarget.type;
@@ -752,7 +874,12 @@
 
     window.openPlayerInteractModal = () => {
       if (!nearbyPlayerId || !otherPlayers[nearbyPlayerId]) return;
-      document.getElementById('target-player-title').innerText = otherPlayers[nearbyPlayerId].name;
+      const p = otherPlayers[nearbyPlayerId];
+      document.getElementById('target-player-title').innerText = p.name;
+      let soc = "";
+      if (p.instagram) soc += `📸 IG: ${p.instagram} `;
+      if (p.telegramUser) soc += `✈️ TG: ${p.telegramUser}`;
+      document.getElementById('target-player-social').innerText = soc || "No social links added.";
       openBox('player-modal');
     };
 
@@ -771,7 +898,11 @@
 
     socket.on('friendListUpdated', (list) => {
       document.getElementById('friends-count').innerText = list.length;
-      document.getElementById('friends-list-container').innerHTML = list.map(f => `<div>• ${f.name}</div>`).join('') || "No friends added yet.";
+      document.getElementById('friends-list-container').innerHTML = list.map(f => `
+        <div style="margin-bottom:4px; padding:4px; background:rgba(255,255,255,0.05); border-radius:6px;">
+          <strong>• ${f.name}</strong> ${f.ig ? `<span style="color:#ec4899; font-size:10px;">(IG: ${f.ig})</span>` : ''} ${f.tg ? `<span style="color:#38bdf8; font-size:10px;">(TG: ${f.tg})</span>` : ''}
+        </div>
+      `).join('') || "No friends added yet.";
     });
 
     // ടെലിപോർട്ടുകൾ
@@ -780,6 +911,7 @@
     window.teleportDinoArea = () => { myPlayer.position.set(50, 0, 90); alert("🦖 Reached Jurassic Dinosaur Zone!"); };
     window.teleportParkourZone = () => { currentParkourIndex = 0; myPlayer.position.set(volcanoPlatforms[0].x, volcanoPlatforms[0].y + 1, volcanoPlatforms[0].z); currentBaseY = volcanoPlatforms[0].y; };
     window.teleportConcert = () => myPlayer.position.set(0, 0, -270);
+    window.teleportFootballField = () => myPlayer.position.set(0, 0, -35);
     window.teleportSeaBattle = () => myPlayer.position.set(0, 0, 680);
 
     // ലൈവ് മൈക്ക്
@@ -861,13 +993,21 @@
       else window.open(d.invoiceUrl, '_blank');
     });
 
-    // ആനിമേഷൻ ലൂപ്പ്
-    let wCycle = 0, dragonAngle = 0;
     function animate() {
       requestAnimationFrame(animate);
       checkProximity();
 
-      // പൂക്കൾ ശേഖരിക്കൽ
+      // മഴ/മഞ്ഞ് വീഴൽ
+      if (weatherMesh.visible) {
+        const pos = weatherMesh.geometry.attributes.position.array;
+        for (let i = 1; i < pCount * 3; i += 3) {
+          pos[i] -= weatherMode === 'snow' ? 0.4 : 1.6;
+          if (pos[i] < 0) pos[i] = 120;
+        }
+        weatherMesh.geometry.attributes.position.needsUpdate = true;
+      }
+
+      // പൂക്കൾ
       for (let f of collectibleFlowers) {
         if (f.active) {
           f.mesh.rotation.y += 0.03;
@@ -881,6 +1021,18 @@
         } else {
           f.respawnTimer--;
           if (f.respawnTimer <= 0) { f.active = true; f.mesh.visible = true; }
+        }
+      }
+
+      // ഫുട്ബോൾ ഫിസിക്സ്
+      if (ballSpeedZ > 0) {
+        football.position.z -= ballSpeedZ;
+        football.rotation.x -= 0.1;
+        ballSpeedZ *= 0.97;
+        if (football.position.z <= -64 && Math.abs(football.position.x) < 6) {
+          ballSpeedZ = 0; football.position.set(0, 0.7, -40);
+          userPts += 50; document.getElementById('pts').innerText = userPts;
+          alert("⚽ GOAAAAL! +50 Points Added! 🎉");
         }
       }
 
@@ -899,10 +1051,10 @@
 
       // ഡ്രാഗൺ
       if (dragonMesh && activeRide !== 'dragon') {
-        dragonAngle += 0.015;
-        dragonMesh.position.x = Math.sin(dragonAngle) * 90;
-        dragonMesh.position.z = Math.cos(dragonAngle) * 90;
-        dragonMesh.rotation.y = dragonAngle + Math.PI / 2;
+        const t = Date.now() * 0.001;
+        dragonMesh.position.x = Math.sin(t) * 90;
+        dragonMesh.position.z = Math.cos(t) * 90;
+        dragonMesh.rotation.y = t + Math.PI / 2;
       }
 
       // തിമിംഗലം
@@ -919,7 +1071,6 @@
         myPlayer.position.set(host.x + sLayout.x, host.y + sLayout.y, host.z + sLayout.z);
         myPlayer.rotation.y = host.rotationY || 0;
       } else {
-        // ജമ്പ് ഫിസിക്സ്
         if (isJumping) {
           myPlayer.position.y += jumpVelocityY; jumpVelocityY += GRAVITY;
           if (myPlayer.position.y <= currentBaseY) { myPlayer.position.y = currentBaseY; isJumping = false; jumpVelocityY = 0; }
@@ -930,18 +1081,12 @@
         const spd = (['dragon'].includes(activeRide) ? 1.8 : (['mech', 'dino'].includes(activeRide) ? 1.2 : 0.45));
 
         if (moveX !== 0 || moveZ !== 0) {
-          const forwardX = moveX * Math.cos(0) + moveZ * Math.sin(0);
-          const forwardZ = -moveX * Math.sin(0) + moveZ * Math.cos(0);
+          const forwardX = moveX * Math.cos(cameraAngleX) + moveZ * Math.sin(cameraAngleX);
+          const forwardZ = -moveX * Math.sin(cameraAngleX) + moveZ * Math.cos(cameraAngleX);
 
           myPlayer.position.x += forwardX * spd;
           myPlayer.position.z += forwardZ * spd;
           myPlayer.rotation.y = Math.atan2(forwardX, forwardZ);
-
-          wCycle += 0.2;
-          if (myPlayer.userData.legL) {
-            myPlayer.userData.legL.rotation.x = Math.sin(wCycle) * 0.6;
-            myPlayer.userData.legR.rotation.x = -Math.sin(wCycle) * 0.6;
-          }
 
           if (nearbyTarget && activeRide !== 'walk' && nearbyTarget.mesh) {
             nearbyTarget.mesh.position.set(myPlayer.position.x, nearbyTarget.isFlying ? myPlayer.position.y - nearbyTarget.seatY : 0, myPlayer.position.z);
@@ -952,10 +1097,11 @@
         }
       }
 
+      // 360° ടച്ച് ക്യാമറ പൊസിഷൻ
       const camDist = 18;
-      camera.position.x = myPlayer.position.x;
-      camera.position.y = myPlayer.position.y + 5;
-      camera.position.z = myPlayer.position.z + camDist;
+      camera.position.x = myPlayer.position.x + Math.sin(cameraAngleX) * camDist * Math.cos(cameraAngleY);
+      camera.position.y = myPlayer.position.y + 4 + Math.sin(cameraAngleY) * camDist;
+      camera.position.z = myPlayer.position.z + Math.cos(cameraAngleX) * camDist * Math.cos(cameraAngleY);
       camera.lookAt(myPlayer.position.x, myPlayer.position.y + 2, myPlayer.position.z);
 
       renderer.render(scene, camera);
