@@ -9,16 +9,19 @@ const OWNER_TELEGRAM_ID = 1689374364;
 const WEB_APP_URL = 'https://global-vibe-metaverse.onrender.com';
 
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+
+// public ഫോൾഡറും റൂട്ടിലുള്ള .glb ഫയലുകളും സെർവ് ചെയ്യാൻ:
 app.use(express.static('public'));
+app.use(express.static('.'));
 
 let players = {};
 let customChatRooms = ["General", "Kerala Hub", "Dubai Lounge", "Global Arena"];
 let pendingRequests = {};
-let allTimeUsers = new Set(); // ബോട്ട് ഉപയോഗിച്ച മൊത്തം ആളുകൾ
+let allTimeUsers = new Set();
 
 bot.onText(/\/start/, (msg) => {
   allTimeUsers.add(msg.chat.id);
-  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nExperience Realistic Rides, Flying Planes, Volcano Climb & Global Multiplayer!", {
+  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nExplore Realistic 3D Models, Ride Dragon & Mech, VIP Zones & Telegram Stars!", {
     parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [[{ text: "🚀 Enter Metaverse", web_app: { url: WEB_APP_URL } }]]
@@ -41,9 +44,6 @@ bot.on('successful_payment', (msg) => {
       } else if (payload.startsWith('celeb_selfie')) {
         const celebName = payload.split('__')[1] || "Celebrity";
         io.to(id).emit('celebSelfieUnlocked', { celebName });
-      } else if (payload.startsWith('video_pass')) {
-        players[id].hasVideoPass = true;
-        io.to(id).emit('unlockVideoCall');
       } else if (payload.startsWith('stage_gift')) {
         const giftTitle = payload.split('__')[1] || "Gift";
         io.emit('celebrateStageGift', { sender: players[id].name, giftTitle });
@@ -66,7 +66,6 @@ io.on('connection', (socket) => {
     shirtColor: '#2563eb',
     isOwner: false,
     unlockedBeast: false,
-    hasVideoPass: false,
     activeRoom: "General",
     friends: [],
     x: 0, y: 0, z: 0
@@ -88,11 +87,9 @@ io.on('connection', (socket) => {
     if (p.telegramId === OWNER_TELEGRAM_ID) {
       p.isOwner = true;
       p.unlockedBeast = true;
-      p.hasVideoPass = true;
     }
     socket.join(p.activeRoom);
     
-    // ഓൺലൈൻ കൗണ്ടും ഓണർ അനലിറ്റിക്സും
     io.emit('serverStatsUpdate', {
       onlineCount: Object.keys(players).length,
       totalBotUsers: allTimeUsers.size
@@ -168,7 +165,6 @@ io.on('connection', (socket) => {
       if (data.type === 'sky_wish') io.emit('displaySkyBanner', { text: data.extraText, sender: p.name });
       if (data.type === 'beast_ride') socket.emit('beastUnlocked');
       if (data.type === 'celeb_selfie') socket.emit('celebSelfieUnlocked', { celebName: data.extraText });
-      if (data.type === 'video_pass') socket.emit('unlockVideoCall');
       if (data.type === 'stage_gift') io.emit('celebrateStageGift', { sender: p.name, giftTitle: data.title });
       return;
     }
@@ -188,12 +184,11 @@ io.on('connection', (socket) => {
     }
   });
 
-  // ഗ്രൂപ്പുകൾ ഉണ്ടാക്കലും ലിങ്ക് അയക്കലും
   socket.on('createNewRoom', (roomName) => {
     if (!customChatRooms.includes(roomName)) {
       customChatRooms.push(roomName);
       io.emit('roomListUpdated', customChatRooms);
-      io.emit('sysRoomChat', `📢 New Lounge created: #${roomName}`);
+      io.emit('sysRoomChat', `📢 New Lounge: #${roomName}`);
     }
   });
 
