@@ -15,7 +15,7 @@
     #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 8px; }
     .top-bar, .side-dock, .chat-box, .modal-card, #joystick-base, #proximity-prompt, #player-interact-prompt, #dismount-btn, #mic-float-btn, #share-float-btn, #swim-indicator, #sky-banner { pointer-events: auto; }
 
-    #sky-banner { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, #ff007f, #7928ca); color: #fff; font-weight: 900; font-size: 15px; padding: 12px 26px; border-radius: 30px; box-shadow: 0 0 30px #ff007f; display: none; text-shadow: 0 0 10px #fff; z-index: 35; text-align: center; }
+    #sky-banner { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, #ff007f, #7928ca); color: #fff; font-weight: 900; font-size: 16px; padding: 12px 28px; border-radius: 30px; box-shadow: 0 0 35px #ff007f; display: none; text-shadow: 0 0 10px #fff; z-index: 35; text-align: center; }
 
     .top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .badges { display: flex; gap: 5px; align-items: center; }
@@ -258,36 +258,31 @@
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.4); scene.add(hemiLight);
     const dirLight = new THREE.DirectionalLight(0xffffff, 1.2); dirLight.position.set(150, 300, 150); scene.add(dirLight);
 
-    // വളരെ വലിയ ദ്വീപ് & സമുദ്രം
+    // ദ്വീപ് & സമുദ്രം
     const island = new THREE.Mesh(new THREE.CylinderGeometry(650, 700, 10, 64), new THREE.MeshStandardMaterial({ color: 0x2e7d32 }));
     island.position.y = -5; scene.add(island);
 
     const ocean = new THREE.Mesh(new THREE.PlaneGeometry(12000, 12000), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1 }));
     ocean.rotation.x = -Math.PI / 2; ocean.position.y = -3; scene.add(ocean);
 
-    // 🌊 പുഴയും പാലവും (River & Bridge Across Island)
-    const river = new THREE.Mesh(new THREE.PlaneGeometry(28, 900), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
-    river.rotation.x = -Math.PI / 2; river.position.set(0, 0.02, 0); scene.add(river);
+    // പുഴ കരയുടെ വശത്തുകൂടി ഒഴുകുന്നു (സ്റ്റേജിൽ നിന്ന് മാറ്റി സുരക്ഷിതമാക്കി)
+    const river = new THREE.Mesh(new THREE.PlaneGeometry(30, 800), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
+    river.rotation.x = -Math.PI / 2; river.position.set(220, 0.02, 0); scene.add(river);
 
     const bridge = new THREE.Group();
-    const bridgePlank = new THREE.Mesh(new THREE.BoxGeometry(32, 1, 14), new THREE.MeshStandardMaterial({ color: 0x854d0e }));
-    bridgePlank.position.y = 1.2; bridge.add(bridgePlank);
-    const bridgeRailL = new THREE.Mesh(new THREE.BoxGeometry(32, 1.2, 0.4), new THREE.MeshStandardMaterial({ color: 0x3e2723 }));
-    bridgeRailL.position.set(0, 2.2, 6.8); bridge.add(bridgeRailL);
-    const bridgeRailR = bridgeRailL.clone(); bridgeRailR.position.set(0, 2.2, -6.8); bridge.add(bridgeRailR);
-    bridge.position.set(0, 0, 0); scene.add(bridge);
+    const bridgePlank = new THREE.Mesh(new THREE.BoxGeometry(36, 1, 14), new THREE.MeshStandardMaterial({ color: 0x854d0e })); bridgePlank.position.y = 1.2; bridge.add(bridgePlank);
+    bridge.position.set(220, 0, 0); scene.add(bridge);
 
     const road = new THREE.Mesh(new THREE.RingGeometry(180, 215, 64), new THREE.MeshStandardMaterial({ color: 0x334155 }));
     road.rotation.x = -Math.PI / 2; road.position.y = 0.05; scene.add(road);
 
     // ----------------------------------------------------
-    // 🌊 1. സമുദ്രത്തിലെ ലൈവ് ഫൈറ്റ്: King Kong vs Godzilla in Sea
+    // 🌊 1. സമുദ്രത്തിലെ ഫൈറ്റ്: King Kong vs Godzilla
     // ----------------------------------------------------
     const seaBattleGroup = new THREE.Group();
     const seaGodzilla = new THREE.Group();
     const gzTorso = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 6, 15, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b })); gzTorso.position.y = 8; seaGodzilla.add(gzTorso);
     const gzHead = new THREE.Mesh(new THREE.SphereGeometry(3.5, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b })); gzHead.position.set(0, 16, 2); seaGodzilla.add(gzHead);
-    const gzJaw = new THREE.Mesh(new THREE.BoxGeometry(3, 1.8, 3.5), new THREE.MeshStandardMaterial({ color: 0x0f172a })); gzJaw.position.set(0, 14.5, 3.8); seaGodzilla.add(gzJaw);
     const spikeGeo = new THREE.ConeGeometry(1.6, 5, 4);
     const spikeMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 1.0 });
     for (let i = 0; i < 7; i++) {
@@ -299,7 +294,6 @@
     const kgTorso = new THREE.Mesh(new THREE.CylinderGeometry(5.5, 6.5, 14, 16), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgTorso.position.y = 7.5; seaKong.add(kgTorso);
     const kgHead = new THREE.Mesh(new THREE.SphereGeometry(3.5, 16, 16), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgHead.position.set(0, 15.5, 0.5); seaKong.add(kgHead);
     const kgArmL = new THREE.Mesh(new THREE.BoxGeometry(3.2, 9, 3.2), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgArmL.position.set(-7, 10, 4); kgArmL.rotation.x = 0.9; seaKong.add(kgArmL);
-    const kgArmR = new THREE.Mesh(new THREE.BoxGeometry(3.2, 9, 3.2), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgArmR.position.set(7, 10, 4); kgArmR.rotation.x = -0.4; seaKong.add(kgArmR);
     seaKong.position.set(30, 0, 0); seaBattleGroup.add(seaKong);
 
     seaBattleGroup.position.set(0, -3, 750); scene.add(seaBattleGroup);
@@ -326,7 +320,7 @@
     celebZone.position.set(-220, 0, 100); scene.add(celebZone);
 
     // ----------------------------------------------------
-    // 🚗 3. റിയലിസ്റ്റിക് മൾട്ടി-പാസഞ്ചർ വെഹിക്കിളുകൾ
+    // 🚗 3. റിയലിസ്റ്റിക് വെഹിക്കിളുകൾ
     // ----------------------------------------------------
     function buildRedCar(x, z) {
       const g = new THREE.Group();
@@ -396,7 +390,6 @@
       return { mesh: g, type: 'boat', maxSeats: 2, prompt: '🛶 Row Wooden Boat (2 Seats)' };
     }
 
-    // 🦖 കൂറ്റൻ ജീവികൾ (2-Seater Mounts)
     function buildRideableGodzilla(x, z) {
       const g = new THREE.Group();
       const torso = new THREE.Mesh(new THREE.CylinderGeometry(4.5, 6, 15, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b })); torso.position.y = 7.5; g.add(torso);
@@ -427,16 +420,16 @@
       buildCruiserBike(50, 200), buildCruiserBike(-50, 200),
       buildDoubleBicycle(80, 200), buildDoubleBicycle(-80, 200),
       buildRedHelicopter(-180, -150), buildJetPlane(180, -150),
-      buildSteamShip(350, 220), buildWoodenBoat(0, -60), // പുഴയിൽ കിടക്കുന്ന ബോട്ട്
+      buildSteamShip(350, 220), buildWoodenBoat(220, -60),
       buildRideableGodzilla(-160, 80), buildRideableKong(160, 80), buildRideableDino(0, 110)
     ];
 
     // ----------------------------------------------------
-    // 🎤 4. ബഗ്ഗുകളില്ലാത്ത കോൺസേർട്ട് സ്റ്റേജും ഇരിപ്പിടങ്ങളും
+    // 🎤 4. ഉറച്ച കരയിലെ കോൺസേർട്ട് സ്റ്റേജ് (വെള്ളം മാറ്റി)
     // ----------------------------------------------------
     const stageG = new THREE.Group();
-    const sFloor = new THREE.Mesh(new THREE.BoxGeometry(36, 1.5, 20), new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.6 })); sFloor.position.y = 0.75; stageG.add(sFloor);
-    const sWall = new THREE.Mesh(new THREE.BoxGeometry(36, 14, 1), new THREE.MeshStandardMaterial({ color: 0x1e1b4b })); sWall.position.set(0, 7.5, -9.5); stageG.add(sWall);
+    const sFloor = new THREE.Mesh(new THREE.BoxGeometry(40, 2, 22), new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.6 })); sFloor.position.y = 1; stageG.add(sFloor);
+    const sWall = new THREE.Mesh(new THREE.BoxGeometry(40, 15, 1), new THREE.MeshStandardMaterial({ color: 0x1e1b4b })); sWall.position.set(0, 8, -10.5); stageG.add(sWall);
     stageG.position.set(0, 0, -260); scene.add(stageG);
 
     const chairsList = [];
@@ -454,7 +447,6 @@
     const flagPole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 9), new THREE.MeshStandardMaterial({ color: 0xffffff })); flagPole.position.set(-320, 96, -230); scene.add(flagPole);
     const flagMesh = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2, 0.1), new THREE.MeshStandardMaterial({ color: 0xef4444 })); flagMesh.position.set(-318.2, 99, -230); scene.add(flagMesh);
 
-    // ലാവ അഗ്നിപർവ്വതം
     const volcano = new THREE.Group();
     const vBase = new THREE.Mesh(new THREE.ConeGeometry(75, 70, 24), new THREE.MeshStandardMaterial({ color: 0x451a03 })); vBase.position.y = 30; volcano.add(vBase);
     const vCrater = new THREE.Mesh(new THREE.CylinderGeometry(18, 22, 4, 24), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xf97316, emissiveIntensity: 1.0 })); vCrater.position.y = 66; volcano.add(vCrater);
@@ -485,7 +477,7 @@
       renderRooms(d.rooms);
     });
 
-    // 👆 360° ടച്ച് ക്യാമറ (Horizontal + Vertical Pitch - ആകാശം കാണാൻ)
+    // 👆 360° ടച്ച് ക്യാമറ (ആകാശം മുകളിലേക്ക് കാണാൻ)
     let isDragging = false, prevX = 0, prevY = 0, cameraAngleX = 0, cameraAngleY = 0.35;
     window.addEventListener('touchstart', (e) => {
       if (e.target.closest('#joystick-base') || e.target.closest('#ui-layer') || e.target.closest('button')) return;
@@ -535,36 +527,6 @@
       alert("✅ Profile updated!");
     };
 
-    // 🌐 ഭാഷാ മാറ്റം
-    const translations = {
-      ml: { server: "🌍 സെർവർ", lang: "⚙️️ ഭാഷ", prof: "👤 പ്രൊഫൈൽ", concert: "🎤 കോൺസേർട്ട് & സീറ്റ്", celeb: "📸 സ്റ്റാർസ് ഫോട്ടോ സോൺ", battle: "🌊 കോങ് vs ഗോഡ്‌സില്ല", mountain: "🏔️ പർവ്വതം & പതാക", volcano: "🌋 ലാവ അഗ്നിപർവ്വതം", friends: "🤝 സുഹൃത്തുക്കൾ", group: "💬 ഗ്രൂപ്പുകൾ" },
-      en: { server: "🌍 Server", lang: "⚙️ Lang", prof: "👤 Profile", concert: "🎤 Concert & Seats", celeb: "📸 Stars Photo Zone", battle: "🌊 Kong vs Godzilla", mountain: "🏔️ Mountain Peak Flag", volcano: "🌋 Lava Volcano Crater", friends: "🤝 Friends & Requests", group: "💬 Group Lounges" },
-      fa: { server: "🌍 سرور", lang: "⚙️ زبان", prof: "👤 پروفایل", concert: "🎤 کنسرت و صندلی", celeb: "📸 منطقه ستاره‌ها", battle: "🌊 نبرد کونگ و گودزیلا", mountain: "🏔️ قله کوهستان", volcano: "🌋 آتشفشان گدازه", friends: "🤝 دوستان", group: "💬 گروه‌ها" },
-      tg: { server: "🌍 Сервер", lang: "⚙️ Забон", prof: "👤 Профил", concert: "🎤 Консерт", celeb: "📸 Минтақаи ситораҳо", battle: "🌊 Ҷанги дарёӣ", mountain: "🏔️ Қуллаи кӯҳ", volcano: "🌋 Вулқон", friends: "🤝 Дӯстон", group: "💬 Гурӯҳҳо" },
-      uz: { server: "🌍 Server", lang: "⚙️ Til", prof: "👤 Profil", concert: "🎤 Konsert", celeb: "📸 Yulduzlar hududi", battle: "🌊 Dengiz jangi", mountain: "🏔️ Tog‘ cho‘qqisi", volcano: "🌋 Vulqon", friends: "🤝 Do‘stlar", group: "💬 Guruhlar" },
-      zh: { server: "🌍 服务器", lang: "⚙️ 语言", prof: "👤 个人资料", concert: "🎤 音乐会与座位", celeb: "📸 名人拍照区", battle: "🌊 海上金刚对哥斯拉", mountain: "🏔️ 山顶红旗", volcano: "🌋 熔岩火山", friends: "🤝 好友与请求", group: "💬 群聊大厅" },
-      my: { server: "🌍 ဆာဗာ", lang: "⚙️ ဘာသာစကား", prof: "👤 ပရိုဖိုင်", concert: "🎤 ဖျော်ဖြေပွဲ", celeb: "📸 ကြယ်ပွင့်ဇုန်", battle: "🌊 ပင်လယ်တိုက်ပွဲ", mountain: "🏔️ တောင်ထွတ်", volcano: "🌋 မီးတောင်", friends: "🤝 သူငယ်ချင်းများ", group: "💬 အဖွဲ့များ" },
-      it: { server: "🌍 Server", lang: "⚙️ Lingua", prof: "👤 Profilo", concert: "🎤 Concerto & Posti", celeb: "📸 Foto delle Star", battle: "🌊 Battaglia in Mare", mountain: "🏔️ Cima della Montagna", volcano: "🌋 Vulcano di Lava", friends: "🤝 Amici", group: "💬 Gruppi" },
-      ru: { server: "🌍 Сервер", lang: "⚙️ Язык", prof: "👤 Профиль", concert: "🎤 Концерт и Места", celeb: "📸 Зона Звезд", battle: "🌊 Битва в Море", mountain: "🏔️ Пик Горы", volcano: "🌋 Лавовый Вулкан", friends: "🤝 Друзья", group: "💬 Группы" },
-      ar: { server: "🌍 السيرفر", lang: "⚙️ اللغة", prof: "👤 الملف الشخصي", concert: "🎤 الحفل والمقاعد", celeb: "📸 منطقة النجوم", battle: "🌊 معركة البحر", mountain: "🏔️ قمة الجبل", volcano: "🌋 بركان الحمم", friends: "🤝 الأصدقاء", group: "💬 المجموعات" }
-    };
-
-    window.applyLanguage = (l) => {
-      closeBox('lang-box');
-      const t = translations[l] || translations.en;
-      document.getElementById('ui-server-btn').innerText = t.server;
-      document.getElementById('ui-lang-btn').innerText = t.lang;
-      document.getElementById('ui-prof-btn').innerText = t.prof;
-      document.getElementById('ui-dock-concert').innerText = t.concert;
-      document.getElementById('ui-dock-celeb').innerText = t.celeb;
-      document.getElementById('ui-dock-battle').innerText = t.battle;
-      document.getElementById('ui-dock-mountain').innerText = t.mountain;
-      document.getElementById('ui-dock-volcano').innerText = t.volcano;
-      document.getElementById('ui-dock-friends').innerText = t.friends;
-      document.getElementById('ui-dock-group').innerText = t.group;
-      alert(`Language updated to ${l.toUpperCase()}!`);
-    };
-
     // പ്രോക്സിമിറ്റി സിസ്റ്റം
     let nearbyTarget = null;
     function checkProximity() {
@@ -582,8 +544,7 @@
         return;
       }
 
-      // സ്റ്റേജ് അടുത്താണെങ്കിൽ
-      if (myPlayer.position.distanceTo(stageG.position) < 24) {
+      if (myPlayer.position.distanceTo(stageG.position) < 25) {
         nearbyTarget = { type: 'sing' }; pBtn.innerText = '🎤 Sing on Stage'; pBtn.style.display = 'block'; return;
       }
       for (let ch of chairsList) {
@@ -625,7 +586,7 @@
         takeInstantSelfie(nearbyTarget.name); return;
       }
       if (nearbyTarget.type === 'sing') {
-        myPlayer.position.set(0, 1.5, -260); // കൃത്യമായി സ്റ്റേജിന്റെ തറയിൽ ഉറച്ചു നിൽക്കുന്നു
+        myPlayer.position.set(0, 2.0, -260); // സ്റ്റേജിന്റെ തറയിൽ ഉറച്ചു നിൽക്കുന്നു
         toggleAlwaysVoiceMic();
         document.getElementById('dismount-btn').style.display = 'block';
         alert("🎤 Standing on Stage! Mic is LIVE!");
@@ -737,7 +698,24 @@
     };
     socket.on('incomingLiveVoice', (d) => new Audio(d.audio).play().catch(() => {}));
 
-    // 🎆 ആകാശത്ത് വിഷ്
+    // 🎆 ആകാശത്ത് വിഷ് & പടക്കങ്ങൾ (Realistic Particle Fireworks)
+    const fireworkParticles = [];
+    function triggerRealisticFireworks(x, y, z) {
+      const pCount = 80;
+      const geo = new THREE.BufferGeometry();
+      const pos = new Float32Array(pCount * 3);
+      const vel = [];
+      for (let i = 0; i < pCount; i++) {
+        pos[i * 3] = x; pos[i * 3 + 1] = y; pos[i * 3 + 2] = z;
+        vel.push(new THREE.Vector3((Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2));
+      }
+      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      const mat = new THREE.PointsMaterial({ color: 0xff007f, size: 0.8, transparent: true });
+      const pts = new THREE.Points(geo, mat);
+      scene.add(pts);
+      fireworkParticles.push({ pts, vel, life: 100 });
+    }
+
     window.broadcastSkyWish = () => {
       const msg = document.getElementById('sky-msg-input').value.trim();
       if (!msg) return;
@@ -748,6 +726,9 @@
       const b = document.getElementById('sky-banner');
       b.innerText = `🎆 ${d.sender}: "${d.text}" 🎆`;
       b.style.display = 'block';
+      triggerRealisticFireworks(myPlayer.position.x, 60, myPlayer.position.z - 20);
+      triggerRealisticFireworks(myPlayer.position.x + 15, 70, myPlayer.position.z - 25);
+      triggerRealisticFireworks(myPlayer.position.x - 15, 65, myPlayer.position.z - 15);
       setTimeout(() => { b.style.display = 'none'; }, 10000);
     });
 
@@ -761,25 +742,6 @@
     socket.on('beastUnlocked', () => { unlockedBeast = true; alert("🦖 Full Control of Giants Unlocked!"); });
     socket.on('unlockVideoCall', () => alert("📹 Video Call Unlocked!"));
 
-    // ഗ്രൂപ്പ് ചാറ്റ്
-    function renderRooms(rooms) {
-      const c = document.getElementById('room-buttons'); c.innerHTML = '';
-      rooms.forEach(r => { c.innerHTML += `<button onclick="switchRoom('${r}')" class="btn-act">#${r}</button>`; });
-    }
-    window.switchRoom = (r) => { closeBox('room-box'); socket.emit('joinChatRoom', r); };
-    window.createRoomAction = () => {
-      const inp = document.getElementById('new-group-name');
-      if (inp.value.trim()) { socket.emit('createNewRoom', inp.value.trim()); inp.value = ''; }
-    };
-    window.sendChatMessage = () => {
-      const f = document.getElementById('chat-txt');
-      if (f.value.trim()) { socket.emit('roomChatMessage', { text: f.value.trim() }); f.value = ''; }
-    };
-    socket.on('broadcastRoomChat', (d) => {
-      const c = document.getElementById('chat-content');
-      c.innerHTML += `<div><strong>${d.sender}:</strong> ${d.text}</div>`; c.scrollTop = c.scrollHeight;
-    });
-
     // ആനിമേഷൻ ലൂപ്പ്
     let wCycle = 0, battleCycle = 0;
     function animate() {
@@ -787,26 +749,35 @@
 
       checkProximity();
 
-      // സമുദ്രത്തിലെ കിംഗ് കോങ് vs ഗോഡ്‌സില്ല ഫൈറ്റ് ആനിമേഷൻ
+      // പടക്കങ്ങളുടെ പാർട്ടിക്കിൾസ് അപ്‌ഡേറ്റ്
+      for (let i = fireworkParticles.length - 1; i >= 0; i--) {
+        const fp = fireworkParticles[i];
+        const pos = fp.pts.geometry.attributes.position.array;
+        for (let j = 0; j < fp.vel.length; j++) {
+          pos[j * 3] += fp.vel[j].x;
+          pos[j * 3 + 1] += fp.vel[j].y;
+          pos[j * 3 + 2] += fp.vel[j].z;
+        }
+        fp.pts.geometry.attributes.position.needsUpdate = true;
+        fp.life -= 1;
+        if (fp.life <= 0) {
+          scene.remove(fp.pts);
+          fireworkParticles.splice(i, 1);
+        }
+      }
+
       battleCycle += 0.05;
       seaKong.position.z = Math.sin(battleCycle) * 8;
       seaGodzilla.position.z = -Math.sin(battleCycle) * 8;
       seaKong.rotation.y = -Math.PI / 4 + Math.sin(battleCycle) * 0.3;
       seaGodzilla.rotation.y = Math.PI / 4 - Math.sin(battleCycle) * 0.3;
 
-      // ഹെലികോപ്റ്റർ റോട്ടർ കറങ്ങൽ
-      worldInteractables.forEach(i => {
-        if (i.mesh.userData?.rotor) i.mesh.userData.rotor.rotation.y += 0.3;
-      });
-
-      // സമുദ്രത്തിൽ നീന്തൽ പരിശോധന (നദിയോ കടലോ)
       const distToCenter = Math.hypot(myPlayer.position.x, myPlayer.position.z);
-      const inRiver = Math.abs(myPlayer.position.x) < 14 && Math.abs(myPlayer.position.z) > 10;
       const swimEl = document.getElementById('swim-indicator');
-      if ((distToCenter > 650 || inRiver) && activeRide === 'walk') {
+      if (distToCenter > 650 && activeRide === 'walk') {
         isSwimming = true; myPlayer.position.y = -2; swimEl.style.display = 'block';
-      } else {
-        isSwimming = false; swimEl.style.display = 'none';
+      } else if (activeRide === 'walk' && myPlayer.position.y === -2) {
+        isSwimming = false; myPlayer.position.y = 0; swimEl.style.display = 'none';
       }
 
       const spd = isSwimming ? 0.25 : (['plane'].includes(activeRide) ? 1.4 : (['heli', 'car', 'bike'].includes(activeRide) ? 0.95 : 0.45));
@@ -833,7 +804,7 @@
         socket.emit('updatePosition', { x: myPlayer.position.x, y: myPlayer.position.y, z: myPlayer.position.z });
       }
 
-      // മുകളിലേക്ക് ആകാശം വ്യക്തമായി കാണാൻ പറ്റുന്ന ക്യാമറ
+      // മുകളിലേക്ക് ആകാശം കാണാൻ കഴിയുന്ന ക്യാമറ കോൺ
       const camDist = 18;
       camera.position.x = myPlayer.position.x + Math.sin(cameraAngleX) * camDist * Math.cos(cameraAngleY);
       camera.position.y = myPlayer.position.y + 4 + Math.sin(cameraAngleY) * camDist;
