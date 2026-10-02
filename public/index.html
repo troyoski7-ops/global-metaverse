@@ -15,10 +15,8 @@
     #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 8px; }
     .top-bar, .side-dock, .chat-box, .modal-card, #joystick-base, #dismount-btn, #sky-banner { pointer-events: auto; }
 
-    /* ആകാശത്ത് തിളങ്ങുന്ന ലൈവ് വിഷ് ബാനർ */
     #sky-banner { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, #ff007f, #7928ca); color: #fff; font-weight: 900; font-size: 13px; padding: 8px 18px; border-radius: 20px; box-shadow: 0 0 20px #ff007f; display: none; text-shadow: 0 0 8px #fff; z-index: 25; text-align: center; }
 
-    /* ഹെഡർ */
     .top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .badges { display: flex; gap: 5px; align-items: center; }
     .badge { background: rgba(15, 23, 42, 0.9); color: #fff; padding: 5px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; border: 1px solid rgba(255,255,255,0.2); }
@@ -28,25 +26,20 @@
     .btn-top { background: rgba(15, 23, 42, 0.85); color: #fff; border: 1px solid rgba(255, 255, 255, 0.25); padding: 5px 8px; border-radius: 12px; font-size: 11px; backdrop-filter: blur(8px); cursor: pointer; }
     .star-btn { background: linear-gradient(45deg, #eab308, #ca8a04); color: #000; font-weight: bold; border: none; }
 
-    /* ഡിസ്മൗണ്ട് / ഇറങ്ങാനുള്ള ചുവന്ന ബട്ടൺ */
     #dismount-btn { position: absolute; top: 88px; left: 50%; transform: translateX(-50%); background: #ef4444; color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: bold; font-size: 12px; border: 2px solid #fff; box-shadow: 0 0 15px rgba(239, 68, 68, 0.9); display: none; cursor: pointer; z-index: 20; }
 
-    /* സൈഡ് പാനൽ */
     .side-dock { position: absolute; right: 8px; top: 48px; display: flex; flex-direction: column; gap: 5px; }
     .dock-btn { background: rgba(15, 23, 42, 0.85); color: #fff; border: 1px solid rgba(255, 255, 255, 0.2); padding: 7px 10px; border-radius: 12px; font-size: 10px; backdrop-filter: blur(8px); text-align: left; cursor: pointer; }
 
-    /* 🕹️ 360° അനലോഗ് ജോയ്സ്റ്റിക്ക് */
     #joystick-base { position: absolute; left: 16px; bottom: 20px; width: 110px; height: 110px; background: rgba(0, 0, 0, 0.35); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.4); touch-action: none; }
     #joystick-stick { position: absolute; left: 35px; top: 35px; width: 40px; height: 40px; background: #38bdf8; border-radius: 50%; box-shadow: 0 0 10px rgba(56, 189, 248, 0.8); pointer-events: none; }
 
-    /* ഗ്രൂപ്പ് ചാറ്റ് */
     .chat-box { position: absolute; right: 8px; bottom: 12px; width: 210px; background: rgba(15, 23, 42, 0.9); border-radius: 12px; padding: 6px; border: 1px solid rgba(255, 255, 255, 0.2); }
     #chat-content { height: 45px; overflow-y: auto; font-size: 10px; color: #fff; margin-bottom: 4px; }
     .chat-controls { display: flex; gap: 3px; }
     .chat-controls input { flex: 1; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; padding: 4px 6px; border-radius: 6px; font-size: 10px; }
     .chat-controls button { background: #0284c7; color: #fff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; }
 
-    /* മോഡലുകൾ */
     .modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(4px); }
     .modal-card { background: #1e293b; color: #fff; padding: 14px; border-radius: 16px; width: 85%; max-width: 310px; display: flex; flex-direction: column; gap: 8px; text-align: center; max-height: 85vh; overflow-y: auto; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin: 4px 0; }
@@ -59,7 +52,6 @@
   <div id="canvas-container"></div>
   <div id="sky-banner"></div>
 
-  <!-- ഇറങ്ങാനുള്ള ബട്ടൺ -->
   <button id="dismount-btn" onclick="dismountVehicle()">🚪 Dismount / Walk Normal</button>
 
   <div id="ui-layer">
@@ -76,6 +68,7 @@
     </div>
 
     <div class="side-dock">
+      <button class="dock-btn" onclick="openBox('games-hub-box')">🎮 Mini Games Hub</button>
       <button class="dock-btn" onclick="openBox('rides-box')">🚀 Realistic Vehicles</button>
       <button class="dock-btn" onclick="openBox('stage-box')">🎤 Concert Stage & Mic</button>
       <button class="dock-btn" onclick="openBox('sky-wish-box')">🎆 Sky Wish (Stars)</button>
@@ -99,7 +92,22 @@
     </div>
   </div>
 
-  <!-- 1. രാജ്യങ്ങൾ (Servers) -->
+  <!-- 1. ഗെയിംസ് ഹബ്ബ് മോഡൽ -->
+  <div id="games-hub-box" class="modal hidden">
+    <div class="modal-card">
+      <h3>🎮 Metaverse Mini Games</h3>
+      <p style="font-size:11px; color:#cbd5e1;">കളിച്ച് കൂടുതൽ പോയിന്റുകൾ നേടുക:</p>
+      <div class="grid-2">
+        <button onclick="playMiniGame('football')" class="btn-act">⚽ Football Penalty</button>
+        <button onclick="playMiniGame('parkour')" class="btn-act" style="background:#ea580c;">🌋 Lava Parkour</button>
+        <button onclick="playMiniGame('race')" class="btn-act" style="background:#dc2626;">🏎️ Speed Racing</button>
+        <button onclick="playMiniGame('dice')" class="btn-act" style="background:#8b5cf6;">🎲 Lucky Dice (+30)</button>
+      </div>
+      <button onclick="closeBox('games-hub-box')" class="btn-close">Close</button>
+    </div>
+  </div>
+
+  <!-- 2. സർവർ മോഡൽ -->
   <div id="country-box" class="modal hidden">
     <div class="modal-card">
       <h3>🌍 Select Telegram Active Server</h3>
@@ -115,7 +123,7 @@
     </div>
   </div>
 
-  <!-- 2. ക്യാരക്ടർ ബിൽഡർ (Boy / Girl) -->
+  <!-- 3. ക്യാരക്ടർ ബിൽഡർ (Boy / Girl) -->
   <div id="avatar-box" class="modal hidden">
     <div class="modal-card">
       <h3>🧑 Select Character Model</h3>
@@ -134,7 +142,7 @@
     </div>
   </div>
 
-  <!-- 3. ഒറിജിനൽ വാഹനങ്ങൾ & ജീവികൾ -->
+  <!-- 4. റൈഡുകൾ & ജയന്റ്സ് -->
   <div id="rides-box" class="modal hidden">
     <div class="modal-card">
       <h3>🚀 Realistic Rides & Giants</h3>
@@ -151,7 +159,7 @@
     </div>
   </div>
 
-  <!-- 4. കോൺസേർട്ട് സ്റ്റേജ് & മൈക്ക് -->
+  <!-- 5. കോൺസേർട്ട് സ്റ്റേജ് -->
   <div id="stage-box" class="modal hidden">
     <div class="modal-card">
       <h3>🎤 Concert Arena</h3>
@@ -161,7 +169,7 @@
     </div>
   </div>
 
-  <!-- 5. ആകാശത്ത് വിഷ് എഴുതാൻ (Sky Wish via Stars) -->
+  <!-- 6. ആകാശത്ത് വിഷ് എഴുതാൻ -->
   <div id="sky-wish-box" class="modal hidden">
     <div class="modal-card">
       <h3>🎆 Broadcast Wish in Sky</h3>
@@ -172,7 +180,7 @@
     </div>
   </div>
 
-  <!-- 6. ഗ്രൂപ്പ് റൂമുകൾ -->
+  <!-- 7. ഗ്രൂപ്പ് റൂമുകൾ -->
   <div id="room-box" class="modal hidden">
     <div class="modal-card">
       <h3>💬 Custom Group Lounges</h3>
@@ -186,7 +194,7 @@
     </div>
   </div>
 
-  <!-- 7. Telegram Stars ഔദ്യോഗിക ഷോപ്പ് (Monetization) -->
+  <!-- 8. Telegram Stars ഔദ്യോഗിക ഷോപ്പ് -->
   <div id="stars-box" class="modal hidden">
     <div class="modal-card">
       <h3>⭐ Telegram Stars Official Store</h3>
@@ -209,7 +217,7 @@
     let activeMode = 'walk';
     let userPts = 100;
 
-    // --- Three.js 3D Engine Setup ---
+    // --- Three.js 3D Scene ---
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
     scene.fog = new THREE.FogExp2(0x87ceeb, 0.003);
@@ -250,7 +258,24 @@
     volcano.position.set(70, 0, -60);
     scene.add(volcano);
 
-    // 🎤 കോൺസേർട്ട് സ്റ്റേജും കസേരകളും (Audience Chairs)
+    // ⚽ 1. Real 3D Football & Goal Post
+    const football = new THREE.Mesh(new THREE.SphereGeometry(0.7, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }));
+    football.position.set(0, 0.7, 25);
+    scene.add(football);
+
+    const goalPost = new THREE.Mesh(new THREE.BoxGeometry(10, 5, 0.5), new THREE.MeshStandardMaterial({ color: 0xffffff, wireframe: true }));
+    goalPost.position.set(0, 2.5, 45);
+    scene.add(goalPost);
+    let ballSpeedZ = 0;
+
+    // 🌋 2. Lava Parkour Floating Platforms
+    for (let i = 0; i < 6; i++) {
+      const plat = new THREE.Mesh(new THREE.CylinderGeometry(2, 2.2, 0.6, 16), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xe11d48, emissiveIntensity: 0.4 }));
+      plat.position.set(40 + (i * 5), 1.5 + (i * 2), -40 - (i * 4));
+      scene.add(plat);
+    }
+
+    // 🎤 കോൺസേർട്ട് സ്റ്റേജും കസേരകളും
     const stage = new THREE.Group();
     const sBase = new THREE.Mesh(new THREE.BoxGeometry(18, 1.5, 12), new THREE.MeshStandardMaterial({ color: 0x111827 }));
     sBase.position.y = 0.75; stage.add(sBase);
@@ -267,16 +292,13 @@
       }
     }
 
-    // ----------------------------------------------------
-    // 🏎️ ഒറിജിനൽ സ്പോർട്സ് കാർ (Chassis, Cabin, 4 Wheels, Lights)
-    // ----------------------------------------------------
+    // 🏎️ ഒറിജിനൽ സ്പോർട്സ് കാർ
     const car = new THREE.Group();
     const carBody = new THREE.Mesh(new THREE.BoxGeometry(3.2, 1, 5.5), new THREE.MeshStandardMaterial({ color: 0xdc2626, metalness: 0.6, roughness: 0.2 }));
     carBody.position.y = 0.8; car.add(carBody);
     const carCabin = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.9, 2.8), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
     carCabin.position.set(0, 1.6, -0.2); car.add(carCabin);
 
-    // 4 റിയൽ വീലുകൾ
     const wheelGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.4, 16);
     const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111827 });
     const carWheels = [];
@@ -288,59 +310,42 @@
       car.add(w);
       carWheels.push(w);
     });
-    // ഹെഡ്‌ലൈറ്റുകൾ
-    const lightGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.1, 12);
-    const lightMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff });
-    const l1 = new THREE.Mesh(lightGeo, lightMat); l1.position.set(-1, 0.8, 2.75); l1.rotation.x = Math.PI / 2; car.add(l1);
-    const l2 = l1.clone(); l2.position.set(1, 0.8, 2.75); car.add(l2);
     car.position.set(-20, 0, -15);
     scene.add(car);
 
-    // ----------------------------------------------------
-    // 🏍️ ഒറിജിനൽ സൂപ്പർ ബൈക്ക് (Bike Wheels, Frame, Handlebar)
-    // ----------------------------------------------------
+    // 🏍️ ഒറിജിനൽ ബൈക്ക്
     const bike = new THREE.Group();
     const bikeFrame = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.8, 2.2), new THREE.MeshStandardMaterial({ color: 0xf59e0b }));
     bikeFrame.position.y = 0.9; bike.add(bikeFrame);
     const bSeat = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 0.8), new THREE.MeshStandardMaterial({ color: 0x111827 }));
     bSeat.position.set(0, 1.2, -0.2); bike.add(bSeat);
-
     const bWheelF = new THREE.Mesh(wheelGeo, wheelMat); bWheelF.rotation.z = Math.PI / 2; bWheelF.position.set(0, 0.5, 1.3); bike.add(bWheelF);
     const bWheelB = new THREE.Mesh(wheelGeo, wheelMat); bWheelB.rotation.z = Math.PI / 2; bWheelB.position.set(0, 0.5, -1.3); bike.add(bWheelB);
-    const bHandle = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.2), new THREE.MeshStandardMaterial({ color: 0x334155 }));
-    bHandle.rotation.z = Math.PI / 2; bHandle.position.set(0, 1.4, 0.8); bike.add(bHandle);
     bike.position.set(20, 0, -15);
     scene.add(bike);
 
-    // ----------------------------------------------------
-    // 🚲 ഒറിജിനൽ സൈക്കിൾ (Bicycle Frame & Thin Wheels)
-    // ----------------------------------------------------
+    // 🚲 ഒറിജിനൽ സൈക്കിൾ
     const cycle = new THREE.Group();
     const thinWheelGeo = new THREE.CylinderGeometry(0.45, 0.45, 0.1, 16);
     const cWheelF = new THREE.Mesh(thinWheelGeo, wheelMat); cWheelF.rotation.z = Math.PI / 2; cWheelF.position.set(0, 0.45, 1); cycle.add(cWheelF);
     const cWheelB = new THREE.Mesh(thinWheelGeo, wheelMat); cWheelB.rotation.z = Math.PI / 2; cWheelB.position.set(0, 0.45, -1); cycle.add(cWheelB);
     const cFrame = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.8), new THREE.MeshStandardMaterial({ color: 0x10b981 }));
     cFrame.rotation.x = Math.PI / 4; cFrame.position.set(0, 0.9, 0); cycle.add(cFrame);
-    const cBar = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.9), new THREE.MeshStandardMaterial({ color: 0x111827 }));
-    cBar.rotation.z = Math.PI / 2; cBar.position.set(0, 1.3, 0.8); cycle.add(cBar);
     cycle.position.set(10, 0, -15);
     scene.add(cycle);
 
-    // ----------------------------------------------------
-    // 🚁 ഒറിജിനൽ ഹെലികോപ്റ്റർ (Cockpit, Tail & Spinning Rotor)
-    // ----------------------------------------------------
+    // 🚁 ഒറിജിനൽ ഹെലികോപ്റ്റർ
     const heli = new THREE.Group();
     const hBody = new THREE.Mesh(new THREE.SphereGeometry(1.5, 16, 16), new THREE.MeshStandardMaterial({ color: 0x3b82f6 }));
     hBody.position.y = 1.6; heli.add(hBody);
     const hTail = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.3, 3), new THREE.MeshStandardMaterial({ color: 0x1e40af }));
     hTail.rotation.x = Math.PI / 2; hTail.position.set(0, 1.6, -2.5); heli.add(hTail);
-
     const rotor = new THREE.Mesh(new THREE.BoxGeometry(6, 0.05, 0.4), new THREE.MeshStandardMaterial({ color: 0x111827 }));
     rotor.position.set(0, 3.2, 0); heli.add(rotor);
     heli.position.set(-10, 0, -25);
     scene.add(heli);
 
-    // 🚢 കടലിലെ കപ്പൽ (Ship)
+    // 🚢 കപ്പൽ
     const ship = new THREE.Group();
     const sHull = new THREE.Mesh(new THREE.BoxGeometry(7, 3.5, 18), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
     sHull.position.y = 1.2; ship.add(sHull);
@@ -362,24 +367,19 @@
     kong.position.set(45, 0, 20);
     scene.add(kong);
 
-    // ----------------------------------------------------
-    // 🧑‍🤝‍🧑 ഒറിജിനൽ ഹ്യൂമനോയിഡ് അവതാർ (Realistic Limbs & Body)
-    // ----------------------------------------------------
+    // 🧑‍🤝‍🧑 ഒറിജിനൽ ഹ്യൂമനോയിഡ് അവതാർ
     let myPlayer = new THREE.Group();
     scene.add(myPlayer);
 
     function buildHumanoidModel() {
       while(myPlayer.children.length > 0) myPlayer.remove(myPlayer.children[0]);
 
-      // ഉടൽ
       const body = new THREE.Mesh(new THREE.BoxGeometry(1, 1.3, 0.6), new THREE.MeshStandardMaterial({ color: userColor }));
       body.position.y = 1.3; myPlayer.add(body);
 
-      // തല & കഴുത്ത്
       const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 16, 16), new THREE.MeshStandardMaterial({ color: '#ffd166' }));
       head.position.y = 2.3; myPlayer.add(head);
 
-      // കണ്ണുകൾ
       const eyeGeo = new THREE.SphereGeometry(0.06, 8, 8);
       const eyeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
       const eyeL = new THREE.Mesh(eyeGeo, eyeMat); eyeL.position.set(-0.14, 2.35, 0.38); myPlayer.add(eyeL);
@@ -393,12 +393,10 @@
         cap.position.y = 2.75; myPlayer.add(cap);
       }
 
-      // കൈകൾ
       const armMat = new THREE.MeshStandardMaterial({ color: userColor });
       const armL = new THREE.Mesh(new THREE.BoxGeometry(0.28, 1, 0.3), armMat); armL.position.set(-0.7, 1.3, 0); myPlayer.add(armL);
       const armR = new THREE.Mesh(new THREE.BoxGeometry(0.28, 1, 0.3), armMat); armR.position.set(0.7, 1.3, 0); myPlayer.add(armR);
 
-      // കാലുകൾ
       const legMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
       const legL = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.8, 0.4), legMat); legL.position.set(-0.25, 0.4, 0); myPlayer.add(legL);
       const legR = legL.clone(); legR.position.set(0.25, 0.4, 0); myPlayer.add(legR);
@@ -436,7 +434,7 @@
     });
     window.addEventListener('touchend', () => { isDragging = false; });
 
-    // 🕹️ ജോയ്സ്റ്റിക്ക് കൺട്രോൾ
+    // 🕹️ ജോയ്സ്റ്റിക്ക്
     let moveX = 0, moveZ = 0;
     const jBase = document.getElementById('joystick-base');
     const jStick = document.getElementById('joystick-stick');
@@ -461,19 +459,35 @@
     jBase.addEventListener('touchend', clearTouch);
     jBase.addEventListener('touchcancel', clearTouch);
 
-    // മോഡലുകൾ
+    // മോഡൽ ഫംഗ്ഷനുകൾ
     window.openBox = (id) => document.getElementById(id).classList.remove('hidden');
     window.closeBox = (id) => document.getElementById(id).classList.add('hidden');
 
     window.setCharGender = (g) => { userGender = g; buildHumanoidModel(); };
     window.setCharColor = (c) => { userColor = c; buildHumanoidModel(); };
+    window.setWorldServer = (k, name) => { closeBox('country-box'); alert(`🌍 Connected to ${name} server!`); };
 
-    window.setWorldServer = (k, name) => {
-      closeBox('country-box');
-      alert(`🌍 Connected to ${name} server!`);
+    // 🎮 ഗെയിംസ് ഹാൻഡ്‌ലർ
+    window.playMiniGame = function(gameType) {
+      closeBox('games-hub-box');
+      if (gameType === 'football') {
+        myPlayer.position.set(0, 0, 20);
+        alert("⚽ ഫുട്ബോൾ ഗ്രൗണ്ടിലേക്ക് എത്തി! പന്ത് ഗോൾപോസ്റ്റിലേക്ക് തട്ടി ഗോളടിക്കുക!");
+      } else if (gameType === 'parkour') {
+        myPlayer.position.set(40, 3, -40);
+        alert("🌋 ലാവ പാർക്കൂർ ആരംഭിച്ചു! ഫ്ലോട്ടിംഗ് സ്റ്റെപ്പുകളിലൂടെ ചാടി മുന്നേറുക!");
+      } else if (gameType === 'race') {
+        mountVehicle('car');
+        alert("🏎️ കാർ റെഡിയായി! ട്രാക്കിലൂടെ വേഗത്തിൽ ഓടി ഫിനിഷ് ചെയ്യുക!");
+      } else if (gameType === 'dice') {
+        const rolled = Math.floor(Math.random() * 6) + 1;
+        userPts += rolled * 10;
+        document.getElementById('pts').innerText = userPts;
+        alert(`🎲 നിങ്ങൾ എറിഞ്ഞ നമ്പർ: ${rolled}! +${rolled * 10} പോയിന്റുകൾ ലഭിച്ചു! 🎉`);
+      }
     };
 
-    // വാഹനം കയറൽ
+    // വാഹനം കയറൽ & ഇറങ്ങൽ
     window.mountVehicle = (t) => {
       activeMode = t;
       closeBox('rides-box');
@@ -488,7 +502,6 @@
       else if (t === 'kong') myPlayer.position.set(kong.position.x, 10, kong.position.z);
     };
 
-    // 🚪 വാഹനം വിട്ട് നടക്കാൻ ഇറങ്ങൽ (Dismount)
     window.dismountVehicle = () => {
       activeMode = 'walk';
       myPlayer.position.y = 0;
@@ -496,7 +509,6 @@
       alert("🚶 Dismounted to normal walk!");
     };
 
-    // 🏔️ മലകയറ്റവും അഗ്നിപർവ്വതവും
     window.teleportToMountain = () => {
       activeMode = 'mountain';
       myPlayer.position.set(mountain.position.x, 38, mountain.position.z);
@@ -517,7 +529,7 @@
       alert("🪑 Seated in audience chair watching concert!");
     };
 
-    // 🎆 ആകാശത്ത് വിഷ് തെളിയിക്കൽ (Sky Wish via Stars)
+    // 🎆 ആകാശത്ത് വിഷ്
     window.submitSkyWish = () => {
       const msg = document.getElementById('sky-txt-input').value.trim();
       if (!msg) return;
@@ -538,7 +550,7 @@
       setTimeout(() => { b.style.display = 'none'; }, 9000);
     });
 
-    // ⭐ Telegram Stars പേയ്‌മെന്റ് സിസ്റ്റം (നിങ്ങൾക്ക് പണം ലഭിക്കാൻ)
+    // ⭐ Telegram Stars
     window.purchaseStarsPerk = (title, type, stars) => {
       closeBox('stars-box');
       socket.emit('requestStarsAction', { title, desc: title, type, stars });
@@ -552,7 +564,7 @@
     socket.on('beastUnlocked', () => { unlockedBeast = true; alert("🦖 Giants Unlocked!"); });
     socket.on('unlockVideoCall', () => alert("📹 Video Call Room Active!"));
 
-    // 🎙️ ലൈവ് വോയ്‌സ് മൈക്ക് (WebRTC Voice Talk)
+    // 🎙️ ലൈവ് വോയ്‌‌സ് മൈക്ക്
     let micLive = false, mediaRec = null, streamObj = null;
     window.toggleVoiceMic = async () => {
       const btn = document.getElementById('mic-btn');
@@ -570,7 +582,7 @@
           mediaRec.start(250);
           micLive = true;
           btn.innerText = "🛑 Stop Singing";
-          alert("🎙️ മൈക്ക് ഓൺ ആയി! നിങ്ങൾ സംസാരിക്കുന്നതും പാടുന്നതും എല്ലാവരും ലൈവായി കേൾക്കും.");
+          alert("🎙️ മൈക്ക് ഓൺ ആയി! നിങ്ങൾ സംസാരിക്കുന്നതും പാടുന്നതും എല്ലാവരും കേൾക്കും.");
         } catch (e) { alert("Mic Permission Denied: " + e.message); }
       } else {
         micLive = false;
@@ -601,7 +613,6 @@
       alert(`💬 Switched to #${r} Lounge!`);
     };
 
-    // ചാറ്റ് അയക്കൽ
     window.sendChatMessage = () => {
       const f = document.getElementById('chat-txt');
       if (f.value.trim()) { socket.emit('roomChatMessage', { text: f.value.trim() }); f.value = ''; }
@@ -622,7 +633,6 @@
     function animate() {
       requestAnimationFrame(animate);
 
-      // ഹെലികോപ്റ്റർ റോട്ടർ കറങ്ങൽ
       rotor.rotation.y += 0.25;
 
       const spd = ['kong', 'godzilla'].includes(activeMode) ? 0.65 : (['car', 'bike', 'heli'].includes(activeMode) ? 0.85 : 0.4);
@@ -643,7 +653,6 @@
           myPlayer.userData.armR.rotation.x = Math.sin(wCycle) * 0.6;
         }
 
-        // വീലുകൾ കറങ്ങുന്നു
         carWheels.forEach(w => w.rotation.x += 0.2);
 
         if (activeMode === 'car') car.position.set(myPlayer.position.x, 0, myPlayer.position.z);
@@ -657,7 +666,24 @@
         socket.emit('updatePosition', { x: myPlayer.position.x, y: myPlayer.position.y, z: myPlayer.position.z });
       }
 
-      // ടച്ച് ഡ്രാഗ് അനുസരിച്ചുള്ള 360° ക്യാമറ ആംഗിൾ
+      // ഫുട്ബോൾ കിക്ക് ഫിസിക്സ്
+      const distToBall = myPlayer.position.distanceTo(football.position);
+      if (distToBall < 1.8) {
+        ballSpeedZ = 0.8;
+      }
+      if (ballSpeedZ > 0) {
+        football.position.z += ballSpeedZ;
+        football.rotation.x += 0.1;
+        ballSpeedZ *= 0.96;
+        if (football.position.z >= 44 && Math.abs(football.position.x) < 5) {
+          ballSpeedZ = 0;
+          football.position.set(0, 0.7, 25);
+          userPts += 50;
+          document.getElementById('pts').innerText = userPts;
+          alert("⚽ GOAAAAL! +50 Points Added! 🎉");
+        }
+      }
+
       const camDist = 12;
       camera.position.x = myPlayer.position.x + Math.sin(cameraAngle) * camDist;
       camera.position.y = myPlayer.position.y + 7;
