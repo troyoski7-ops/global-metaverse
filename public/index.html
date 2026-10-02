@@ -6,6 +6,7 @@
   <title>GlobeVibe 3D Metaverse</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
@@ -13,11 +14,14 @@
     #canvas-container { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
     #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 8px; }
-    .top-bar, .side-dock, .chat-box, .modal-card, #joystick-base, #proximity-prompt, #player-interact-prompt, #jump-btn, #kick-ball-btn, #dismount-btn, #mic-float-btn, #share-float-btn, #swim-indicator, #sky-banner, #gift-broadcast { pointer-events: auto; }
+    .top-bar, .side-dock, .chat-box, .modal-card, #joystick-base, #proximity-prompt, #player-interact-prompt, #jump-btn, #kick-ball-btn, #dismount-btn, #mic-float-btn, #share-float-btn, #swim-indicator, #sky-banner, #gift-broadcast, #pts-popup { pointer-events: auto; }
 
     #sky-banner { position: absolute; top: 60px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, #ff007f, #7928ca); color: #fff; font-weight: 900; font-size: 16px; padding: 12px 30px; border-radius: 35px; box-shadow: 0 0 35px #ff007f; display: none; text-shadow: 0 0 12px #fff; z-index: 35; text-align: center; }
-
     #gift-broadcast { position: absolute; top: 110px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #eab308, #ca8a04); color: #000; font-weight: 900; font-size: 14px; padding: 10px 24px; border-radius: 25px; box-shadow: 0 0 25px #eab308; display: none; z-index: 35; text-align: center; border: 2px solid #fff; }
+
+    /* പൂക്കൾ പറിക്കുമ്പോൾ വരുന്ന ഫ്ലോട്ടിംഗ് പോയിന്റ് ആനിമേഷൻ */
+    #pts-popup { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; font-weight: 900; color: #facc15; text-shadow: 0 0 12px #ca8a04; display: none; pointer-events: none; z-index: 50; animation: popUp 0.8s ease-out forwards; }
+    @keyframes popUp { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -120px) scale(1.4); } }
 
     .top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .badges { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
@@ -69,6 +73,7 @@
   <div id="canvas-container"></div>
   <div id="sky-banner"></div>
   <div id="gift-broadcast"></div>
+  <div id="pts-popup">+10 🌸</div>
 
   <button id="mic-float-btn" onclick="toggleAlwaysVoiceMic()" title="Voice Mic">🎙️</button>
   <button id="share-float-btn" onclick="openBox('share-box')" title="Share Bot">📤</button>
@@ -86,26 +91,26 @@
         <div id="owner-tag" class="badge owner-tag hidden">👑 OWNER</div>
         <div class="badge online-badge">🟢 Online: <span id="online-users-count">1</span></div>
         <div id="owner-total-users" class="badge owner-stat-badge">👑 Total Users: <span id="total-users-count">1</span></div>
-        <div class="badge">🪙 <span id="pts">100</span></div>
+        <div class="badge">🌸 Flowers: <span id="pts">100</span></div>
       </div>
       <div class="top-btns">
         <button class="btn-top" onclick="openBox('country-box')" id="ui-server-btn">🌍 Server</button>
-        <button class="btn-top" onclick="openBox('lang-box')" id="ui-lang-btn">⚙️ Lang</button>
+        <button class="btn-top" onclick="openBox('climate-box')">⛅ Weather</button>
         <button class="btn-top" onclick="openBox('profile-box')" id="ui-prof-btn">👤 Profile</button>
         <button class="btn-top star-btn" onclick="openBox('stars-box')">⭐ Stars</button>
       </div>
     </div>
 
     <div class="side-dock">
-      <button class="dock-btn" onclick="openBox('games-hub-box')" id="ui-dock-games">🎮 Mini Games Hub</button>
-      <button class="dock-btn" onclick="teleportConcert()" id="ui-dock-concert">🎤 Concert & Seats</button>
-      <button class="dock-btn" onclick="teleportCelebZone()" id="ui-dock-celeb">📸 Stars Photo VIP</button>
-      <button class="dock-btn" onclick="teleportSeaBattle()" id="ui-dock-battle">🌊 Sea: Kong vs Godzilla</button>
-      <button class="dock-btn" onclick="teleportMountainPeak()" id="ui-dock-mountain">🏔️ Mountain Climb & Flag</button>
-      <button class="dock-btn" onclick="teleportVolcano()" id="ui-dock-volcano">🌋 Lava Volcano Crater</button>
-      <button class="dock-btn" onclick="openBox('friends-box')" id="ui-dock-friends">🤝 Friends & Requests</button>
+      <button class="dock-btn" onclick="teleportParkourZone()">🌋 Volcano Parkour</button>
+      <button class="dock-btn" onclick="teleportConcert()">🎤 Concert & Seats</button>
+      <button class="dock-btn" onclick="teleportCelebZone()">📸 Stars Photo VIP</button>
+      <button class="dock-btn" onclick="teleportDragonArea()">🐉 Mount Flying Dragon</button>
+      <button class="dock-btn" onclick="teleportMechArea()">🤖 Mount Giant Mech</button>
+      <button class="dock-btn" onclick="teleportSeaBattle()">🌊 Shark & Sea Arena</button>
+      <button class="dock-btn" onclick="openBox('friends-box')">🤝 Friends & Requests</button>
       <button class="dock-btn" onclick="openBox('stage-gift-box')">🎁 Concert Gift (Stars)</button>
-      <button class="dock-btn" onclick="openBox('room-box')" id="ui-dock-group">💬 Group Lounges</button>
+      <button class="dock-btn" onclick="openBox('room-box')">💬 Group Lounges</button>
     </div>
 
     <div id="joystick-base">
@@ -121,28 +126,26 @@
     </div>
   </div>
 
-  <!-- 1. ഗെയിംസ് ഹബ്ബ് -->
-  <div id="games-hub-box" class="modal hidden">
+  <div id="climate-box" class="modal hidden">
     <div class="modal-card">
-      <h3>🎮 Metaverse Mini Games</h3>
+      <h3>⛅ Climate & Sky System</h3>
       <div class="grid-2">
-        <button onclick="teleportFootballZone()" class="btn-act">⚽ Football Penalty</button>
-        <button onclick="teleportParkourZone()" class="btn-act" style="background:#ea580c;">🌋 Volcano Parkour</button>
-        <button onclick="playDiceGame()" class="btn-act" style="background:#8b5cf6;">🎲 Lucky Dice (+30)</button>
-        <button onclick="mountCarRacing()" class="btn-act" style="background:#dc2626;">🏎️ Speed Racing</button>
+        <button onclick="changeWeatherMode('day')" class="btn-act" style="background:#0284c7;">☀️️ Bright Day</button>
+        <button onclick="changeWeatherMode('night')" class="btn-act" style="background:#0f172a;">🌙 Night Stars</button>
+        <button onclick="changeWeatherMode('rain')" class="btn-act" style="background:#0369a1;">🌧️ Heavy Rain</button>
+        <button onclick="changeWeatherMode('snow')" class="btn-act" style="background:#38bdf8; color:#000;">❄️ Falling Snow</button>
       </div>
-      <button onclick="closeBox('games-hub-box')" class="btn-close">Close</button>
+      <button onclick="closeBox('climate-box')" class="btn-close">Close</button>
     </div>
   </div>
 
-  <!-- 2. പ്രൊഫൈൽ മോഡൽ -->
   <div id="profile-box" class="modal hidden">
     <div class="modal-card">
       <h3>👤 Profile & Social Links</h3>
       <input type="text" id="prof-name-input" placeholder="Your Name" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
       <input type="text" id="prof-bio-input" placeholder="Bio / Status" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
-      <input type="text" id="prof-ig-input" placeholder="Instagram ID (e.g. @username)" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
-      <input type="text" id="prof-tg-input" placeholder="Telegram Username (e.g. @handle)" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
+      <input type="text" id="prof-ig-input" placeholder="Instagram ID" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
+      <input type="text" id="prof-tg-input" placeholder="Telegram Username" style="padding:7px; border-radius:6px; border:1px solid #64748b; background:#0f172a; color:#fff; font-size:11px;">
       <p style="font-size:11px; margin-top:4px;">Select Avatar Model:</p>
       <div class="grid-2">
         <button onclick="setCharModel('boy')" class="btn-act">👦 Boy Avatar</button>
@@ -153,7 +156,6 @@
     </div>
   </div>
 
-  <!-- 3. ഫ്രണ്ട്സ് മോഡൽ -->
   <div id="friends-box" class="modal hidden">
     <div class="modal-card">
       <h3>🤝 Friends List (<span id="friends-count">0</span>)</h3>
@@ -164,7 +166,6 @@
     </div>
   </div>
 
-  <!-- 4. പ്ലെയർ ഇന്ററാക്ട് മോഡൽ -->
   <div id="player-modal" class="modal hidden">
     <div class="modal-card">
       <h3 id="target-player-title">Player Interaction</h3>
@@ -179,7 +180,6 @@
     </div>
   </div>
 
-  <!-- 5. കോൺസേർട്ട് സ്റ്റേജ് ഗിഫ്റ്റുകൾ -->
   <div id="stage-gift-box" class="modal hidden">
     <div class="modal-card">
       <h3>🎁 Concert Stage Gifts</h3>
@@ -191,7 +191,6 @@
     </div>
   </div>
 
-  <!-- 6. ഷെയർ മെനു -->
   <div id="share-box" class="modal hidden">
     <div class="modal-card">
       <h3>🚀 Share GlobeVibe Metaverse</h3>
@@ -205,7 +204,6 @@
     </div>
   </div>
 
-  <!-- 7. രാജ്യങ്ങൾ -->
   <div id="country-box" class="modal hidden">
     <div class="modal-card">
       <h3>🌍 Select World Server</h3>
@@ -214,40 +212,11 @@
         <button onclick="changeServer('india', '🇮🇳 India')" class="btn-act">🇮🇳 India</button>
         <button onclick="changeServer('uae', '🇦🇪 UAE/Dubai')" class="btn-act">🇦🇪 UAE</button>
         <button onclick="changeServer('iran', '🇮🇷 Iran / Persian')" class="btn-act">🇮🇷 Iran</button>
-        <button onclick="changeServer('tajikistan', '🇹🇯 Tajikistan')" class="btn-act">🇹🇯 Tajikistan</button>
-        <button onclick="changeServer('uzbekistan', '🇺🇿 Uzbekistan')" class="btn-act">🇺🇿 Uzbekistan</button>
-        <button onclick="changeServer('china', '🇨🇳 China')" class="btn-act">🇨🇳 China</button>
-        <button onclick="changeServer('myanmar', '🇲🇲 Myanmar')" class="btn-act">🇲🇲 Myanmar</button>
-        <button onclick="changeServer('italy', '🇮🇹 Italy')" class="btn-act">🇮🇹 Italy</button>
-        <button onclick="changeServer('russia', '🇷🇺 Russia')" class="btn-act">🇷🇺 Russia</button>
-        <button onclick="changeServer('usa', '🇺🇸 USA')" class="btn-act">🇺🇸 USA</button>
-        <button onclick="changeServer('germany', '🇩🇪 Germany')" class="btn-act">🇩🇪 Germany</button>
       </div>
       <button onclick="closeBox('country-box')" class="btn-close">Close</button>
     </div>
   </div>
 
-  <!-- 8. ഭാഷ മാറ്റം -->
-  <div id="lang-box" class="modal hidden">
-    <div class="modal-card">
-      <h3>⚙️ Select Language</h3>
-      <div class="grid-2">
-        <button onclick="applyLanguage('ml')" class="btn-act">മലയാളം</button>
-        <button onclick="applyLanguage('en')" class="btn-act">English</button>
-        <button onclick="applyLanguage('fa')" class="btn-act">فارسی (Persian)</button>
-        <button onclick="applyLanguage('tg')" class="btn-act">Тоҷикӣ (Tajik)</button>
-        <button onclick="applyLanguage('uz')" class="btn-act">O‘zbek (Uzbek)</button>
-        <button onclick="applyLanguage('zh')" class="btn-act">中文 (Chinese)</button>
-        <button onclick="applyLanguage('my')" class="btn-act">မြန်မာ (Burmese)</button>
-        <button onclick="applyLanguage('it')" class="btn-act">Italiano (Italian)</button>
-        <button onclick="applyLanguage('ru')" class="btn-act">Русский</button>
-        <button onclick="applyLanguage('ar')" class="btn-act">العربية</button>
-      </div>
-      <button onclick="closeBox('lang-box')" class="btn-close">Close</button>
-    </div>
-  </div>
-
-  <!-- 9. ഗ്രൂപ്പ് റൂമുകൾ -->
   <div id="room-box" class="modal hidden">
     <div class="modal-card">
       <h3>💬 Custom Group Lounges</h3>
@@ -262,18 +231,16 @@
     </div>
   </div>
 
-  <!-- 10. Telegram Stars സ്റ്റോർ -->
   <div id="stars-box" class="modal hidden">
     <div class="modal-card">
       <h3>⭐ Telegram Stars Official Store</h3>
-      <button onclick="purchaseStars('Full Control: Godzilla, Kong & Dino', 'beast_ride', 25)" class="btn-act" style="background:#15803d;">🦖 Unlock Giants (25 Stars)</button>
+      <button onclick="purchaseStars('Full Control: Dragon, Mech & Giants', 'beast_ride', 25)" class="btn-act" style="background:#15803d;">🦖 Unlock Dragon & Mech (25 Stars)</button>
       <button onclick="purchaseStars('VIP Celebrity Selfie Pass', 'celeb_selfie', 10)" class="btn-act" style="background:#ca8a04;">📸 VIP Photo Pass (10 Stars)</button>
       <button onclick="openBox('sky-wish-box'); closeBox('stars-box');" class="btn-act" style="background:#a855f7;">🎆 Sky Fireworks Wish (15 Stars)</button>
       <button onclick="closeBox('stars-box')" class="btn-close">Close</button>
     </div>
   </div>
 
-  <!-- 11. ആകാശത്ത് വിഷ് എഴുതൽ -->
   <div id="sky-wish-box" class="modal hidden">
     <div class="modal-card">
       <h3>🎆 Sky Wish Broadcast</h3>
@@ -295,17 +262,30 @@
     let nearbyTarget = null;
     let nearbyPlayerId = null;
 
-    // --- 🦘 ജമ്പ് ഫിസിക്സ് സിസ്റ്റം & എളുപ്പമുള്ള വോൾക്കാനോ സ്റ്റെപ്പുകൾ ---
+    // --- 🦘 വോൾക്കാനോ ഈസി ജമ്പ് സിസ്റ്റം ---
     let isJumping = false;
     let jumpVelocityY = 0;
     const GRAVITY = -0.016;
     let currentBaseY = 0;
+    let currentParkourIndex = -1;
     const volcanoPlatforms = [];
 
     window.triggerPlayerJump = function() {
-      if (!isJumping && activeRide === 'walk' && !isSwimming) {
-        isJumping = true;
-        jumpVelocityY = 0.44;
+      if (activeRide === 'walk' && !isSwimming) {
+        if (currentParkourIndex >= 0 && currentParkourIndex < volcanoPlatforms.length - 1) {
+          currentParkourIndex++;
+          const target = volcanoPlatforms[currentParkourIndex];
+          myPlayer.position.x = target.x;
+          myPlayer.position.z = target.z;
+          currentBaseY = target.y;
+          myPlayer.position.y = currentBaseY;
+          return;
+        }
+
+        if (!isJumping) {
+          isJumping = true;
+          jumpVelocityY = 0.44;
+        }
       }
     };
 
@@ -329,175 +309,158 @@
     const ocean = new THREE.Mesh(new THREE.PlaneGeometry(18000, 18000), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1 }));
     ocean.rotation.x = -Math.PI / 2; ocean.position.y = -3; scene.add(ocean);
 
-    // 🌊 നദിയും റോഡും
     const river = new THREE.Mesh(new THREE.PlaneGeometry(35, 900), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
     river.rotation.x = -Math.PI / 2; river.position.set(220, 0.02, 0); scene.add(river);
 
-    // നദിക്ക് മുകളിലൂടെ നടക്കാൻ സാധിക്കുന്ന സോളിഡ് പാലം (Crossable Solid Bridge)
     const bridge = new THREE.Group();
     const bridgePlank = new THREE.Mesh(new THREE.BoxGeometry(45, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0x854d0e, roughness: 0.7 }));
     bridgePlank.position.y = 1.0; bridge.add(bridgePlank);
-    const bridgeRailL = new THREE.Mesh(new THREE.BoxGeometry(45, 1.4, 0.5), new THREE.MeshStandardMaterial({ color: 0x3e2723 }));
-    bridgeRailL.position.set(0, 2.0, 7.8); bridge.add(bridgeRailL);
-    const bridgeRailR = bridgeRailL.clone(); bridgeRailR.position.set(0, 2.0, -7.8); bridge.add(bridgeRailR);
     bridge.position.set(220, 0, 0); scene.add(bridge);
 
     const road = new THREE.Mesh(new THREE.RingGeometry(240, 280, 64), new THREE.MeshStandardMaterial({ color: 0x334155 }));
     road.rotation.x = -Math.PI / 2; road.position.y = 0.05; scene.add(road);
 
     // ----------------------------------------------------
-    // 🌋 1. എളുപ്പത്തിൽ കയറാൻ കഴിയുന്ന വോൾക്കാനോ പാർക്കൂർ (Easy Step-by-Step Top Climb)
+    // 🌸 ദ്വീപിൽ എല്ലായിടത്തും തിളങ്ങുന്ന പോയിന്റ് പൂക്കൾ (Collectible Point Flowers)
     // ----------------------------------------------------
+    const collectibleFlowers = [];
+    const flowerColors = [0xff007f, 0xfacc15, 0x38bdf8, 0xa855f7, 0xef4444, 0x10b981];
+
+    function createFlowerMesh(color) {
+      const g = new THREE.Group();
+      // പൂവിന്റെ നടുവിലെ മഞ്ഞ ഭാഗം
+      const center = new THREE.Mesh(
+        new THREE.SphereGeometry(0.35, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0xffffff })
+      );
+      center.position.y = 0.5;
+      g.add(center);
+
+      // ഇതളുകൾ (Petals)
+      const petalGeo = new THREE.SphereGeometry(0.25, 8, 8);
+      const petalMat = new THREE.MeshStandardMaterial({ color: color, emissive: color, emissiveIntensity: 0.6 });
+      for (let i = 0; i < 5; i++) {
+        const petal = new THREE.Mesh(petalGeo, petalMat);
+        const ang = (i / 5) * Math.PI * 2;
+        petal.position.set(Math.cos(ang) * 0.45, 0.5, Math.sin(ang) * 0.45);
+        g.add(petal);
+      }
+      return g;
+    }
+
+    // ദ്വീപിൽ റാൻഡം ആയി 150 തിളങ്ങുന്ന പൂക്കൾ വിതറുന്നു
+    for (let i = 0; i < 150; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 30 + Math.random() * 680; // ദ്വീപിന്റെ എല്ലാ ഭാഗത്തും
+      const fx = Math.cos(angle) * radius;
+      const fz = Math.sin(angle) * radius;
+
+      // റോഡിലും നദിയിലും വരാതിരിക്കാൻ ചെറിയ ഓഫ്‌സെറ്റ്
+      if (Math.abs(fx - 220) < 25) continue;
+
+      const clr = flowerColors[Math.floor(Math.random() * flowerColors.length)];
+      const fl = createFlowerMesh(clr);
+      fl.position.set(fx, 0, fz);
+      scene.add(fl);
+
+      collectibleFlowers.push({
+        mesh: fl,
+        baseY: 0,
+        active: true,
+        respawnTimer: 0
+      });
+    }
+
+    // ശബ്ദ എഫക്റ്റ് (Audio chime for flower collect)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playChimeSound() {
+      try {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.15);
+      } catch(e) {}
+    }
+
+    function showPointPopup(val) {
+      const pop = document.getElementById('pts-popup');
+      pop.innerText = `+${val} 🌸`;
+      pop.style.display = 'block';
+      pop.style.animation = 'none';
+      pop.offsetHeight; // reflow
+      pop.style.animation = 'popUp 0.8s ease-out forwards';
+      setTimeout(() => { pop.style.display = 'none'; }, 800);
+    }
+
+    // 🌋 വോൾക്കാനോ സ്റ്റെപ്പുകൾ
     const volcano = new THREE.Group();
     const vBase = new THREE.Mesh(new THREE.ConeGeometry(95, 90, 24), new THREE.MeshStandardMaterial({ color: 0x451a03 })); vBase.position.y = 40; volcano.add(vBase);
     const vCrater = new THREE.Mesh(new THREE.CylinderGeometry(24, 28, 4, 24), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xf97316, emissiveIntensity: 1.0 })); vCrater.position.y = 86; volcano.add(vCrater);
     volcano.position.set(380, 0, -280); scene.add(volcano);
 
-    // എളുപ്പത്തിൽ ചാടാൻ പാകത്തിന് അടുത്തടുത്തുള്ള 14 വലിയ സ്റ്റെപ്പുകൾ
-    for (let i = 0; i < 14; i++) {
-      const plat = new THREE.Mesh(new THREE.CylinderGeometry(4.8, 5.2, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xe11d48, emissiveIntensity: 0.6 }));
-      const px = 150 + (i * 15);
-      const py = 2 + (i * 5.8);
-      const pz = -140 - (i * 9);
-      plat.position.set(px, py, pz);
-      scene.add(plat);
-      volcanoPlatforms.push({ x: px, y: py + 0.6, z: pz, radius: 5.4 });
+    for (let i = 0; i < 12; i++) {
+      const plat = new THREE.Mesh(new THREE.CylinderGeometry(5.2, 5.6, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xe11d48, emissiveIntensity: 0.6 }));
+      const px = 160 + (i * 14); const py = 2 + (i * 5.2); const pz = -140 - (i * 8);
+      plat.position.set(px, py, pz); scene.add(plat);
+      volcanoPlatforms.push({ x: px, y: py + 0.6, z: pz, radius: 5.6 });
     }
 
-    // ----------------------------------------------------
-    // 🌊 2. സമുദ്രത്തിലെ ലൈവ് ഫൈറ്റ്: King Kong vs Godzilla
-    // ----------------------------------------------------
-    const seaBattleGroup = new THREE.Group();
-    const seaGodzilla = new THREE.Group();
-    const gzTorso = new THREE.Mesh(new THREE.CylinderGeometry(5, 7, 18, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b })); gzTorso.position.y = 9; seaGodzilla.add(gzTorso);
-    const gzHead = new THREE.Mesh(new THREE.SphereGeometry(4, 16, 16), new THREE.MeshStandardMaterial({ color: 0x1e293b })); gzHead.position.set(0, 18, 2.5); seaGodzilla.add(gzHead);
-    const spikeGeo = new THREE.ConeGeometry(1.8, 6, 4);
-    const spikeMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 1.0 });
-    for (let i = 0; i < 7; i++) {
-      const sp = new THREE.Mesh(spikeGeo, spikeMat); sp.rotation.x = -Math.PI / 3; sp.position.set(0, 8 + (i * 2.2), -5 - (i * 2)); seaGodzilla.add(sp);
-    }
-    seaGodzilla.position.set(-35, 0, 0); seaBattleGroup.add(seaGodzilla);
+    // 📦 .GLB മോഡലുകൾ
+    const gltfLoader = new THREE.GLTFLoader();
+    const worldInteractables = [];
 
-    const seaKong = new THREE.Group();
-    const kgTorso = new THREE.Mesh(new THREE.CylinderGeometry(6, 7.5, 16, 16), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgTorso.position.y = 8.5; seaKong.add(kgTorso);
-    const kgHead = new THREE.Mesh(new THREE.SphereGeometry(4, 16, 16), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgHead.position.set(0, 17.5, 0.5); seaKong.add(kgHead);
-    const kgArmL = new THREE.Mesh(new THREE.BoxGeometry(3.6, 10, 3.6), new THREE.MeshStandardMaterial({ color: 0x18181b })); kgArmL.position.set(-8, 11, 4); kgArmL.rotation.x = 0.9; seaKong.add(kgArmL);
-    seaKong.position.set(35, 0, 0); seaBattleGroup.add(seaKong);
+    let dragonMesh = null;
+    gltfLoader.load('/dragon.glb', (gltf) => {
+      dragonMesh = gltf.scene;
+      dragonMesh.scale.set(3.5, 3.5, 3.5);
+      dragonMesh.position.set(-60, 25, 40);
+      scene.add(dragonMesh);
+      worldInteractables.push({ mesh: dragonMesh, type: 'dragon', prompt: '🐉 Ride Flying Dragon', isFlying: true, seatY: 3.5 });
+    }, undefined, (e) => console.log('Dragon load error', e));
 
-    seaBattleGroup.position.set(0, -3, 950); scene.add(seaBattleGroup);
+    let mechMesh = null;
+    gltfLoader.load('/mech.glb', (gltf) => {
+      mechMesh = gltf.scene;
+      mechMesh.scale.set(2.8, 2.8, 2.8);
+      mechMesh.position.set(70, 0, 80);
+      scene.add(mechMesh);
+      worldInteractables.push({ mesh: mechMesh, type: 'mech', prompt: '🤖 Mount Giant Mech', seatY: 4.5 });
+    }, undefined, (e) => console.log('Mech load error', e));
 
-    // ----------------------------------------------------
-    // 📸 3. പ്രീമിയം സെലിബ്രിറ്റി വിഐപി ഫോട്ടോ സോൺ (Red Carpet & Pillars)
-    // ----------------------------------------------------
-    const celebZone = new THREE.Group();
-    const carpet = new THREE.Mesh(new THREE.BoxGeometry(70, 0.4, 22), new THREE.MeshStandardMaterial({ color: 0xdc2626 }));
-    carpet.position.y = 0.2; celebZone.add(carpet);
+    let sharkMesh = null;
+    gltfLoader.load('/shark.glb', (gltf) => {
+      sharkMesh = gltf.scene;
+      sharkMesh.scale.set(3, 3, 3);
+      sharkMesh.position.set(220, -1.5, 50);
+      scene.add(sharkMesh);
+    }, undefined, (e) => console.log('Shark load error', e));
 
-    function createCelebrityFigure(name, shirtColor, hairColor, x) {
-      const g = new THREE.Group();
-      const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.6, 1.5, 12), new THREE.MeshStandardMaterial({ color: shirtColor })); torso.position.y = 1.4; g.add(torso);
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 16), new THREE.MeshStandardMaterial({ color: '#ffd166' })); head.position.y = 2.4; g.add(head);
-      const hair = new THREE.Mesh(new THREE.SphereGeometry(0.48, 16, 16), new THREE.MeshStandardMaterial({ color: hairColor })); hair.position.set(0, 2.55, -0.05); g.add(hair);
-      g.position.set(x, 0, 0); celebZone.add(g);
-      return { mesh: g, name };
-    }
-    const celebList = [
-      createCelebrityFigure("Iron Man (Avenger)", 0xdc2626, 0x7f1d1d, -22),
-      createCelebrityFigure("CR7 Ronaldo (Football Legend)", 0x2563eb, 0x111827, -8),
-      createCelebrityFigure("Messi (Football Legend)", 0x0284c7, 0x451a03, 6),
-      createCelebrityFigure("K-Pop Lisa (Blackpink)", 0xec4899, 0xb45309, 20),
-      createCelebrityFigure("BTS Member (K-Pop)", 0x8b5cf6, 0x1e1b4b, 32)
-    ];
-    celebZone.position.set(-270, 0, 130); scene.add(celebZone);
+    gltfLoader.load('/man.glb', (gltf) => {
+      const man = gltf.scene; man.scale.set(2, 2, 2); man.position.set(-270, 0, 125); scene.add(man);
+    });
+    gltfLoader.load('/suit.glb', (gltf) => {
+      const suit = gltf.scene; suit.scale.set(2, 2, 2); suit.position.set(-250, 0, 125); scene.add(suit);
+    });
 
-    // ----------------------------------------------------
-    // 🚗 4. റിയലിസ്റ്റിക് വെഹിക്കിളുകൾ & ജീവികൾ (മാപ്പിൽ എല്ലായിടത്തും)
-    // ----------------------------------------------------
-    function buildRedCar(x, z) {
-      const g = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.BoxGeometry(3.8, 1.1, 6.0), new THREE.MeshStandardMaterial({ color: 0xdc2626, metalness: 0.5, roughness: 0.2 })); body.position.y = 0.8; g.add(body);
-      const cabin = new THREE.Mesh(new THREE.SphereGeometry(1.6, 16, 16), new THREE.MeshStandardMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.8 })); cabin.scale.set(0.9, 0.7, 1.2); cabin.position.set(0, 1.6, -0.2); g.add(cabin);
-      const wGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.5, 16); const wMat = new THREE.MeshStandardMaterial({ color: 0x111827 });
-      [ [-1.9, 0.55, 1.8], [1.9, 0.55, 1.8], [-1.9, 0.55, -1.8], [1.9, 0.55, -1.8] ].forEach(p => {
-        const w = new THREE.Mesh(wGeo, wMat); w.rotation.z = Math.PI / 2; w.position.set(...p); g.add(w);
-      });
-      g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'car', prompt: '🚗 Drive Red Car', seatY: 0.6 };
-    }
+    gltfLoader.load('/plant.glb', (gltf) => {
+      for (let i = 0; i < 8; i++) {
+        const p = gltf.scene.clone();
+        p.scale.set(1.5, 1.5, 1.5);
+        p.position.set(-80 + (i * 20), 0, -50 + (Math.sin(i) * 20));
+        scene.add(p);
+      }
+    });
 
-    function buildCruiserBike(x, z) {
-      const g = new THREE.Group();
-      const tank = new THREE.Mesh(new THREE.SphereGeometry(0.65, 16, 12), new THREE.MeshStandardMaterial({ color: 0xdc2626 })); tank.scale.set(0.8, 0.7, 1.4); tank.position.set(0, 1.2, 0.2); g.add(tank);
-      const seat = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.2, 1.2), new THREE.MeshStandardMaterial({ color: 0xb45309 })); seat.position.set(0, 1.1, -0.7); g.add(seat);
-      const wGeo = new THREE.CylinderGeometry(0.6, 0.6, 0.35, 16); const wMat = new THREE.MeshStandardMaterial({ color: 0x111827 });
-      const wF = new THREE.Mesh(wGeo, wMat); wF.rotation.z = Math.PI / 2; wF.position.set(0, 0.6, 1.4); g.add(wF);
-      const wB = new THREE.Mesh(wGeo, wMat); wB.rotation.z = Math.PI / 2; wB.position.set(0, 0.6, -1.4); g.add(wB);
-      g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'bike', prompt: '🏍️ Ride Cruiser Bike', seatY: 0.8 };
-    }
-
-    function buildRedHelicopter(x, z) {
-      const g = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.SphereGeometry(2.4, 16, 16), new THREE.MeshStandardMaterial({ color: 0xdc2626 })); body.position.y = 2.4; g.add(body);
-      const tail = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.4, 5), new THREE.MeshStandardMaterial({ color: 0xffffff })); tail.rotation.x = Math.PI / 2; tail.position.set(0, 2.4, -4); g.add(tail);
-      const rotor = new THREE.Mesh(new THREE.BoxGeometry(10, 0.08, 0.8), new THREE.MeshStandardMaterial({ color: 0x111827 })); rotor.position.set(0, 4.6, 0); g.add(rotor);
-      g.userData = { rotor }; g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'heli', prompt: '🚁 Fly Helicopter', isFlying: true, seatY: 1.6 };
-    }
-
-    function buildJetPlane(x, z) {
-      const g = new THREE.Group();
-      const body = new THREE.Mesh(new THREE.CylinderGeometry(2.4, 2.4, 24, 16), new THREE.MeshStandardMaterial({ color: 0xffffff })); body.rotation.x = Math.PI / 2; body.position.y = 3; g.add(body);
-      const nose = new THREE.Mesh(new THREE.ConeGeometry(2.4, 5, 16), new THREE.MeshStandardMaterial({ color: 0x2563eb })); nose.rotation.x = -Math.PI / 2; nose.position.set(0, 3, 14.5); g.add(nose);
-      const wings = new THREE.Mesh(new THREE.BoxGeometry(26, 0.3, 5), new THREE.MeshStandardMaterial({ color: 0xffffff })); wings.position.set(0, 3, 0); g.add(wings);
-      g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type: 'plane', prompt: '✈️ Pilot Jet Plane', isFlying: true, seatY: 2.0 };
-    }
-
-    function buildBeast(type, name, color, scale, x, z) {
-      const g = new THREE.Group();
-      const torso = new THREE.Mesh(new THREE.CylinderGeometry(2.5 * scale, 3.5 * scale, 9 * scale, 16), new THREE.MeshStandardMaterial({ color }));
-      torso.position.y = 4.5 * scale; g.add(torso);
-      const head = new THREE.Mesh(new THREE.SphereGeometry(2.2 * scale, 16, 16), new THREE.MeshStandardMaterial({ color }));
-      head.position.set(0, 9 * scale, 1.2 * scale); g.add(head);
-      g.position.set(x, 0, z); scene.add(g);
-      return { mesh: g, type, prompt: `🦖 Mount ${name}`, seatY: 5 * scale };
-    }
-
-    const worldInteractables = [
-      buildRedCar(0, 260), buildRedCar(-180, 260), buildRedCar(180, 260),
-      buildCruiserBike(70, 260), buildCruiserBike(-70, 260),
-      buildRedHelicopter(-200, -200), buildJetPlane(200, -200),
-      buildBeast('dino', 'Red T-Rex', 0xc2410c, 1.2, 50, 100),
-      buildBeast('dino', 'T-Rex Beast', 0xc2410c, 1.2, -60, 110),
-      buildBeast('kong', 'King Kong', 0x18181b, 1.3, 130, 80),
-      buildBeast('godzilla', 'Godzilla', 0x1e293b, 1.4, -130, 80)
-    ];
-
-    // 🎤 കോൺസേർട്ട് സ്റ്റേജും ഇരിപ്പിടങ്ങളും
+    // 🎤 കോൺസേർട്ട് സ്റ്റേജ്
     const stageG = new THREE.Group();
     const sFloor = new THREE.Mesh(new THREE.BoxGeometry(40, 2, 22), new THREE.MeshStandardMaterial({ color: 0x78350f })); sFloor.position.y = 1; stageG.add(sFloor);
-    const sWall = new THREE.Mesh(new THREE.BoxGeometry(40, 15, 1), new THREE.MeshStandardMaterial({ color: 0x1e1b4b })); sWall.position.set(0, 8, -10.5); stageG.add(sWall);
     stageG.position.set(0, 0, -320); scene.add(stageG);
-
-    const chairsList = [];
-    for (let r = 0; r < 4; r++) {
-      for (let c = -7; c <= 7; c++) {
-        const ch = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, 1.6), new THREE.MeshStandardMaterial({ color: 0xa855f7 }));
-        ch.position.set(c * 2.8, 0.6, -280 + (r * 3.5)); scene.add(ch); chairsList.push(ch);
-      }
-    }
-
-    // ⚽ ഫുട്ബോൾ
-    const football = new THREE.Mesh(new THREE.SphereGeometry(0.7, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 }));
-    football.position.set(0, 0.7, -40); scene.add(football);
-    const goalPost = new THREE.Mesh(new THREE.BoxGeometry(12, 6, 0.5), new THREE.MeshStandardMaterial({ color: 0xffffff, wireframe: true }));
-    goalPost.position.set(0, 3, -65); scene.add(goalPost);
-
-    // 🏔️ പർവ്വതവും കൊടിയും
-    const mountain = new THREE.Mesh(new THREE.ConeGeometry(85, 110, 24), new THREE.MeshStandardMaterial({ color: 0x334155 })); mountain.position.set(-400, 50, -300); scene.add(mountain);
-    const flagPole = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 10), new THREE.MeshStandardMaterial({ color: 0xffffff })); flagPole.position.set(-400, 110, -300); scene.add(flagPole);
-    const flagMesh = new THREE.Mesh(new THREE.BoxGeometry(3.5, 2, 0.1), new THREE.MeshStandardMaterial({ color: 0xef4444 })); flagMesh.position.set(-398.2, 113, -300); scene.add(flagMesh);
 
     // 🧑‍🤝‍🧑 പ്ലെയർ അവതാർ
     let myPlayer = new THREE.Group(); scene.add(myPlayer);
@@ -505,18 +468,32 @@
       while(myPlayer.children.length > 0) myPlayer.remove(myPlayer.children[0]);
       const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 0.7), new THREE.MeshStandardMaterial({ color: userColor })); body.position.y = 1.45; myPlayer.add(body);
       const head = new THREE.Mesh(new THREE.SphereGeometry(0.46, 16, 16), new THREE.MeshStandardMaterial({ color: '#ffd166' })); head.position.y = 2.45; myPlayer.add(head);
-      
-      if (userGender === 'girl') {
-        const hair = new THREE.Mesh(new THREE.BoxGeometry(0.95, 1, 1), new THREE.MeshStandardMaterial({ color: 0x7c2d12 })); hair.position.set(0, 2.5, -0.1); myPlayer.add(hair);
-      } else {
-        const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.5, 0.22, 12), new THREE.MeshStandardMaterial({ color: 0x1e293b })); cap.position.y = 2.9; myPlayer.add(cap);
-      }
       const legMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
       const legL = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.9, 0.45), legMat); legL.position.set(-0.3, 0.45, 0); myPlayer.add(legL);
       const legR = legL.clone(); legR.position.set(0.3, 0.45, 0); myPlayer.add(legR);
       myPlayer.userData = { body, legL, legR };
     }
     buildAvatar();
+
+    // 🌧️ കാലാവസ്ഥ പാർട്ടിക്കിൾസ്
+    let weatherMode = 'day';
+    const pCount = 1200;
+    const pGeo = new THREE.BufferGeometry();
+    const pPos = new Float32Array(pCount * 3);
+    for (let i = 0; i < pCount * 3; i += 3) {
+      pPos[i] = (Math.random() - 0.5) * 600; pPos[i + 1] = Math.random() * 120; pPos[i + 2] = (Math.random() - 0.5) * 600;
+    }
+    pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    const pMat = new THREE.PointsMaterial({ color: 0x38bdf8, size: 0.4, transparent: true });
+    const weatherMesh = new THREE.Points(pGeo, pMat); weatherMesh.visible = false; scene.add(weatherMesh);
+
+    window.changeWeatherMode = function(type) {
+      weatherMode = type; closeBox('climate-box');
+      if (type === 'day') { scene.background.set(0x87ceeb); scene.fog.color.set(0x87ceeb); dirLight.intensity = 1.2; weatherMesh.visible = false; }
+      if (type === 'night') { scene.background.set(0x020617); scene.fog.color.set(0x020617); dirLight.intensity = 0.2; weatherMesh.visible = false; }
+      if (type === 'rain') { scene.background.set(0x334155); scene.fog.color.set(0x334155); pMat.color.set(0x38bdf8); weatherMesh.visible = true; }
+      if (type === 'snow') { scene.background.set(0xe2e8f0); scene.fog.color.set(0xe2e8f0); pMat.color.set(0xffffff); weatherMesh.visible = true; }
+    };
 
     socket.emit('registerUser', {
       name: tg?.initDataUnsafe?.user?.first_name || "Gokul",
@@ -528,8 +505,7 @@
       isOwner = d.isOwner; unlockedBeast = d.unlockedBeast;
       if (isOwner) {
         document.getElementById('owner-tag').classList.remove('hidden');
-        const owStat = document.getElementById('owner-total-users');
-        owStat.style.display = 'block';
+        document.getElementById('owner-total-users').style.display = 'block';
         document.getElementById('total-users-count').innerText = d.totalBotUsers || 1;
       }
       renderRooms(d.rooms);
@@ -540,32 +516,24 @@
       if (isOwner) document.getElementById('total-users-count').innerText = st.totalBotUsers;
     });
 
-    // 💬 വർക്കിംഗ് ചാറ്റ് സിസ്റ്റം (Fixed Chat)
+    // 💬 ചാറ്റ്
     window.sendChatMessage = () => {
       const input = document.getElementById('chat-txt');
       const text = input.value.trim();
-      if (text) {
-        socket.emit('roomChatMessage', { text });
-        input.value = '';
-      }
+      if (text) { socket.emit('roomChatMessage', { text }); input.value = ''; }
     };
-    document.getElementById('chat-txt').addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') sendChatMessage();
-    });
+    document.getElementById('chat-txt').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChatMessage(); });
     socket.on('broadcastRoomChat', (d) => {
       const box = document.getElementById('chat-content');
       const msgDiv = document.createElement('div');
       msgDiv.innerHTML = `<strong>${d.sender}:</strong> ${d.text}`;
-      box.appendChild(msgDiv);
-      box.scrollTop = box.scrollHeight;
+      box.appendChild(msgDiv); box.scrollTop = box.scrollHeight;
     });
     socket.on('sysRoomChat', (txt) => {
       const box = document.getElementById('chat-content');
       const msgDiv = document.createElement('div');
-      msgDiv.style.color = '#38bdf8';
-      msgDiv.innerText = txt;
-      box.appendChild(msgDiv);
-      box.scrollTop = box.scrollHeight;
+      msgDiv.style.color = '#38bdf8'; msgDiv.innerText = txt;
+      box.appendChild(msgDiv); box.scrollTop = box.scrollHeight;
     });
 
     // 👆 360° ടച്ച് ക്യാമറ
@@ -607,59 +575,19 @@
 
     window.shareToTelegram = () => window.open(`https://t.me/share/url?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent("Join me on GlobeVibe 3D Metaverse!")}`);
     window.shareToWhatsApp = () => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent("Join me on GlobeVibe 3D Metaverse: " + SHARE_URL)}`);
-    window.shareToInstagram = () => { navigator.clipboard.writeText(SHARE_URL); alert("📋 Metaverse link copied! Paste on Instagram Story or Bio."); };
-    window.copyMetaverseLink = () => { navigator.clipboard.writeText(SHARE_URL); alert("📋 Link copied to clipboard for all apps!"); };
+    window.shareToInstagram = () => { navigator.clipboard.writeText(SHARE_URL); alert("📋 Link copied for Instagram!"); };
+    window.copyMetaverseLink = () => { navigator.clipboard.writeText(SHARE_URL); alert("📋 Link copied to clipboard!"); };
 
     window.setCharModel = (g) => { userGender = g; buildAvatar(); alert(`Avatar set to ${g.toUpperCase()}!`); };
-
     window.saveUserProfile = () => {
       const name = document.getElementById('prof-name-input').value.trim();
       const bio = document.getElementById('prof-bio-input').value.trim();
       const instagram = document.getElementById('prof-ig-input').value.trim();
       const telegramUser = document.getElementById('prof-tg-input').value.trim();
       socket.emit('updateProfile', { name, bio, instagram, telegramUser, gender: userGender, shirtColor: userColor });
-      closeBox('profile-box');
-      alert("✅ Profile updated!");
+      closeBox('profile-box'); alert("✅ Profile updated!");
     };
 
-    // 🌐 ഭാഷാ മാറ്റം
-    const translations = {
-      ml: { server: "🌍 സെർവർ", lang: "⚙️ ഭാഷ", prof: "👤 പ്രൊഫൈൽ", games: "🎮 മിനി ഗെയിംസ്", concert: "🎤 കോൺസേർട്ട് & സീറ്റ്", celeb: "📸 സ്റ്റാർസ് ഫോട്ടോ വിഐപി", battle: "🌊 കോങ് vs ഗോഡ്‌സില്ല", mountain: "🏔️ പർവ്വതം & പതാക", volcano: "🌋 ലാവ അഗ്നിപർവ്വതം", friends: "🤝 സുഹൃത്തുക്കൾ", group: "💬 ഗ്രൂപ്പുകൾ" },
-      en: { server: "🌍 Server", lang: "⚙️ Lang", prof: "👤 Profile", games: "🎮 Mini Games", concert: "🎤 Concert & Seats", celeb: "📸 Stars Photo VIP", battle: "🌊 Kong vs Godzilla", mountain: "🏔️ Mountain Peak Flag", volcano: "🌋 Lava Volcano Crater", friends: "🤝 Friends & Requests", group: "💬 Group Lounges" },
-      fa: { server: "🌍 سرور", lang: "⚙️ زبان", prof: "👤 پروفایل", games: "🎮 بازی‌های کوچک", concert: "🎤 کنسرت و صندلی", celeb: "📸 عکس ستاره‌ها", battle: "🌊 نبرد کونگ و گودزیلا", mountain: "🏔️ قله کوهستان", volcano: "🌋 آتشفشان گدازه", friends: "🤝 دوستان", group: "💬 گروه‌ها" },
-      tg: { server: "🌍 Сервер", lang: "⚙️ Забон", prof: "👤 Профил", games: "🎮 Бозиҳои хурд", concert: "🎤 Консерт", celeb: "📸 Акси ситораҳо", battle: "🌊 Ҷанги дарёӣ", mountain: "🏔️ Қуллаи кӯҳ", volcano: "🌋 Вулқон", friends: "🤝 Дӯстон", group: "💬 Гурӯҳҳо" },
-      uz: { server: "🌍 Server", lang: "⚙️ Til", prof: "👤 Profil", games: "🎮 Mini o‘yinlar", concert: "🎤 Konsert", celeb: "📸 Yulduzlar fotosi", battle: "🌊 Dengiz jangi", mountain: "🏔️ Tog‘ cho‘qqisi", volcano: "🌋 Vulqon", friends: "🤝 Do‘stlar", group: "💬 Guruhlar" },
-      zh: { server: "🌍 服务器", lang: "⚙️ 语言", prof: "👤 个人资料", games: "🎮 迷你小游戏", concert: "🎤 音乐会与座位", celeb: "📸 VIP 名人合影", battle: "🌊 海上金刚对哥斯拉", mountain: "🏔️️ 山顶红旗", volcano: "🌋 熔岩火山", friends: "🤝 好友与请求", group: "💬 群聊大厅" },
-      my: { server: "🌍 ဆာဗာ", lang: "⚙️ ဘာသာစကား", prof: "👤 ပရိုဖိုင်", games: "🎮 ဂိမ်းများ", concert: "🎤 ဖျော်ဖြေပွဲ", celeb: "📸 ကြယ်ပွင့်ဓာတ်ပုံ", battle: "🌊 ပင်လယ်တိုက်ပွဲ", mountain: "🏔️ တောင်ထွတ်", volcano: "🌋 မီးတောင်", friends: "🤝 သူငယ်ချင်းများ", group: "💬 အဖွဲ့များ" },
-      it: { server: "🌍 Server", lang: "⚙️ Lingua", prof: "👤 Profilo", games: "🎮 Mini Giochi", concert: "🎤 Concerto & Posti", celeb: "📸 Foto VIP Star", battle: "🌊 Battaglia in Mare", mountain: "🏔️ Cima della Montagna", volcano: "🌋 Vulcano di Lava", friends: "🤝 Amici", group: "💬 Gruppi" },
-      ru: { server: "🌍 Сервер", lang: "⚙️ Язык", prof: "👤 Профиль", games: "🎮 Мини-игры", concert: "🎤 Концерт и Места", celeb: "📸 VIP Фото со Звездами", battle: "🌊 Битва в Море", mountain: "🏔️️ Пик Горы", volcano: "🌋 Лавовый Вулкан", friends: "🤝 Друзья", group: "💬 Группы" },
-      ar: { server: "🌍 السيرفر", lang: "⚙️️ اللغة", prof: "👤 الملف الشخصي", games: "🎮 ألعاب مصغرة", concert: "🎤 الحفل والمقاعد", celeb: "📸 صورة النجوم", battle: "🌊 معركة البحر", mountain: "🏔️ قمة الجبل", volcano: "🌋 بركان الحمم", friends: "🤝 الأصدقاء", group: "💬 المجموعات" }
-    };
-
-    window.applyLanguage = (l) => {
-      closeBox('lang-box');
-      const t = translations[l] || translations.en;
-      document.getElementById('ui-server-btn').innerText = t.server;
-      document.getElementById('ui-lang-btn').innerText = t.lang;
-      document.getElementById('ui-prof-btn').innerText = t.prof;
-      document.getElementById('ui-dock-games').innerText = t.games;
-      document.getElementById('ui-dock-concert').innerText = t.concert;
-      document.getElementById('ui-dock-celeb').innerText = t.celeb;
-      document.getElementById('ui-dock-battle').innerText = t.battle;
-      document.getElementById('ui-dock-mountain').innerText = t.mountain;
-      document.getElementById('ui-dock-volcano').innerText = t.volcano;
-      document.getElementById('ui-dock-friends').innerText = t.friends;
-      document.getElementById('ui-dock-group').innerText = t.group;
-      alert(`Language updated to ${l.toUpperCase()}!`);
-    };
-
-    window.changeServer = (k, name) => {
-      closeBox('country-box');
-      document.getElementById('ui-server-btn').innerText = `🌍 ${name}`;
-      alert(`🌍 Connected to ${name} server!`);
-    };
-
-    // ഗ്രൂപ്പ് റൂമുകൾ
     function renderRooms(rooms) {
       const c = document.getElementById('room-buttons'); c.innerHTML = '';
       rooms.forEach(r => { c.innerHTML += `<button onclick="switchRoom('${r}')" class="btn-act">#${r}</button>`; });
@@ -670,411 +598,111 @@
       const inp = document.getElementById('new-group-name');
       if (inp.value.trim()) { socket.emit('createNewRoom', inp.value.trim()); inp.value = ''; }
     };
-    window.inviteToCurrentLounge = () => {
-      navigator.clipboard.writeText(SHARE_URL);
-      alert("🔗 Metaverse Lounge link copied! Share with your friends.");
-    };
+    window.inviteToCurrentLounge = () => { navigator.clipboard.writeText(SHARE_URL); alert("🔗 Lounge Link copied!"); };
 
-    // പ്രോക്സിമിറ്റി സിസ്റ്റം
     function checkProximity() {
-      const dBall = myPlayer.position.distanceTo(football.position);
-      const kickBtn = document.getElementById('kick-ball-btn');
-      if (dBall < 4) { kickBtn.style.display = 'flex'; } else { kickBtn.style.display = 'none'; }
-
-      let nearCeleb = null;
-      for (let cl of celebList) {
-        if (myPlayer.position.distanceTo(celebZone.position.clone().add(cl.mesh.position)) < 5) {
-          nearCeleb = cl; break;
-        }
-      }
-      const pBtn = document.getElementById('proximity-prompt');
-      if (nearCeleb) {
-        nearbyTarget = { type: 'celeb_photo', name: nearCeleb.name };
-        pBtn.innerText = `⭐ VIP Selfie with ${nearCeleb.name} (10 Stars)`;
-        pBtn.style.display = 'block';
-        return;
-      }
-
-      if (myPlayer.position.distanceTo(stageG.position) < 25) {
-        nearbyTarget = { type: 'sing' }; pBtn.innerText = '🎤 Sing on Stage'; pBtn.style.display = 'block'; return;
-      }
-      for (let ch of chairsList) {
-        if (myPlayer.position.distanceTo(ch.position) < 3.2) {
-          nearbyTarget = { type: 'seat', pos: ch.position }; pBtn.innerText = '🪑 Sit in Audience Seat'; pBtn.style.display = 'block'; return;
-        }
-      }
-
       if (activeRide === 'walk') {
         let found = null;
         for (let item of worldInteractables) {
-          if (myPlayer.position.distanceTo(item.mesh.position) < 9) { found = item; break; }
+          if (item.mesh && myPlayer.position.distanceTo(item.mesh.position) < 12) { found = item; break; }
         }
+        const pBtn = document.getElementById('proximity-prompt');
         if (found) { nearbyTarget = found; pBtn.innerText = found.prompt; pBtn.style.display = 'block'; return; }
-      }
-
-      nearbyTarget = null; pBtn.style.display = 'none';
-
-      let nearP = null;
-      for (let id in otherPlayers) {
-        if (id !== socket.id) {
-          const dist = myPlayer.position.distanceTo(new THREE.Vector3(otherPlayers[id].x, otherPlayers[id].y, otherPlayers[id].z));
-          if (dist < 5) { nearP = otherPlayers[id]; break; }
-        }
-      }
-      const pPrompt = document.getElementById('player-interact-prompt');
-      if (nearP) {
-        nearbyPlayerId = nearP.id;
-        pPrompt.innerText = `👤 Interact with ${nearP.name} (Tap)`;
-        pPrompt.style.display = 'block';
-      } else {
-        nearbyPlayerId = null; pPrompt.style.display = 'none';
+        else { nearbyTarget = null; pBtn.style.display = 'none'; }
       }
     }
 
-    // 🚗 വാഹനങ്ങളിൽ അകത്തിരുന്ന് ഓടിക്കുന്ന സിസ്റ്റം (Proper In-Vehicle Driving)
     window.interactWithNearbyTarget = () => {
       if (!nearbyTarget) return;
-      if (nearbyTarget.type === 'celeb_photo') {
-        if (isOwner) {
-          takeInstantSelfie(nearbyTarget.name);
-        } else {
-          socket.emit('requestStarsAction', {
-            title: `VIP Selfie with ${nearbyTarget.name}`,
-            desc: "Download high quality celebrity selfie photo",
-            stars: 10,
-            type: 'celeb_selfie',
-            extraText: nearbyTarget.name
-          });
-        }
-        return;
-      }
-      if (nearbyTarget.type === 'sing') {
-        myPlayer.position.set(0, 2.0, -320);
-        toggleAlwaysVoiceMic();
-        document.getElementById('dismount-btn').style.display = 'block';
-        alert("🎤 Standing on Stage! Mic is LIVE!");
-        return;
-      }
-      if (nearbyTarget.type === 'seat') {
-        myPlayer.position.set(nearbyTarget.pos.x, 1, nearbyTarget.pos.z);
-        document.getElementById('dismount-btn').style.display = 'block'; return;
+      if (['dragon', 'mech'].includes(nearbyTarget.type) && !unlockedBeast && !isOwner) {
+        openBox('stars-box'); alert("⭐ Unlock Dragon & Mech using Beast Pass!"); return;
       }
 
       activeRide = nearbyTarget.type;
       document.getElementById('proximity-prompt').style.display = 'none';
       document.getElementById('dismount-btn').style.display = 'block';
 
-      // കളിക്കാരൻ വാഹനത്തിനുള്ളിൽ ഇരിക്കുന്നു
       myPlayer.position.x = nearbyTarget.mesh.position.x;
       myPlayer.position.z = nearbyTarget.mesh.position.z;
       if (nearbyTarget.isFlying) {
-        myPlayer.position.y = 35;
-        nearbyTarget.mesh.position.y = 35 - nearbyTarget.seatY;
-        alert("✈️ Flying in the sky!");
+        myPlayer.position.y = 35; nearbyTarget.mesh.position.y = 35 - nearbyTarget.seatY;
+        alert("🐉 Soaring through the sky on Flying Dragon!");
       } else {
-        myPlayer.position.y = nearbyTarget.seatY || 0.8;
+        myPlayer.position.y = nearbyTarget.seatY || 1.0;
+        alert("🤖 Piloting Giant Mech Robot!");
       }
     };
 
     window.dismountActiveRide = () => {
-      if (nearbyTarget && nearbyTarget.isFlying) {
-        nearbyTarget.mesh.position.y = 0;
-      }
-      activeRide = 'walk';
-      currentBaseY = 0;
-      myPlayer.position.y = 0;
+      if (nearbyTarget && nearbyTarget.isFlying) nearbyTarget.mesh.position.y = 15;
+      activeRide = 'walk'; currentBaseY = 0; myPlayer.position.y = 0;
       document.getElementById('dismount-btn').style.display = 'none';
-      alert("🚶 Dismounted to normal walk!");
-    };
-
-    window.openPlayerInteractModal = () => {
-      if (!nearbyPlayerId || !otherPlayers[nearbyPlayerId]) return;
-      const p = otherPlayers[nearbyPlayerId];
-      document.getElementById('target-player-title').innerText = p.name;
-      let soc = "";
-      if (p.instagram) soc += `📸 IG: ${p.instagram} `;
-      if (p.telegramUser) soc += `✈️ TG: ${p.telegramUser}`;
-      document.getElementById('target-player-social').innerText = soc || "No social links added.";
-      openBox('player-modal');
-    };
-
-    let sentReqTo = null;
-    window.sendFriendRequestToNearby = () => {
-      if (nearbyPlayerId) {
-        socket.emit('sendFriendReq', nearbyPlayerId);
-        sentReqTo = nearbyPlayerId;
-        document.getElementById('send-fr-btn').style.display = 'none';
-        document.getElementById('cancel-fr-btn').style.display = 'block';
-        alert("🤝 Friend request sent!");
-      }
-    };
-    window.cancelSentFriendReq = () => {
-      if (sentReqTo) {
-        socket.emit('cancelFriendReq', sentReqTo);
-        sentReqTo = null;
-        document.getElementById('send-fr-btn').style.display = 'block';
-        document.getElementById('cancel-fr-btn').style.display = 'none';
-        alert("❌ Friend request cancelled!");
-      }
-    };
-
-    socket.on('incomingFriendReq', (d) => {
-      const container = document.getElementById('requests-list-container');
-      container.innerHTML += `<div id="req-row-${d.fromId}" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; background:rgba(255,255,255,0.05); padding:4px 6px; border-radius:6px;">
-        <span>${d.fromName}</span>
-        <div style="display:flex; gap:4px;">
-          <button onclick="acceptReq('${d.fromId}')" class="btn-act" style="padding:3px 6px; font-size:9px; background:#22c55e;">Accept</button>
-          <button onclick="rejectReq('${d.fromId}')" class="btn-act" style="padding:3px 6px; font-size:9px; background:#ef4444;">Reject</button>
-        </div>
-      </div>`;
-      alert(`🔔 New friend request from ${d.fromName}!`);
-    });
-
-    window.acceptReq = (id) => {
-      socket.emit('acceptFriendReq', id);
-      document.getElementById(`req-row-${id}`)?.remove();
-    };
-    window.rejectReq = (id) => {
-      socket.emit('rejectFriendReq', id);
-      document.getElementById(`req-row-${id}`)?.remove();
-    };
-
-    socket.on('friendListUpdated', (list) => {
-      document.getElementById('friends-count').innerText = list.length;
-      document.getElementById('friends-list-container').innerHTML = list.map(f => `
-        <div style="margin-bottom:4px; padding:4px; background:rgba(255,255,255,0.05); border-radius:6px;">
-          <strong>• ${f.name}</strong> ${f.ig ? `<span style="color:#ec4899; font-size:10px;">(IG: ${f.ig})</span>` : ''} ${f.tg ? `<span style="color:#38bdf8; font-size:10px;">(TG: ${f.tg})</span>` : ''}
-        </div>
-      `).join('') || "No friends added yet.";
-    });
-
-    window.startPrivateVoiceTalk = () => {
-      closeBox('player-modal'); toggleAlwaysVoiceMic(); alert("🎙️ 1-on-1 Voice connection active!");
-    };
-    window.openPrivateChatPrompt = () => {
-      const txt = prompt("Enter private message:");
-      if (txt && nearbyPlayerId) {
-        socket.emit('sendPrivateMsg', { targetId: nearbyPlayerId, text: txt });
-        alert("✉️ Private message sent!");
-      }
-    };
-    socket.on('receivePrivateMsg', (d) => alert(`✉ Private from ${d.from}: "${d.text}"`));
-
-    // ⚽ ഫുട്ബോൾ കിക്ക് ഫിസിക്സ്
-    let ballSpeedZ = 0;
-    window.triggerBallKick = () => { ballSpeedZ = 1.3; };
-
-    function takeInstantSelfie(celebName) {
-      document.getElementById('ui-layer').style.display = 'none';
-      setTimeout(() => {
-        const link = document.createElement('a');
-        link.download = `selfie-with-${celebName.replace(/\s+/g, '_')}.png`;
-        link.href = renderer.domElement.toDataURL("image/png");
-        link.click();
-        document.getElementById('ui-layer').style.display = 'flex';
-        alert(`📸 VIP Selfie with ${celebName} saved to your device!`);
-      }, 200);
-    }
-    socket.on('celebSelfieUnlocked', (d) => takeInstantSelfie(d.celebName));
-
-    // ഗെയിംസ് ഹാൻഡ്‌ലറുകൾ
-    window.teleportFootballZone = () => { closeBox('games-hub-box'); myPlayer.position.set(0, 0, -32); alert("⚽ Walk to the ball & press KICK!"); };
-    window.teleportParkourZone = () => {
-      closeBox('games-hub-box');
-      myPlayer.position.set(volcanoPlatforms[0].x, volcanoPlatforms[0].y + 1, volcanoPlatforms[0].z);
-      currentBaseY = volcanoPlatforms[0].y;
-      alert("🌋 Volcano Parkour started! Jump step by step to the top crater!");
-    };
-    window.playDiceGame = () => {
-      closeBox('games-hub-box');
-      const rolled = Math.floor(Math.random() * 6) + 1;
-      userPts += rolled * 10;
-      document.getElementById('pts').innerText = userPts;
-      alert(`🎲 Rolled number: ${rolled}! +${rolled * 10} Points added!`);
-    };
-    window.mountCarRacing = () => {
-      closeBox('games-hub-box');
-      myPlayer.position.set(0, 1.2, 260);
-      activeRide = 'car';
-      document.getElementById('dismount-btn').style.display = 'block';
-      alert("🏎️ Racing started on the circular road!");
     };
 
     // ടെലിപോർട്ടുകൾ
+    window.teleportDragonArea = () => { myPlayer.position.set(-60, 0, 30); alert("🐉 Reached Flying Dragon Nest!"); };
+    window.teleportMechArea = () => { myPlayer.position.set(70, 0, 70); alert("🤖 Reached Giant Mech Bay!"); };
+    window.teleportParkourZone = () => { currentParkourIndex = 0; myPlayer.position.set(volcanoPlatforms[0].x, volcanoPlatforms[0].y + 1, volcanoPlatforms[0].z); currentBaseY = volcanoPlatforms[0].y; };
     window.teleportConcert = () => myPlayer.position.set(0, 0, -270);
-    window.teleportCelebZone = () => myPlayer.position.set(-270, 0, 125);
-    window.teleportSeaBattle = () => { myPlayer.position.set(0, 0, 870); alert("🌊 Watching Kong vs Godzilla Epic Sea Fight!"); };
-    window.teleportMountainPeak = () => { myPlayer.position.set(mountain.position.x, 110, mountain.position.z); document.getElementById('dismount-btn').style.display = 'block'; };
-    window.teleportVolcano = () => { myPlayer.position.set(volcano.position.x, 88, volcano.position.z); document.getElementById('dismount-btn').style.display = 'block'; };
-
-    // ലൈവ് മൈക്ക്
-    let isVoiceActive = false, voiceRec = null, voiceStr = null;
-    window.toggleAlwaysVoiceMic = async () => {
-      const btn = document.getElementById('mic-float-btn');
-      if (!isVoiceActive) {
-        try {
-          voiceStr = await navigator.mediaDevices.getUserMedia({ audio: true });
-          voiceRec = new MediaRecorder(voiceStr);
-          voiceRec.ondataavailable = (e) => {
-            if (e.data.size > 0 && isVoiceActive) {
-              const r = new FileReader(); r.onload = () => socket.emit('voiceTalkStream', r.result); r.readAsDataURL(e.data);
-            }
-          };
-          voiceRec.start(250); isVoiceActive = true; btn.classList.remove('muted'); btn.innerText = "🎙️";
-        } catch (err) { alert("Mic Permission: " + err.message); }
-      } else {
-        isVoiceActive = false; if (voiceRec) voiceRec.stop(); if (voiceStr) voiceStr.getTracks().forEach(t => t.stop());
-        btn.classList.add('muted'); btn.innerText = "🔇";
-      }
-    };
-    socket.on('incomingLiveVoice', (d) => new Audio(d.audio).play().catch(() => {}));
-
-    // 🎆 റിയലിസ്റ്റിക് സ്കൈ പടക്കങ്ങൾ
-    const fireworkParticles = [];
-    function launchRocketFirework(startX, targetY, startZ, colorHex) {
-      const pCount = 120;
-      const geo = new THREE.BufferGeometry();
-      const pos = new Float32Array(pCount * 3);
-      const vel = [];
-      for (let i = 0; i < pCount; i++) {
-        pos[i * 3] = startX;
-        pos[i * 3 + 1] = targetY;
-        pos[i * 3 + 2] = startZ;
-        const theta = Math.random() * Math.PI * 2;
-        const phi = Math.random() * Math.PI;
-        const speed = 1.2 + Math.random() * 2.2;
-        vel.push(new THREE.Vector3(
-          speed * Math.sin(phi) * Math.cos(theta),
-          speed * Math.cos(phi),
-          speed * Math.sin(phi) * Math.sin(theta)
-        ));
-      }
-      geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      const mat = new THREE.PointsMaterial({ color: colorHex, size: 0.9, transparent: true, opacity: 1.0 });
-      const pts = new THREE.Points(geo, mat);
-      scene.add(pts);
-      fireworkParticles.push({ pts, vel, life: 120 });
-    }
-
-    window.broadcastSkyWish = () => {
-      const msg = document.getElementById('sky-msg-input').value.trim();
-      if (!msg) return;
-      closeBox('sky-wish-box');
-      socket.emit('requestStarsAction', { title: "Sky Fireworks Wish", desc: "Display wish in sky with fireworks", stars: 15, type: 'sky_wish', extraText: msg });
-    };
-
-    socket.on('displaySkyBanner', (d) => {
-      const b = document.getElementById('sky-banner');
-      b.innerText = `🎆 ${d.sender}: "${d.text}" 🎆`;
-      b.style.display = 'block';
-      const px = myPlayer.position.x;
-      const pz = myPlayer.position.z;
-      launchRocketFirework(px, 75, pz - 25, 0xff007f);
-      setTimeout(() => launchRocketFirework(px - 20, 85, pz - 35, 0x38bdf8), 300);
-      setTimeout(() => launchRocketFirework(px + 20, 80, pz - 30, 0xfacc15), 600);
-      setTimeout(() => launchRocketFirework(px, 95, pz - 40, 0x22c55e), 900);
-      setTimeout(() => { b.style.display = 'none'; }, 11000);
-    });
-
-    // 🎁 കോൺസേർട്ട് ഗിഫ്റ്റ് സ്ക്രീനിൽ കാണിക്കൽ
-    window.sendStageGift = (title, stars) => {
-      closeBox('stage-gift-box');
-      socket.emit('requestStarsAction', { title, desc: `Gift ${title} on stage`, stars, type: 'stage_gift' });
-    };
-    socket.on('celebrateStageGift', (d) => {
-      launchRocketFirework(0, 35, -320, 0xff007f);
-      launchRocketFirework(10, 40, -320, 0xfacc15);
-      const giftEl = document.getElementById('gift-broadcast');
-      giftEl.innerText = `🎁 ${d.sender} sent ${d.giftTitle} to Stage! 🎉`;
-      giftEl.style.display = 'block';
-      setTimeout(() => { giftEl.style.display = 'none'; }, 6000);
-    });
-
-    window.purchaseStars = (title, type, stars) => {
-      closeBox('stars-box'); socket.emit('requestStarsAction', { title, desc: title, type, stars });
-    };
-    socket.on('openOfficialInvoice', (d) => {
-      if (tg?.openInvoice) tg.openInvoice(d.invoiceUrl, (st) => { if (st === 'paid') alert("⭐ Stars Paid! Features Unlocked."); });
-      else window.open(d.invoiceUrl, '_blank');
-    });
-    socket.on('beastUnlocked', () => { unlockedBeast = true; alert("🦖 Full Control of Giants Unlocked!"); });
-    socket.on('unlockVideoCall', () => alert("📹 Video Call Unlocked!"));
+    window.teleportCelebZone = () => myPlayer.position.set(-260, 0, 115);
+    window.teleportSeaBattle = () => myPlayer.position.set(220, 0, 40);
 
     // ആനിമേഷൻ ലൂപ്പ്
-    let wCycle = 0, battleCycle = 0;
+    let wCycle = 0, dragonAngle = 0;
     function animate() {
       requestAnimationFrame(animate);
-
       checkProximity();
 
-      // വോൾക്കാനോ സ്റ്റെപ്പുകളിലെ കൊളീഷൻ പരിശോധന
-      let onPlatform = false;
-      for (let p of volcanoPlatforms) {
-        const d = Math.hypot(myPlayer.position.x - p.x, myPlayer.position.z - p.z);
-        if (d < p.radius) {
-          currentBaseY = p.y;
-          onPlatform = true;
-          break;
+      // 🌸 പൂക്കൾ കറങ്ങുന്നതും കളിക്കാരൻ എത്തുമ്പോൾ പോയിന്റ് ലഭിക്കുന്നതും (Flower Collection Logic)
+      for (let f of collectibleFlowers) {
+        if (f.active) {
+          f.mesh.rotation.y += 0.03; // ഭംഗിയായി കറങ്ങുന്നു
+          f.mesh.position.y = Math.sin(Date.now() * 0.005 + f.mesh.position.x) * 0.15 + 0.2; // പതുക്കെ പൊങ്ങിത്താഴുന്നു
+
+          // കളിക്കാരൻ പൂവിന്റെ അടുത്തെത്തുമ്പോൾ (2.0 മീറ്റർ)
+          const dist = myPlayer.position.distanceTo(f.mesh.position);
+          if (dist < 2.0 && activeRide === 'walk') {
+            f.active = false;
+            f.mesh.visible = false;
+            f.respawnTimer = 250; // അൽപസമയത്തിന് ശേഷം വീണ്ടും വിരിയും
+            userPts += 10;
+            document.getElementById('pts').innerText = userPts;
+            playChimeSound();
+            showPointPopup(10);
+          }
+        } else {
+          // റെസ്പോൺ ടൈമർ
+          f.respawnTimer--;
+          if (f.respawnTimer <= 0) {
+            f.active = true;
+            f.mesh.visible = true;
+          }
         }
       }
-      // സോളിഡ് പാലത്തിന് മുകളിലൂടെ നടക്കൽ (Crossable Bridge)
-      const onBridge = Math.abs(myPlayer.position.x - 220) < 22 && Math.abs(myPlayer.position.z) < 8;
-      if (onBridge) {
-        currentBaseY = 1.0;
-        onPlatform = true;
+
+      // ഡ്രാഗൺ ആകാശത്ത് പറക്കുന്നു
+      if (dragonMesh && activeRide !== 'dragon') {
+        dragonAngle += 0.015;
+        dragonMesh.position.x = Math.sin(dragonAngle) * 90;
+        dragonMesh.position.z = Math.cos(dragonAngle) * 90;
+        dragonMesh.rotation.y = dragonAngle + Math.PI / 2;
       }
 
-      if (!onPlatform && !nearbyTarget?.isFlying && activeRide === 'walk') {
-        currentBaseY = 0;
+      // സ്രാവ് നീന്തുന്നു
+      if (sharkMesh) {
+        sharkMesh.position.z += Math.sin(Date.now() * 0.002) * 0.3;
+        sharkMesh.rotation.y = Math.sin(Date.now() * 0.002) * 0.2;
       }
 
-      // 🦘 ജമ്പ് ഫിസിക്സ്
+      // ജമ്പ് ഫിസിക്സ്
       if (isJumping) {
-        myPlayer.position.y += jumpVelocityY;
-        jumpVelocityY += GRAVITY;
-        if (myPlayer.position.y <= currentBaseY) {
-          myPlayer.position.y = currentBaseY;
-          isJumping = false;
-          jumpVelocityY = 0;
-        }
-      } else if (activeRide === 'walk' && !isSwimming) {
+        myPlayer.position.y += jumpVelocityY; jumpVelocityY += GRAVITY;
+        if (myPlayer.position.y <= currentBaseY) { myPlayer.position.y = currentBaseY; isJumping = false; jumpVelocityY = 0; }
+      } else if (activeRide === 'walk' && !isSwimming && currentParkourIndex === -1) {
         myPlayer.position.y = currentBaseY;
       }
 
-      // 🎆 പടക്കങ്ങളുടെ പാർട്ടിക്കിൾസ്
-      for (let i = fireworkParticles.length - 1; i >= 0; i--) {
-        const fp = fireworkParticles[i];
-        const pos = fp.pts.geometry.attributes.position.array;
-        for (let j = 0; j < fp.vel.length; j++) {
-          pos[j * 3] += fp.vel[j].x;
-          pos[j * 3 + 1] += fp.vel[j].y;
-          pos[j * 3 + 2] += fp.vel[j].z;
-          fp.vel[j].y -= 0.012;
-        }
-        fp.pts.geometry.attributes.position.needsUpdate = true;
-        fp.pts.material.opacity = fp.life / 120;
-        fp.life -= 1;
-        if (fp.life <= 0) {
-          scene.remove(fp.pts);
-          fireworkParticles.splice(i, 1);
-        }
-      }
-
-      battleCycle += 0.05;
-      seaKong.position.z = Math.sin(battleCycle) * 8;
-      seaGodzilla.position.z = -Math.sin(battleCycle) * 8;
-      seaKong.rotation.y = -Math.PI / 4 + Math.sin(battleCycle) * 0.3;
-      seaGodzilla.rotation.y = Math.PI / 4 - Math.sin(battleCycle) * 0.3;
-
-      const distToCenter = Math.hypot(myPlayer.position.x, myPlayer.position.z);
-      const swimEl = document.getElementById('swim-indicator');
-      if (distToCenter > 800 && activeRide === 'walk') {
-        isSwimming = true; myPlayer.position.y = -2; swimEl.style.display = 'block';
-      } else if (activeRide === 'walk' && !isJumping && myPlayer.position.y === -2) {
-        isSwimming = false; myPlayer.position.y = 0; swimEl.style.display = 'none';
-      }
-
-      const spd = isSwimming ? 0.25 : (['plane'].includes(activeRide) ? 1.6 : (['heli', 'car', 'bike'].includes(activeRide) ? 1.1 : 0.45));
+      const spd = isSwimming ? 0.25 : (['dragon'].includes(activeRide) ? 1.8 : (['mech'].includes(activeRide) ? 1.2 : 0.45));
 
       if (moveX !== 0 || moveZ !== 0) {
         const forwardX = moveX * Math.cos(cameraAngleX) + moveZ * Math.sin(cameraAngleX);
@@ -1090,30 +718,12 @@
           myPlayer.userData.legR.rotation.x = -Math.sin(wCycle) * 0.6;
         }
 
-        // കളിക്കാരൻ നീങ്ങുമ്പോൾ വാഹനം കൂടെ കൃത്യമായി നീങ്ങുന്നു
         if (nearbyTarget && activeRide !== 'walk' && nearbyTarget.mesh) {
-          if (nearbyTarget.isFlying) {
-            nearbyTarget.mesh.position.set(myPlayer.position.x, myPlayer.position.y - nearbyTarget.seatY, myPlayer.position.z);
-          } else {
-            nearbyTarget.mesh.position.set(myPlayer.position.x, myPlayer.position.y - nearbyTarget.seatY, myPlayer.position.z);
-          }
+          nearbyTarget.mesh.position.set(myPlayer.position.x, nearbyTarget.isFlying ? myPlayer.position.y - nearbyTarget.seatY : 0, myPlayer.position.z);
           nearbyTarget.mesh.rotation.y = myPlayer.rotation.y;
-          if (nearbyTarget.mesh.userData?.rotor) nearbyTarget.mesh.userData.rotor.rotation.y += 0.5;
         }
 
         socket.emit('updatePosition', { x: myPlayer.position.x, y: myPlayer.position.y, z: myPlayer.position.z });
-      }
-
-      // ഫുട്ബോൾ കിക്ക് ഫിസിക്സ്
-      if (ballSpeedZ > 0) {
-        football.position.z -= ballSpeedZ;
-        football.rotation.x -= 0.1;
-        ballSpeedZ *= 0.97;
-        if (football.position.z <= -64 && Math.abs(football.position.x) < 6) {
-          ballSpeedZ = 0; football.position.set(0, 0.7, -40);
-          userPts += 50; document.getElementById('pts').innerText = userPts;
-          alert("⚽ GOAAAAL! +50 Points Added! 🎉");
-        }
       }
 
       const camDist = 18;
