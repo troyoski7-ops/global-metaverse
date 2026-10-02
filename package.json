@@ -1,0 +1,14 @@
+{
+  "name": "global-vibe-metaverse",
+  "version": "3.0.0",
+  "description": "Global Fantasy Metaverse with Telegram Stars & Points Ecosystem",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5",
+    "node-telegram-bot-api": "^0.66.0"
+  }
+}
