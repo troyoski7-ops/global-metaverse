@@ -20,7 +20,7 @@ let allTimeUsers = new Set();
 
 bot.onText(/\/start/, (msg) => {
   allTimeUsers.add(msg.chat.id);
-  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nConcerts, Jurassic Dinosaurs, Flying Dragons, Video Calls & Telegram Stars!", {
+  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nConcerts, 2-Player Dinosaurs & Mech, Flying Dragons, Video Calls & Telegram Stars!", {
     parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [[{ text: "🚀 Enter Metaverse", web_app: { url: WEB_APP_URL } }]]
@@ -35,7 +35,7 @@ bot.on('successful_payment', (msg) => {
   for (let id in players) {
     if (players[id].telegramId === msg.chat.id) {
       if (payload.startsWith('sky_wish')) {
-        const text = payload.split('__')[1] || "Happy Celebrations!";
+        const text = payload.split('__')[1] || "Happy Metaverse!";
         io.emit('displaySkyBanner', { text, sender: players[id].name });
       } else if (payload.startsWith('beast_ride')) {
         players[id].unlockedBeast = true;
@@ -58,15 +58,14 @@ io.on('connection', (socket) => {
     id: socket.id,
     telegramId: null,
     name: "Player_" + Math.floor(100 + Math.random() * 900),
-    bio: "Exploring GlobeVibe Metaverse",
     gender: 'boy',
-    shirtColor: '#2563eb',
     isOwner: false,
     unlockedBeast: false,
     hasVideoPass: false,
     activeRoom: "General",
+    activeRide: 'walk',
     friends: [],
-    x: 0, y: 0, z: 0
+    x: 0, y: 0, z: 0, rotationY: 0
   };
 
   socket.on('registerUser', (userData) => {
@@ -75,10 +74,7 @@ io.on('connection', (socket) => {
     p.name = userData.name || p.name;
     p.telegramId = userData.telegramId ? Number(userData.telegramId) : null;
     if (p.telegramId) allTimeUsers.add(p.telegramId);
-
     p.gender = userData.gender || 'boy';
-    p.shirtColor = userData.shirtColor || '#2563eb';
-    p.bio = userData.bio || p.bio;
 
     if (p.telegramId === OWNER_TELEGRAM_ID) {
       p.isOwner = true;
@@ -86,7 +82,7 @@ io.on('connection', (socket) => {
       p.hasVideoPass = true;
     }
     socket.join(p.activeRoom);
-    
+
     io.emit('serverStatsUpdate', {
       onlineCount: Object.keys(players).length,
       totalBotUsers: allTimeUsers.size
@@ -97,7 +93,6 @@ io.on('connection', (socket) => {
       unlockedBeast: p.unlockedBeast,
       hasVideoPass: p.hasVideoPass,
       rooms: customChatRooms,
-      profile: p,
       totalBotUsers: allTimeUsers.size
     });
     io.emit('playerListUpdate', players);
@@ -122,12 +117,27 @@ io.on('connection', (socket) => {
     }
   });
 
-  // പ്രൈവറ്റ് & ഗ്രൂപ്പ് വീഡിയോ കോൾ സിഗ്നലിംഗ്
+  // 2-Player Passenger Sync
+  socket.on('mountAsPassenger', (data) => {
+    players[socket.id].activeRide = data.rideType + '_passenger';
+    socket.broadcast.emit('passengerMounted', {
+      passengerId: socket.id,
+      hostId: data.hostId,
+      rideType: data.rideType
+    });
+  });
+
+  socket.on('dismountPassenger', () => {
+    players[socket.id].activeRide = 'walk';
+    socket.broadcast.emit('passengerDismounted', { passengerId: socket.id });
+  });
+
+  // Video Call Signal
   socket.on('startVideoCallSignal', (data) => {
     if (data.targetId && players[data.targetId]) {
-      io.to(data.targetId).emit('incomingVideoCall', { fromId: socket.id, fromName: players[socket.id].name, peerData: data.peerData });
+      io.to(data.targetId).emit('incomingVideoCall', { fromId: socket.id, fromName: players[socket.id].name });
     } else {
-      socket.to(players[socket.id].activeRoom).emit('incomingGroupVideo', { fromId: socket.id, fromName: players[socket.id].name, peerData: data.peerData });
+      socket.to(players[socket.id].activeRoom).emit('incomingGroupVideo', { fromId: socket.id, fromName: players[socket.id].name });
     }
   });
 
@@ -188,14 +198,23 @@ io.on('connection', (socket) => {
   socket.on('updatePosition', (pos) => {
     if (players[socket.id]) {
       Object.assign(players[socket.id], pos);
-      socket.broadcast.emit('playerMoved', { id: socket.id, ...pos, name: players[socket.id].name, gender: players[socket.id].gender });
+      socket.broadcast.emit('playerMoved', {
+        id: socket.id,
+        ...pos,
+        name: players[socket.id].name,
+        gender: players[socket.id].gender,
+        activeRide: players[socket.id].activeRide
+      });
     }
   });
 
   socket.on('disconnect', () => {
     delete players[socket.id];
     io.emit('playerLeft', socket.id);
-    io.emit('serverStatsUpdate', { onlineCount: Object.keys(players).length, totalBotUsers: allTimeUsers.size });
+    io.emit('serverStatsUpdate', {
+      onlineCount: Object.keys(players).length,
+      totalBotUsers: allTimeUsers.size
+    });
   });
 });
 
