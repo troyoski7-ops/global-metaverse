@@ -13,9 +13,10 @@ app.use(express.static('public'));
 
 let players = {};
 let customChatRooms = ["General", "Kerala Hub", "Dubai Lounge", "Global Arena"];
+let pendingRequests = {};
 
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nClimb Mountains, Visit Volcano, Ride Multi-passenger Vehicles & Beasts!", {
+  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nJump, Explore, Take VIP Celebrity Photos & Experience Realistic Sky Fireworks with Telegram Stars!", {
     parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [[{ text: "🚀 Enter Metaverse", web_app: { url: WEB_APP_URL } }]]
@@ -30,16 +31,22 @@ bot.on('successful_payment', (msg) => {
   for (let id in players) {
     if (players[id].telegramId === msg.chat.id) {
       if (payload.startsWith('sky_wish')) {
-        const text = payload.split('__')[1] || "Happy Metaverse!";
+        const text = payload.split('__')[1] || "Happy Celebrations!";
         io.emit('displaySkyBanner', { text, sender: players[id].name });
       } else if (payload.startsWith('beast_ride')) {
         players[id].unlockedBeast = true;
         io.to(id).emit('beastUnlocked');
+      } else if (payload.startsWith('celeb_selfie')) {
+        const celebName = payload.split('__')[1] || "Celebrity";
+        io.to(id).emit('celebSelfieUnlocked', { celebName });
       } else if (payload.startsWith('video_pass')) {
         players[id].hasVideoPass = true;
         io.to(id).emit('unlockVideoCall');
+      } else if (payload.startsWith('stage_gift')) {
+        const giftTitle = payload.split('__')[1] || "Gift";
+        io.emit('celebrateStageGift', { sender: players[id].name, giftTitle });
       }
-      bot.sendMessage(msg.chat.id, "⭐ **Telegram Stars Verified!**");
+      bot.sendMessage(msg.chat.id, "⭐ **Telegram Stars Verified!** Feature activated in Metaverse.");
       break;
     }
   }
@@ -51,14 +58,14 @@ io.on('connection', (socket) => {
     telegramId: null,
     name: "Player_" + Math.floor(100 + Math.random() * 900),
     bio: "Exploring GlobeVibe Metaverse",
+    instagram: "",
+    telegramUser: "",
     gender: 'boy',
     shirtColor: '#2563eb',
     isOwner: false,
     unlockedBeast: false,
     hasVideoPass: false,
     activeRoom: "General",
-    ridingVehicleId: null,
-    seatIndex: 0,
     friends: [],
     x: 0, y: 0, z: 0
   };
@@ -71,6 +78,8 @@ io.on('connection', (socket) => {
     p.gender = userData.gender || 'boy';
     p.shirtColor = userData.shirtColor || '#2563eb';
     p.bio = userData.bio || p.bio;
+    p.instagram = userData.instagram || "";
+    p.telegramUser = userData.telegramUser || "";
 
     if (p.telegramId === OWNER_TELEGRAM_ID) {
       p.isOwner = true;
@@ -87,13 +96,30 @@ io.on('connection', (socket) => {
     if (p) {
       p.name = data.name || p.name;
       p.bio = data.bio || p.bio;
+      p.instagram = data.instagram || p.instagram;
+      p.telegramUser = data.telegramUser || p.telegramUser;
+      p.gender = data.gender || p.gender;
+      p.shirtColor = data.shirtColor || p.shirtColor;
       io.emit('playerListUpdate', players);
+      socket.emit('profileUpdatedSuccess', p);
     }
   });
 
   socket.on('sendFriendReq', (targetId) => {
     if (players[targetId]) {
+      if (!pendingRequests[targetId]) pendingRequests[targetId] = [];
+      if (!pendingRequests[targetId].includes(socket.id)) {
+        pendingRequests[targetId].push(socket.id);
+      }
       io.to(targetId).emit('incomingFriendReq', { fromId: socket.id, fromName: players[socket.id].name });
+      socket.emit('friendReqSentSuccess', { targetId });
+    }
+  });
+
+  socket.on('cancelFriendReq', (targetId) => {
+    if (pendingRequests[targetId]) {
+      pendingRequests[targetId] = pendingRequests[targetId].filter(id => id !== socket.id);
+      io.to(targetId).emit('friendReqCancelled', { fromId: socket.id });
     }
   });
 
@@ -103,9 +129,18 @@ io.on('connection', (socket) => {
     if (p && sender) {
       if (!p.friends.includes(fromId)) p.friends.push(fromId);
       if (!sender.friends.includes(socket.id)) sender.friends.push(socket.id);
-      socket.emit('friendListUpdated', p.friends.map(id => players[id]?.name || "Friend"));
-      io.to(fromId).emit('friendListUpdated', sender.friends.map(id => players[id]?.name || "Friend"));
+      if (pendingRequests[socket.id]) {
+        pendingRequests[socket.id] = pendingRequests[socket.id].filter(id => id !== fromId);
+      }
+      socket.emit('friendListUpdated', p.friends.map(id => ({ id, name: players[id]?.name || "Friend", ig: players[id]?.instagram, tg: players[id]?.telegramUser })));
+      io.to(fromId).emit('friendListUpdated', sender.friends.map(id => ({ id, name: players[id]?.name || "Friend", ig: players[id]?.instagram, tg: players[id]?.telegramUser })));
       socket.emit('sysRoomChat', `🤝 You and ${sender.name} are now friends!`);
+    }
+  });
+
+  socket.on('rejectFriendReq', (fromId) => {
+    if (pendingRequests[socket.id]) {
+      pendingRequests[socket.id] = pendingRequests[socket.id].filter(id => id !== fromId);
     }
   });
 
@@ -115,14 +150,16 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Telegram Stars Invoice
+  // Telegram Stars Invoice Generator
   socket.on('requestStarsAction', async (data) => {
     const p = players[socket.id];
     if (!p) return;
     if (p.isOwner) {
       if (data.type === 'sky_wish') io.emit('displaySkyBanner', { text: data.extraText, sender: p.name });
       if (data.type === 'beast_ride') socket.emit('beastUnlocked');
+      if (data.type === 'celeb_selfie') socket.emit('celebSelfieUnlocked', { celebName: data.extraText });
       if (data.type === 'video_pass') socket.emit('unlockVideoCall');
+      if (data.type === 'stage_gift') io.emit('celebrateStageGift', { sender: p.name, giftTitle: data.title });
       return;
     }
 
@@ -130,14 +167,14 @@ io.on('connection', (socket) => {
       const link = await bot.createInvoiceLink(
         data.title,
         data.desc,
-        `${data.type}__${data.extraText || ''}__${Date.now()}`,
+        `${data.type}__${data.extraText || data.title}__${Date.now()}`,
         "",
         "XTR",
         [{ label: data.title, amount: data.stars }]
       );
       socket.emit('openOfficialInvoice', { invoiceUrl: link });
     } catch (err) {
-      console.error("Invoice Error:", err.message);
+      console.error("Stars Invoice Error:", err.message);
     }
   });
 
@@ -176,7 +213,7 @@ io.on('connection', (socket) => {
   socket.on('updatePosition', (pos) => {
     if (players[socket.id]) {
       Object.assign(players[socket.id], pos);
-      socket.broadcast.emit('playerMoved', { id: socket.id, ...pos, name: players[socket.id].name, shirtColor: players[socket.id].shirtColor });
+      socket.broadcast.emit('playerMoved', { id: socket.id, ...pos, name: players[socket.id].name, gender: players[socket.id].gender, shirtColor: players[socket.id].shirtColor });
     }
   });
 
