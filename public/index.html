@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Global Vibe Metaverse</title>
+  <title>GlobeVibe</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -13,30 +13,41 @@
   <div id="game-container"></div>
 
   <div id="ui-layer">
-    <!-- ടോപ്പ് ഹെഡർ -->
+    <!-- മുകളിലെ വരി (സ്ക്രോൾ ചെയ്യാവുന്നത്) -->
     <div class="top-nav">
       <div id="owner-tag" class="owner-pill hidden">👑 OWNER</div>
-      <div class="points-badge">🪙 Points: <span id="user-points">100</span></div>
-      <button class="nav-btn" onclick="openProfile()">👤 Profile</button>
-      <button class="nav-btn" onclick="openSettings()">⚙️ Settings</button>
-      <button class="nav-btn" onclick="takeSelfie()">📸 Selfie (BTS/Avengers)</button>
-      <button class="nav-btn mic-free" id="mic-btn" onclick="toggleVoice()">🎙️ Free Mic</button>
+      <div class="points-badge">🪙 <span id="user-points">100</span></div>
+      <button class="nav-btn" onclick="takeSelfie()">📸 Selfie Zone</button>
+      <button class="nav-btn mic-free" id="mic-btn">🎙️ Free Mic</button>
       <button class="nav-btn video-star" onclick="startVideoCall()">📹 Video Call</button>
     </div>
 
-    <!-- വാഹനങ്ങൾ & ഫാന്റസി റൈഡുകൾ -->
+    <!-- ഗെയിംസ് ബട്ടൺ -->
+    <div class="game-launcher">
+      <button onclick="openGamesModal()">🎮 Games</button>
+    </div>
+
+    <!-- വാഹനങ്ങൾ -->
     <div class="action-dock">
       <button onclick="setMoveMode('walk')">🏃 Walk</button>
       <button onclick="setMoveMode('bike')">🏍️ Bike</button>
       <button onclick="setMoveMode('elephant')">🐘 Elephant</button>
-      <button onclick="setMoveMode('beast')" class="star-btn">🦖 Ride Godzilla / Dino</button>
+      <button onclick="setMoveMode('beast')" class="star-btn">🦖 Ride Dino</button>
       <button onclick="setMoveMode('heli')">🚁 Helicopter</button>
       <button onclick="setMoveMode('ship')">🚢 Ship</button>
     </div>
 
-    <!-- മിനി ഗെയിംസ് ഹബ്ബ് ബട്ടൺ -->
-    <div class="game-launcher">
-      <button onclick="openGamesModal()">🎮 Play Mini Games (Earn Points)</button>
+    <!-- മൊബൈലിൽ നടക്കാനുള്ള ടച്ച് ബട്ടണുകൾ -->
+    <div class="touch-controls">
+      <div></div>
+      <button class="touch-btn" id="btn-up">⬆️</button>
+      <div></div>
+      <button class="touch-btn" id="btn-left">⬅️</button>
+      <div></div>
+      <button class="touch-btn" id="btn-right">➡️</button>
+      <div></div>
+      <button class="touch-btn" id="btn-down">⬇️</button>
+      <div></div>
     </div>
 
     <!-- ചാറ്റ് ബോക്സ് -->
@@ -46,81 +57,36 @@
         <span onclick="sendEmoji('❤️')">❤️</span>
         <span onclick="sendEmoji('🔥')">🔥</span>
         <span onclick="sendEmoji('👏')">👏</span>
-        <span onclick="sendEmoji('💍')">💍</span>
         <span onclick="sendEmoji('🎉')">🎉</span>
       </div>
       <div class="chat-input-row">
-        <input type="text" id="chat-field" placeholder="Chat freely...">
+        <input type="text" id="chat-field" placeholder="Chat...">
         <button onclick="dispatchChat()">Send</button>
       </div>
     </div>
   </div>
 
-  <!-- സെൽഫി ബൂത്ത് പ്രോമ്പ്റ്റ് -->
   <div id="selfie-banner" class="banner hidden">
-    <span>🌟 You are near <strong><span id="star-name">BTS Zone</span></strong>! Stand next to them and click:</span>
-    <button onclick="takeSelfie()">📸 Capture Photo</button>
+    <span>🌟 Near <strong id="star-name">BTS Zone</strong></span>
+    <button onclick="takeSelfie()">📸 Click</button>
   </div>
 
-  <!-- Beast Ride അൺലോക്ക് മോഡൽ (Stars vs Points) -->
   <div id="beast-modal" class="modal hidden">
     <div class="modal-card">
       <h3>🦖 Unlock Godzilla / Dino Ride</h3>
-      <p>Ride the Giant Beast with your friends across the metaverse!</p>
-      <button onclick="redeemWithPoints()" class="action-btn">🪙 Redeem with 500 Points</button>
-      <button onclick="buyWithStars()" class="star-full-btn">⭐ Buy with 50 Telegram Stars</button>
+      <button onclick="redeemWithPoints()" class="action-btn">🪙 500 Points</button>
+      <button onclick="buyWithStars()" class="star-full-btn">⭐ 50 Stars</button>
       <button onclick="closeBeastModal()" class="close-btn">Cancel</button>
     </div>
   </div>
 
-  <!-- മിനി ഗെയിംസ് മോഡൽ -->
   <div id="games-modal" class="modal hidden">
     <div class="modal-card">
-      <h3>🎮 Mini Games Hub</h3>
-      <p>Play games to earn points and redeem special beast rides:</p>
-      <button onclick="playMiniGame('football')" class="action-btn">⚽ Football Penalty (+50 pts)</button>
-      <button onclick="playMiniGame('dice')" class="action-btn">🎲 Lucky Dice Roll (+30 pts)</button>
-      <button onclick="playMiniGame('parkour')" class="action-btn">🌋 Lava Rock Parkour (+100 pts)</button>
+      <h3>🎮 Mini Games</h3>
+      <button onclick="playMiniGame('football')" class="action-btn">⚽ Football (+50 pts)</button>
+      <button onclick="playMiniGame('dice')" class="action-btn">🎲 Lucky Dice (+30 pts)</button>
+      <button onclick="playMiniGame('parkour')" class="action-btn">🌋 Lava Parkour (+100 pts)</button>
       <button onclick="closeGamesModal()" class="close-btn">Close</button>
-    </div>
-  </div>
-
-  <!-- പ്രോക്സിമിറ്റി ഇന്ററാക്ഷൻ കാർഡ് -->
-  <div id="interaction-card" class="card hidden">
-    <h4 id="target-player-name">Player Name</h4>
-    <div class="card-buttons">
-      <button onclick="sendFriendReq()">➕ Add Friend</button>
-      <button onclick="proposeTarget()">💍 Propose</button>
-      <button onclick="sendGift()">🎁 Send Stars Gift</button>
-      <button onclick="closeInteraction()">✖️ Close</button>
-    </div>
-  </div>
-
-  <!-- സെറ്റിംഗ്സ് മോഡൽ (17 ഭാഷകൾ) -->
-  <div id="settings-modal" class="modal hidden">
-    <div class="modal-card">
-      <h3 id="settings-title">⚙️ Settings</h3>
-      <label id="lbl-language">Language:</label>
-      <select id="lang-select" onchange="changeLanguage(this.value)">
-        <option value="en" selected>English (Default)</option>
-        <option value="ru">Русский (Russian)</option>
-        <option value="fa">فارسی (Persian)</option>
-        <option value="ar">العربية (Arabic)</option>
-        <option value="uz">O'zbek (Uzbek)</option>
-        <option value="tg">Тоҷикӣ (Tajik)</option>
-        <option value="es">Español (Spanish)</option>
-        <option value="pt">Português (Portuguese)</option>
-        <option value="id">Bahasa Indonesia</option>
-        <option value="tr">Türkçe (Turkish)</option>
-        <option value="uk">Українська (Ukrainian)</option>
-        <option value="it">Italiano (Italian)</option>
-        <option value="de">Deutsch (German)</option>
-        <option value="fr">Français (French)</option>
-        <option value="zh">中文 (Chinese)</option>
-        <option value="hi">हिन्दी (Hindi)</option>
-        <option value="ml">മലയാളം (Malayalam)</option>
-      </select>
-      <button onclick="closeSettings()" class="action-btn">Close</button>
     </div>
   </div>
 
