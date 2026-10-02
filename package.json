@@ -1,14 +1,14 @@
 {
-  "name": "global-vibe-metaverse",
-  "version": "3.0.0",
-  "description": "Global Fantasy Metaverse with Telegram Stars & Points Ecosystem",
+  "name": "globevibe-metaverse",
+  "version": "1.0.0",
+  "description": "3D Telegram Metaverse Mini App",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.19.2",
-    "socket.io": "^4.7.5",
-    "node-telegram-bot-api": "^0.66.0"
+    "node-telegram-bot-api": "^0.66.0",
+    "socket.io": "^4.7.5"
   }
 }
