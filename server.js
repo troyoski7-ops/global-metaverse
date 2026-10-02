@@ -15,7 +15,7 @@ let players = {};
 let customChatRooms = ["General", "Kerala Hub", "Dubai Lounge", "Global Arena"];
 
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nExperience Sea Battles, Celebrities, Realistic Vehicles & Global Community!", {
+  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nClimb Mountains, Visit Volcano, Ride Multi-passenger Vehicles & Beasts!", {
     parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [[{ text: "🚀 Enter Metaverse", web_app: { url: WEB_APP_URL } }]]
@@ -39,7 +39,7 @@ bot.on('successful_payment', (msg) => {
         players[id].hasVideoPass = true;
         io.to(id).emit('unlockVideoCall');
       }
-      bot.sendMessage(msg.chat.id, "⭐ **Telegram Stars Verified!** Perks active in Metaverse.");
+      bot.sendMessage(msg.chat.id, "⭐ **Telegram Stars Verified!**");
       break;
     }
   }
@@ -57,6 +57,8 @@ io.on('connection', (socket) => {
     unlockedBeast: false,
     hasVideoPass: false,
     activeRoom: "General",
+    ridingVehicleId: null,
+    seatIndex: 0,
     friends: [],
     x: 0, y: 0, z: 0
   };
@@ -113,6 +115,7 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Telegram Stars Invoice
   socket.on('requestStarsAction', async (data) => {
     const p = players[socket.id];
     if (!p) return;
@@ -173,7 +176,7 @@ io.on('connection', (socket) => {
   socket.on('updatePosition', (pos) => {
     if (players[socket.id]) {
       Object.assign(players[socket.id], pos);
-      socket.broadcast.emit('playerMoved', { id: socket.id, ...pos, name: players[socket.id].name });
+      socket.broadcast.emit('playerMoved', { id: socket.id, ...pos, name: players[socket.id].name, shirtColor: players[socket.id].shirtColor });
     }
   });
 
