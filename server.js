@@ -4,11 +4,9 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http, { cors: { origin: "*" } });
 const TelegramBot = require('node-telegram-bot-api');
 
-// ⭐️ Bot Token & Owner ID
+// യഥാർത്ഥ Bot Token & Owner ID
 const BOT_TOKEN = '8592382374:AAGB2NTv2bU1-99i95d5_sd_rkcM_QbfVc4';
 const OWNER_TELEGRAM_ID = 1689374364;
-
-// ⭐️ നിങ്ങളുടെ കൃത്യമായ Render ലൈവ് URL
 const WEB_APP_URL = 'https://global-vibe-metaverse.onrender.com';
 
 const bot = new TelegramBot(BOT_TOKEN, { polling: true });
@@ -16,162 +14,164 @@ app.use(express.static('public'));
 
 let players = {};
 
-// ടെലിഗ്രാം ബോട്ട് /start ഹാൻഡ്‌ലർ
+// ടെലിഗ്രാം /start കമാൻഡ്
 bot.onText(/\/start/, (msg) => {
-  const chatId = msg.chat.id;
-  const isOwner = chatId === OWNER_TELEGRAM_ID;
-
+  const isOwner = msg.chat.id === OWNER_TELEGRAM_ID;
   bot.sendMessage(
-    chatId,
+    msg.chat.id, 
     isOwner 
-      ? "👑 **Welcome Owner!** You have full unlimited free access to all features." 
-      : "🌍 **Welcome to Global Vibe Metaverse!**\n\nPlay games, meet BTS & Avengers, hang out with friends for FREE!",
+      ? "👑 **Welcome Owner!** You have full unlimited access to GlobeVibe."
+      : "🌍 **Welcome to GlobeVibe 3D Metaverse!**\n\nExplore with Friends, Ride Giants, Sing on Concert Stage and Play Mini Games!", 
     {
       parse_mode: "Markdown",
       reply_markup: {
-        inline_keyboard: [
-          [{ text: "🚀 Play / Enter Metaverse", web_app: { url: WEB_APP_URL } }]
-        ]
+        inline_keyboard: [[{ text: "🚀 Play Metaverse", web_app: { url: WEB_APP_URL } }]]
       }
     }
   );
 });
 
-// Telegram Stars ഇൻവോയ്‌സ് അയക്കൽ
-function sendInvoice(chatId, title, desc, stars, payloadKey) {
-  const prices = [{ label: title, amount: stars }];
-  bot.sendInvoice(chatId, title, desc, `${payloadKey}_${Date.now()}`, "", "XTR", prices)
-    .catch(err => console.error("Invoice Error:", err.message));
-}
+// ഒഫീഷ്യൽ Telegram Stars പ്രീ-ചെക്ക്ഔട്ട് അപ്രൂവൽ
+bot.on('pre_checkout_query', (query) => {
+  bot.answerPreCheckoutQuery(query.id, true).catch(err => console.error("Checkout validation err:", err));
+});
 
-bot.on('pre_checkout_query', (query) => bot.answerPreCheckoutQuery(query.id, true));
-
+// പേയ്‌മെന്റ് വിജയിക്കുമ്പോൾ ഇൻ-ഗെയിം റിവാർഡ് നൽകുന്നു
 bot.on('successful_payment', (msg) => {
   const payload = msg.successful_payment.invoice_payload;
   for (let id in players) {
     if (players[id].telegramId === msg.chat.id) {
-      if (payload.startsWith('beast_ride')) {
-        players[id].unlockedBeast = true;
-        io.to(id).emit('beastUnlocked');
-      } else if (payload.startsWith('video_call')) {
-        players[id].hasVideoPass = true;
-        io.to(id).emit('videoCallAccessGranted', { free: false });
+      if (payload.startsWith('vip_pass')) {
+        players[id].isVIP = true;
+        io.to(id).emit('vipUnlocked');
+      } else if (payload.startsWith('star_gift')) {
+        io.emit('celebrateStarsGift', {
+          sender: players[id].name,
+          gift: "🌟 Fireworks & Telegram Stars Gift"
+        });
       }
-      bot.sendMessage(msg.chat.id, "⭐ Payment confirmed! Feature unlocked successfully.");
+      bot.sendMessage(msg.chat.id, "⭐ **Payment Successful!** Your perks are active in GlobeVibe.");
       break;
     }
   }
 });
 
-// മൾട്ടിപ്ലെയർ സോക്കറ്റ് കണക്ഷൻ
+// സോക്കറ്റ് മൾട്ടിപ്ലെയർ എഞ്ചിൻ
 io.on('connection', (socket) => {
   players[socket.id] = {
     id: socket.id,
     telegramId: null,
     name: "Player_" + Math.floor(1000 + Math.random() * 9000),
-    color: "#ffcc00",
+    shirtColor: '#2563eb',
+    gender: 'boy',
     points: 100,
     isOwner: false,
-    unlockedBeast: false,
-    hasVideoPass: false,
-    x: 0, y: 5, z: 0,
-    vehicle: 'walk',
-    friends: [],
-    spouse: null
+    isVIP: false,
+    region: 'kerala',
+    x: 0, y: 0, z: 0
   };
 
   socket.on('registerUser', (userData) => {
     const p = players[socket.id];
     if (!p) return;
-
     p.name = userData.name || p.name;
-    p.color = userData.color || p.color;
     p.telegramId = userData.telegramId ? Number(userData.telegramId) : null;
+    p.shirtColor = userData.shirtColor || '#2563eb';
+    p.gender = userData.gender || 'boy';
 
     if (p.telegramId === OWNER_TELEGRAM_ID) {
       p.isOwner = true;
-      p.unlockedBeast = true;
-      p.hasVideoPass = true;
+      p.isVIP = true;
       p.points = 9999999;
-      console.log(`👑 OWNER LOGGED IN: ${p.name}`);
     }
 
-    socket.emit('ownerVerified', { isOwner: p.isOwner, points: p.points });
-    io.emit('playerUpdated', p);
+    socket.join(p.region);
+    socket.emit('ownerVerified', { isOwner: p.isOwner, points: p.points, isVIP: p.isVIP, id: socket.id });
+    io.emit('allPlayersUpdate', players);
   });
 
-  socket.emit('initPlayers', players);
-  socket.broadcast.emit('playerJoined', players[socket.id]);
-
-  socket.on('updatePosition', (data) => {
-    if (players[socket.id]) {
-      Object.assign(players[socket.id], data);
-      socket.broadcast.emit('playerMoved', { id: socket.id, ...data });
-    }
-  });
-
-  socket.on('addGamePoints', (amount) => {
+  // റീജിയൻ സെർവർ സ്വിച്ച് (Kerala, India, UAE, Global)
+  socket.on('switchRegionServer', (newRegion) => {
     const p = players[socket.id];
     if (p) {
-      p.points += amount;
-      socket.emit('pointsUpdated', p.points);
+      socket.leave(p.region);
+      socket.join(newRegion);
+      p.region = newRegion;
+      io.to(newRegion).emit('incomingSystemChat', {
+        text: `📢 ${p.name} joined the ${newRegion.toUpperCase()} server!`
+      });
     }
   });
 
-  socket.on('redeemBeastWithPoints', () => {
+  // ഒഫീഷ്യൽ Telegram Stars ഇൻവോയ്‌സ് ലിങ്ക് ജനറേറ്റ് ചെയ്യുന്നു
+  socket.on('requestOfficialInvoice', async (data) => {
     const p = players[socket.id];
     if (!p) return;
-    if (p.isOwner || p.points >= 500) {
-      if (!p.isOwner) p.points -= 500;
-      p.unlockedBeast = true;
-      socket.emit('beastUnlocked');
-      socket.emit('pointsUpdated', p.points);
-    } else {
-      socket.emit('needMorePoints', { required: 500, current: p.points });
-    }
-  });
 
-  socket.on('buyBeastStars', () => {
-    const p = players[socket.id];
-    if (!p) return;
     if (p.isOwner) {
-      socket.emit('beastUnlocked');
-    } else if (p.telegramId) {
-      sendInvoice(p.telegramId, "Beast & Dinosaur Ride", "Ride Godzilla, King Kong & T-Rex", 50, "beast_ride");
+      socket.emit('vipUnlocked');
+      io.emit('celebrateStarsGift', { sender: p.name, gift: "👑 Royal Owner Gift (FREE)" });
+      return;
+    }
+
+    try {
+      const link = await bot.createInvoiceLink(
+        data.title,
+        data.description,
+        `${data.type}_${socket.id}_${Date.now()}`,
+        "",
+        "XTR",
+        [{ label: data.title, amount: data.stars }]
+      );
+      socket.emit('openTelegramInvoiceWindow', { invoiceUrl: link });
+    } catch (err) {
+      console.error("Telegram Stars Link Error:", err.message);
     }
   });
 
-  socket.on('sendChat', (data) => {
-    const p = players[socket.id];
-    if (p) io.emit('newChat', { sender: p.name, isOwner: p.isOwner, text: data.text });
+  // ലൈവ് കോൺസേർട്ട് ഓഡിയോ സ്ട്രീമിംഗ് (മൈക്കിലൂടെ പാടാൻ)
+  socket.on('streamSingerAudio', (audioChunk) => {
+    socket.broadcast.emit('playLiveSingerVoice', {
+      sender: players[socket.id]?.name || "Singer",
+      audio: audioChunk
+    });
   });
 
-  socket.on('sendFriendRequest', (targetId) => {
-    const p = players[socket.id];
-    if (p && players[targetId]) io.to(targetId).emit('receiveFriendRequest', { fromId: socket.id, fromName: p.name });
+  // കോൺസേർട്ട് മ്യൂസിക് ട്രാക്ക് സിങ്ക്
+  socket.on('syncStageTrack', (trackUrl) => {
+    io.emit('playConcertTrackForAll', { url: trackUrl, dj: players[socket.id]?.name || "DJ" });
   });
 
-  socket.on('proposePlayer', (targetId) => {
+  // ഗ്രൂപ്പ് ചാറ്റ് അയക്കൽ
+  socket.on('sendGroupChatMsg', (data) => {
     const p = players[socket.id];
-    if (p && players[targetId]) io.to(targetId).emit('receiveProposal', { fromId: socket.id, fromName: p.name });
-  });
-
-  socket.on('acceptProposal', (fromId) => {
-    const p1 = players[socket.id], p2 = players[fromId];
-    if (p1 && p2) {
-      p1.spouse = p2.name; p2.spouse = p1.name;
-      io.emit('weddingCelebration', { p1: p1.name, p2: p2.name });
+    if (p) {
+      io.to(p.region).emit('broadcastChatMessage', {
+        sender: p.name,
+        isOwner: p.isOwner,
+        isVIP: p.isVIP,
+        text: data.text
+      });
     }
   });
 
-  socket.on('checkVideoCallEligibility', () => {
+  // ഫ്രണ്ട്സ് & പ്രൊപ്പോസൽ
+  socket.on('proposeInGame', () => {
     const p = players[socket.id];
-    if (!p) return;
-    if (p.isOwner || p.hasVideoPass) {
-      socket.emit('videoCallAccessGranted', { free: true });
-    } else {
-      if (p.telegramId) sendInvoice(p.telegramId, "Video Call Pass", "Unlock Video Calling", 50, "video_call");
-      socket.emit('videoCallRequiresStars', { stars: 50 });
+    if (p) {
+      io.emit('broadcastChatMessage', {
+        sender: "SYSTEM",
+        isOwner: false,
+        text: `💍 ${p.name} proposed in the Metaverse! Fireworks in the sky! 🎆`
+      });
+    }
+  });
+
+  // പൊസിഷൻ അപ്‌ഡേറ്റ്
+  socket.on('updatePosition', (pos) => {
+    if (players[socket.id]) {
+      Object.assign(players[socket.id], pos);
+      socket.to(players[socket.id].region).emit('playerMoved', { id: socket.id, ...pos });
     }
   });
 
@@ -181,8 +181,8 @@ io.on('connection', (socket) => {
   });
 });
 
-// Render-ൽ പോർട്ട് എറർ വരാതിരിക്കാൻ '0.0.0.0'
+// Render പോർട്ട് ബൈൻഡിംഗ്
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server online and listening on port ${PORT}`);
+  console.log(`GlobeVibe Server running on port ${PORT}`);
 });
