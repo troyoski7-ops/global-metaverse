@@ -12,10 +12,10 @@ const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 app.use(express.static('public'));
 
 let players = {};
-let customChatRooms = ["General", "Kerala Hub", "Dubai Lounge", "Global Chat"];
+let customChatRooms = ["General", "Kerala Hub", "Dubai Lounge", "Global Arena"];
 
 bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Ready!**\n\nDrive Realistic Sports Cars, Bikes, Fly Helicopters, Climb Mountains & Explore Lava Volcano!", {
+  bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nDrive Realistic Vehicles, Play Mini-Games, Sing Live, Climb Mountains & Explore Lava Volcano!", {
     parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [[{ text: "🚀 Play Metaverse", web_app: { url: WEB_APP_URL } }]]
@@ -39,7 +39,7 @@ bot.on('successful_payment', (msg) => {
         players[id].hasVideoPass = true;
         io.to(id).emit('unlockVideoCall');
       }
-      bot.sendMessage(msg.chat.id, "⭐ **Telegram Stars Verified!** Feature activated.");
+      bot.sendMessage(msg.chat.id, "⭐ **Telegram Stars Verified!** Perks active in Metaverse.");
       break;
     }
   }
@@ -98,7 +98,7 @@ io.on('connection', (socket) => {
       );
       socket.emit('openOfficialInvoice', { invoiceUrl: link });
     } catch (err) {
-      console.error("Invoice Link Error:", err.message);
+      console.error("Stars Error:", err.message);
     }
   });
 
@@ -148,4 +148,4 @@ io.on('connection', (socket) => {
 });
 
 const PORT = process.env.PORT || 3000;
-http.listen(PORT, '0.0.0.0', () => console.log(`GlobeVibe Engine running on port ${PORT}`));
+http.listen(PORT, '0.0.0.0', () => console.log(`Engine running on port ${PORT}`));
