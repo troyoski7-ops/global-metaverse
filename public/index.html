@@ -14,7 +14,7 @@
     #canvas-container { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
     #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; display: flex; flex-direction: column; justify-content: space-between; padding: 6px; }
-    .top-bar, .side-dock, .right-action-stack, .chat-box, .modal-card, #joystick-base, #proximity-prompt, #player-interact-prompt, #jump-btn, #kick-ball-btn, #dismount-btn, #mic-float-btn, #sky-banner, #gift-broadcast, #video-call-window, #pts-popup { pointer-events: auto; }
+    .top-bar, .side-dock, .right-action-stack, .chat-box, .modal-card, #joystick-base, #proximity-prompt, #player-interact-prompt, #jump-btn, #kick-ball-btn, #dismount-btn, #mic-float-btn, #sky-banner, #gift-broadcast, #video-call-window, #pts-popup, #swim-indicator { pointer-events: auto; }
 
     #sky-banner { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); background: linear-gradient(90deg, #ff007f, #7928ca); color: #fff; font-weight: 900; font-size: 15px; padding: 10px 25px; border-radius: 30px; box-shadow: 0 0 35px #ff007f; display: none; text-shadow: 0 0 12px #fff; z-index: 35; text-align: center; }
     #gift-broadcast { position: absolute; top: 105px; left: 50%; transform: translateX(-50%); background: linear-gradient(45deg, #eab308, #ca8a04); color: #000; font-weight: 900; font-size: 13px; padding: 8px 20px; border-radius: 20px; box-shadow: 0 0 25px #eab308; display: none; z-index: 35; text-align: center; border: 2px solid #fff; }
@@ -22,11 +22,12 @@
     #pts-popup { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 24px; font-weight: 900; color: #facc15; text-shadow: 0 0 12px #ca8a04; display: none; pointer-events: none; z-index: 50; }
     @keyframes popUp { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -120px) scale(1.4); } }
 
+    #swim-indicator { position: absolute; top: 85px; left: 50%; transform: translateX(-50%); background: #0284c7; color: #fff; padding: 6px 14px; border-radius: 16px; font-size: 11px; font-weight: bold; display: none; z-index: 20; border: 1px solid #fff; }
+
     #video-call-window { position: absolute; top: 75px; left: 12px; width: 140px; height: 185px; background: #0f172a; border: 2px solid #38bdf8; border-radius: 12px; overflow: hidden; display: none; z-index: 40; box-shadow: 0 0 20px rgba(56, 189, 248, 0.7); }
     #remote-video { width: 100%; height: 100%; object-fit: cover; }
     #close-video-btn { position: absolute; top: 4px; right: 4px; background: #ef4444; color: #fff; border: none; border-radius: 50%; width: 22px; height: 22px; font-weight: bold; font-size: 11px; cursor: pointer; }
 
-    /* Top Navigation bar cleanly arranged at the very top */
     .top-bar { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .badges { display: flex; gap: 4px; align-items: center; }
     .badge { background: rgba(15, 23, 42, 0.9); color: #fff; padding: 4px 7px; border-radius: 10px; font-size: 10px; font-weight: bold; border: 1px solid rgba(255,255,255,0.2); }
@@ -36,7 +37,6 @@
     .top-nav-btns { display: flex; gap: 3px; }
     .btn-top { background: rgba(15, 23, 42, 0.9); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); padding: 4px 6px; border-radius: 8px; font-size: 10px; cursor: pointer; font-weight: bold; }
 
-    /* Right Action Floating Column */
     .right-action-stack { position: absolute; right: 8px; top: 46px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; z-index: 25; }
     .star-float-btn { background: linear-gradient(45deg, #eab308, #ca8a04); color: #000; font-weight: 900; font-size: 11px; border: 2px solid #fff; padding: 6px 10px; border-radius: 16px; box-shadow: 0 0 12px #eab308; cursor: pointer; }
     .share-round-btn { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(45deg, #38bdf8, #6366f1); color: #fff; border: 2px solid #fff; font-size: 15px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(99, 102, 241, 0.8); cursor: pointer; }
@@ -77,6 +77,7 @@
   <div id="sky-banner"></div>
   <div id="gift-broadcast"></div>
   <div id="pts-popup">+10 🌸</div>
+  <div id="swim-indicator">🏊 Swimming in River Water...</div>
 
   <div id="video-call-window">
     <button id="close-video-btn" onclick="stopVideoCalling()">✕</button>
@@ -119,7 +120,6 @@
       <button class="dock-btn" onclick="teleportDragonArea()" id="ui-dock-dragon">🐉 Flying Dragon</button>
       <button class="dock-btn" onclick="teleportMechArea()" id="ui-dock-mech">🤖 2-Player Mech Mount</button>
       <button class="dock-btn" onclick="teleportDinoArea()" id="ui-dock-dino">🦖 2-Player Dinosaur</button>
-      <button class="dock-btn" onclick="teleportWhaleSeaArea()" id="ui-dock-whale">🐋 2-Player Sea Whale</button>
       <button class="dock-btn" onclick="openBox('friends-box')" id="ui-dock-friends">🤝 Friends & Requests</button>
       <button class="dock-btn" onclick="openBox('room-box')" id="ui-dock-group">💬 Group Lounges</button>
     </div>
@@ -137,7 +137,6 @@
     </div>
   </div>
 
-  <!-- മോഡലുകൾ -->
   <div id="climate-box" class="modal hidden">
     <div class="modal-card">
       <h3>⛅ Climate & Weather System</h3>
@@ -145,7 +144,7 @@
         <button onclick="changeWeatherMode('day')" class="btn-act" style="background:#0284c7;">☀️ Bright Day</button>
         <button onclick="changeWeatherMode('night')" class="btn-act" style="background:#0f172a;">🌙 Night Stars</button>
         <button onclick="changeWeatherMode('rain')" class="btn-act" style="background:#0369a1;">🌧️ Heavy Rain</button>
-        <button onclick="changeWeatherMode('snow')" class="btn-act" style="background:#38bdf8; color:#000;">❄️ Falling Snow</button>
+        <button onclick="changeWeatherMode('snow')" class="btn-act" style="background:#38bdf8; color:#000;">❄️️ Falling Snow</button>
       </div>
       <button onclick="closeBox('climate-box')" class="btn-close">Close</button>
     </div>
@@ -226,7 +225,6 @@
       <div class="grid-2">
         <button onclick="shareToTelegram()" class="btn-act" style="background:#0284c7;">✈️ Telegram Share</button>
         <button onclick="shareToWhatsApp()" class="btn-act" style="background:#22c55e;">💬 WhatsApp</button>
-        <button onclick="shareToInstagram()" class="btn-act" style="background:#e11d48;">📸 Instagram</button>
         <button onclick="copyMetaverseLink()" class="btn-act" style="background:#8b5cf6;">📋 Copy Bot Link</button>
       </div>
       <button onclick="closeBox('share-box')" class="btn-close">Close</button>
@@ -294,20 +292,19 @@
 
     const SHARE_URL = window.location.href;
     let isOwner = false, unlockedBeast = false, hasVideoPass = false;
-    let userGender = 'boy', activeRide = 'walk', userPts = 100;
+    let userGender = 'boy', activeRide = 'walk', isSwimming = false, userPts = 100;
     let otherPlayers = {};
     let nearbyTarget = null;
     let nearbyPlayerId = null;
     let currentHostVehicleId = null;
 
-    // 2-Player Seat Layouts (എല്ലാ ജീവികളിലും മെക്കിലും തിമിംഗലത്തിലും 2 പേർക്ക് ഇരിക്കാൻ)
+    // 2-Player Seat Layouts
     const VEHICLE_SEATS = {
       dino: { driver: { x: 0, y: 3.5, z: 0.8 }, passenger: { x: 0, y: 3.6, z: -1.2 } },
-      mech: { driver: { x: 0, y: 4.5, z: 0.6 }, passenger: { x: 0, y: 4.8, z: -1.0 } },
-      whale: { driver: { x: 0, y: 2.8, z: 2.0 }, passenger: { x: 0, y: 3.0, z: -2.0 } }
+      mech: { driver: { x: 0, y: 4.5, z: 0.6 }, passenger: { x: 0, y: 4.8, z: -1.0 } }
     };
 
-    // 🦘 വോൾക്കാനോ മുകളിലേക്ക് കണക്റ്റഡ് ആയ സ്റ്റെപ്പുകളിലൂടെയുള്ള ചാട്ടം
+    // 🦘 വോൾക്കാനോ ഈസി ജമ്പ് സിസ്റ്റം (Plat top collision fix)
     let isJumping = false;
     let jumpVelocityY = 0;
     const GRAVITY = -0.016;
@@ -316,7 +313,7 @@
     const volcanoPlatforms = [];
 
     window.triggerPlayerJump = function() {
-      if (activeRide === 'walk') {
+      if (activeRide === 'walk' && !isSwimming) {
         if (currentParkourIndex >= 0 && currentParkourIndex < volcanoPlatforms.length - 1) {
           currentParkourIndex++;
           const target = volcanoPlatforms[currentParkourIndex];
@@ -325,7 +322,7 @@
           currentBaseY = target.y;
           myPlayer.position.y = currentBaseY;
           if (currentParkourIndex === volcanoPlatforms.length - 1) {
-            alert("🌋 Congratulations! Reached Volcano Top Lava Crater!");
+            alert("🌋 Congratulations! Reached Volcano Top Crater!");
           }
           return;
         }
@@ -357,16 +354,16 @@
     const ocean = new THREE.Mesh(new THREE.PlaneGeometry(18000, 18000), new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1 }));
     ocean.rotation.x = -Math.PI / 2; ocean.position.y = -3; scene.add(ocean);
 
-    // 🌊 നദിയും നടക്കാൻ കഴിയുന്ന സോളിഡ് ബ്രിഡ്ജും (River & Solid Bridge Restored)
-    const river = new THREE.Mesh(new THREE.PlaneGeometry(35, 900), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
+    // 🌊 നദിയും നടക്കാൻ കഴിയുന്ന സോളിഡ് ബ്രിഡ്ജും (Bridge Y=1.5 Fix)
+    const river = new THREE.Mesh(new THREE.PlaneGeometry(42, 900), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
     river.rotation.x = -Math.PI / 2; river.position.set(220, 0.02, 0); scene.add(river);
 
     const bridge = new THREE.Group();
-    const bridgePlank = new THREE.Mesh(new THREE.BoxGeometry(45, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0x854d0e, roughness: 0.7 }));
-    bridgePlank.position.y = 1.0; bridge.add(bridgePlank);
-    const bridgeRailL = new THREE.Mesh(new THREE.BoxGeometry(45, 1.4, 0.5), new THREE.MeshStandardMaterial({ color: 0x3e2723 }));
-    bridgeRailL.position.set(0, 2.0, 7.8); bridge.add(bridgeRailL);
-    const bridgeRailR = bridgeRailL.clone(); bridgeRailR.position.set(0, 2.0, -7.8); bridge.add(bridgeRailR);
+    const bridgePlank = new THREE.Mesh(new THREE.BoxGeometry(50, 1.6, 18), new THREE.MeshStandardMaterial({ color: 0x854d0e, roughness: 0.7 }));
+    bridgePlank.position.y = 1.4; bridge.add(bridgePlank);
+    const bridgeRailL = new THREE.Mesh(new THREE.BoxGeometry(50, 1.4, 0.5), new THREE.MeshStandardMaterial({ color: 0x3e2723 }));
+    bridgeRailL.position.set(0, 2.5, 8.8); bridge.add(bridgeRailL);
+    const bridgeRailR = bridgeRailL.clone(); bridgeRailR.position.set(0, 2.5, -8.8); bridge.add(bridgeRailR);
     bridge.position.set(220, 0, 0); scene.add(bridge);
 
     // ⛅ കാലാവസ്ഥ മാറ്റം
@@ -412,6 +409,7 @@
       const radius = 30 + Math.random() * 680;
       const fx = Math.cos(angle) * radius;
       const fz = Math.sin(angle) * radius;
+      if (Math.abs(fx - 220) < 28) continue; // നദിയിൽ പൂക്കൾ ഇടില്ല
       const fl = createFlowerMesh(flowerColors[Math.floor(Math.random() * flowerColors.length)]);
       fl.position.set(fx, 0, fz);
       scene.add(fl);
@@ -448,31 +446,33 @@
     let ballSpeedZ = 0;
     window.triggerBallKick = () => { ballSpeedZ = 1.3; };
 
-    // 🌋 വോൾക്കാനോയും കൃത്യമായി മുകളിലേക്ക് എത്തുന്ന സ്റ്റെപ്പുകളും (Spiral Volcano Steps Fix)
+    // 🌋 വോൾക്കാനോ & അടുത്തുനിൽക്കുന്ന സ്റ്റെപ്പുകൾ (Step Distance Reduced & Surface Standing Fix)
     const volcano = new THREE.Group();
     const vBase = new THREE.Mesh(new THREE.ConeGeometry(95, 90, 24), new THREE.MeshStandardMaterial({ color: 0x451a03 })); vBase.position.y = 40; volcano.add(vBase);
     const vCrater = new THREE.Mesh(new THREE.CylinderGeometry(24, 28, 4, 24), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xf97316, emissiveIntensity: 1.0 })); vCrater.position.y = 86; volcano.add(vCrater);
     volcano.position.set(380, 0, -280); scene.add(volcano);
 
-    for (let i = 0; i < 18; i++) {
-      const plat = new THREE.Mesh(new THREE.CylinderGeometry(5.0, 5.5, 1.2, 16), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xe11d48, emissiveIntensity: 0.6 }));
-      const fraction = i / 17;
-      const angle = fraction * Math.PI * 1.5;
-      const radius = 100 - (fraction * 70);
+    // സ്റ്റെപ്പുകൾ തമ്മിലുള്ള അകലം കുറച്ചു (Easy Step Hopping)
+    for (let i = 0; i < 20; i++) {
+      const plat = new THREE.Mesh(new THREE.CylinderGeometry(5.2, 5.6, 1.4, 16), new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0xe11d48, emissiveIntensity: 0.6 }));
+      const fraction = i / 19;
+      const angle = fraction * Math.PI * 1.6;
+      const radius = 95 - (fraction * 65);
       const px = 380 + Math.cos(angle) * radius;
       const pz = -280 + Math.sin(angle) * radius;
-      const py = 2 + (fraction * 84);
+      const py = 1.5 + (fraction * 85);
       plat.position.set(px, py, pz);
       scene.add(plat);
-      volcanoPlatforms.push({ x: px, y: py + 0.6, z: pz });
+      volcanoPlatforms.push({ x: px, y: py + 0.8, z: pz }); // പ്ലാറ്റ്‌ഫോമിന്റെ കൃത്യമായ മുകളിലെ ഉപരിതലം (Surface)
     }
 
-    // 🎤 കോൺസേർട്ട് സ്റ്റേജും ഇരിപ്പിടങ്ങളും (Solid Stage Standing Fix)
+    // 🎤 കോൺസേർട്ട് സ്റ്റേജ്
     const stageG = new THREE.Group();
     const sFloor = new THREE.Mesh(new THREE.BoxGeometry(45, 2, 24), new THREE.MeshStandardMaterial({ color: 0x78350f })); sFloor.position.y = 1.0; stageG.add(sFloor);
     const sWall = new THREE.Mesh(new THREE.BoxGeometry(45, 16, 1), new THREE.MeshStandardMaterial({ color: 0x1e1b4b })); sWall.position.set(0, 8, -11.5); stageG.add(sWall);
     stageG.position.set(0, 0, -320); scene.add(stageG);
 
+    // 🪑 കസേരകളും ശരിയായ ഇരിപ്പും (Proper Seating Height Fix)
     const chairsList = [];
     for (let r = 0; r < 5; r++) {
       for (let c = -8; c <= 8; c++) {
@@ -491,6 +491,13 @@
       worldInteractables.push({ mesh: dragonMesh, type: 'dragon', prompt: '🐉 Ride Flying Dragon', isFlying: true, seatY: 3.5 });
     }, undefined, (e) => console.log('Dragon load error', e));
 
+    // 🦈 നദിയിൽ നീന്തുന്ന സ്രാവ് (Shark in River Restored)
+    let riverShark = null;
+    gltfLoader.load('/shark.glb', (gltf) => {
+      riverShark = gltf.scene; riverShark.scale.set(3.2, 3.2, 3.2);
+      riverShark.position.set(220, -0.6, 60); scene.add(riverShark);
+    }, undefined, (e) => console.log('Shark load error', e));
+
     function loadMech(x, z) {
       gltfLoader.load('/mech.glb', (gltf) => {
         const m = gltf.scene; m.scale.set(2.8, 2.8, 2.8); m.position.set(x, 0, z); scene.add(m);
@@ -499,13 +506,6 @@
     }
     loadMech(70, 80);
     loadMech(-140, -60);
-
-    // 🐋 കടലിൽ നീന്തുന്ന 2-Player തിമിംഗലം (Whale Sea Ride Fix)
-    let whaleMesh = null;
-    gltfLoader.load('/Whale.glb', (gltf) => {
-      whaleMesh = gltf.scene; whaleMesh.scale.set(4.5, 4.5, 4.5); whaleMesh.position.set(0, -1.5, 880); scene.add(whaleMesh);
-      worldInteractables.push({ mesh: whaleMesh, type: 'whale', prompt: '🐋 Ride Sea Whale (Seat 1)', seatY: 2.5, isSeaRide: true });
-    }, undefined, (e) => console.log('Whale load error', e));
 
     function loadDino(file, scale, x, z, prompt) {
       gltfLoader.load(file, (gltf) => {
@@ -533,7 +533,7 @@
       }
     }, undefined, (e) => console.log('Tree load error', e));
 
-    // 🧑‍🤝‍🧑 ക്യാരക്ടർ നേരെ നടക്കാൻ ക്രമീകരിച്ച റിയലിസ്റ്റിക് മോഡലുകൾ (Facing Direction Fix)
+    // 🧑‍🤝‍🧑 ക്യാരക്ടർ മോഡൽ
     let myPlayer = new THREE.Group(); 
     scene.add(myPlayer);
 
@@ -544,7 +544,7 @@
         const charMesh = gltf.scene;
         charMesh.scale.set(1.8, 1.8, 1.8);
         charMesh.position.set(0, 0, 0);
-        charMesh.rotation.y = 0; // ഇനി ഒരിക്കലും പുറകോട്ട് തിരിയില്ല, നേരെ നടക്കും
+        charMesh.rotation.y = 0;
         myPlayer.add(charMesh);
       }, undefined, (error) => { console.error("Avatar Load Error:", error); });
     }
@@ -564,9 +564,7 @@
 
     socket.on('ownerVerified', (d) => {
       isOwner = d.isOwner; unlockedBeast = d.unlockedBeast; hasVideoPass = d.hasVideoPass;
-      if (isOwner) {
-        document.getElementById('owner-tag').classList.remove('hidden');
-      }
+      if (isOwner) document.getElementById('owner-tag').classList.remove('hidden');
       renderRooms(d.rooms);
     });
 
@@ -574,7 +572,7 @@
       document.getElementById('online-users-count').innerText = st.onlineCount;
     });
 
-    // 👆 360° ടച്ച് ക്യാമറ (Look around sky & land)
+    // 👆 360° ടച്ച് ക്യാമറ
     let isDragging = false, prevX = 0, prevY = 0, cameraAngleX = 0, cameraAngleY = 0.25;
     window.addEventListener('touchstart', (e) => {
       if (e.target.closest('#joystick-base') || e.target.closest('#ui-layer') || e.target.closest('.modal') || e.target.closest('button')) return;
@@ -591,17 +589,17 @@
 
     // 🌐 10 ഭാഷകൾ
     const multiLangDict = {
-      ml: { server: "🌍 സെർവർ", lang: "⚙️ ഭാഷ", prof: "👤 പ്രൊഫൈൽ", parkour: "🌋 വോൾക്കാനോ ടോപ്പ്", concert: "🎤 കോൺസേർട്ട് & സീറ്റ്", dragon: "🐉 പറക്കുന്ന ഡ്രാഗൺ", mech: "🤖 2-Player മെക്ക്", dino: "🦖 2-Player ദിനോസർ", whale: "🐋 2-Player തിമിംഗലം", friends: "🤝 സുഹൃത്തുക്കൾ", group: "💬 ഗ്രൂപ്പുകൾ" },
-      en: { server: "🌍 Server", lang: "⚙️ Lang", prof: "👤 Profile", parkour: "🌋 Volcano Top", concert: "🎤 Concert & Seats", dragon: "🐉 Flying Dragon", mech: "🤖 2-Player Mech", dino: "🦖 2-Player Dino", whale: "🐋 2-Player Whale", friends: "🤝 Friends", group: "💬 Lounges" },
-      hi: { server: "🌍 सर्वर", lang: "⚙️ भाषा", prof: "👤 प्रोफाइल", parkour: "🌋 ज्वालामुखी शीर्ष", concert: "🎤 कॉन्सर्ट", dragon: "🐉 उड़ने वाला ड्रैगन", mech: "🤖 2-प्लेयर मेक", dino: "🦖 2-प्लेयर डायनासोर", whale: "🐋 2-प्लेयर व्हेल", friends: "🤝 दोस्त", group: "💬 समूह" },
-      fa: { server: "🌍 سرور", lang: "⚙️ زبان", prof: "👤 پروفایل", parkour: "🌋 قله آتشفشان", concert: "🎤 کنسرت", dragon: "🐉 اژدهای پرنده", mech: "🤖 مک دو نفره", dino: "🦖 دایناسور دو نفره", whale: "🐋 نهنگ آبی", friends: "🤝 دوستان", group: "💬 گروه‌ها" },
-      tg: { server: "🌍 Сервер", lang: "⚙️ Забон", prof: "👤 Профил", parkour: "🌋 Қуллаи вулқон", concert: "🎤 Консерт", dragon: "🐉 Аждаҳо", mech: "🤖 Мех 2-нафара", dino: "🦖 Динозавр", whale: "🐋 Наҳанг", friends: "🤝 Дӯстон", group: "💬 Гурӯҳҳо" },
-      uz: { server: "🌍 Server", lang: "⚙️ Til", prof: "👤 Profil", parkour: "🌋 Vulqon cho‘qqisi", concert: "🎤 Konsert", dragon: "🐉 Ajdaho", mech: "🤖 2 kishilik Mex", dino: "🦖 Dinozavr", whale: "🐋 Kit", friends: "🤝 Do‘stlar", group: "💬 Guruhlar" },
-      ru: { server: "🌍 Сервер", lang: "⚙️ Язык", prof: "👤 Профиль", parkour: "🌋 Вершина вулкана", concert: "🎤 Концерт", dragon: "🐉 Дракон", mech: "🤖 2-местный Мех", dino: "🦖 Динозавр", whale: "🐋 Кит", friends: "🤝 Друзья", group: "💬 Группы" },
-      zh: { server: "🌍 服务器", lang: "⚙️ 语言", prof: "👤 个人资料", parkour: "🌋 火山之巅", concert: "🎤 音乐会", dragon: "🐉 飞龙", mech: "🤖 双人机甲", dino: "🦖 双人恐龙", whale: "🐋 蓝鲸", friends: "🤝 好友", group: "💬 休息室" },
-      it: { server: "🌍 Server", lang: "⚙️ Lingua", prof: "👤 Profilo", parkour: "🌋 Cima Vulcano", concert: "🎤 Concerto", dragon: "🐉 Drago Volante", mech: "🤖 Mech 2 Giocatori", dino: "🦖 Dinosauro", whale: "🐋 Balenottera", friends: "🤝 Amici", group: "💬 Gruppi" },
-      my: { server: "🌍 ဆာဗာ", lang: "⚙️ ဘာသာစကား", prof: "👤 ပရိုဖိုင်", parkour: "🌋 မီးတောင်ထိပ်", concert: "🎤 ဖျော်ဖြေပွဲ", dragon: "🐉 နဂါး", mech: "🤖 ၂ ယောက်စီး စက်ရုပ်", dino: "🦖 ဒိုင်နိုဆော", whale: "🐋 ဝေလငါး", friends: "🤝 သူငယ်ချင်းများ", group: "💬 အဖွဲ့များ" },
-      id: { server: "🌍 Server", lang: "⚙️ Bahasa", prof: "👤 Profil", parkour: "🌋 Puncak Gunung", concert: "🎤 Konser", dragon: "🐉 Naga Terbang", mech: "🤖 Mech 2 Pemain", dino: "🦖 Dinosaurus", whale: "🐋 Paus Biru", friends: "🤝 Teman", group: "💬 Grup" }
+      ml: { server: "🌍 സെർവർ", lang: "⚙️ ഭാഷ", prof: "👤 പ്രൊഫൈൽ", parkour: "🌋 വോൾക്കാനോ ടോപ്പ്", concert: "🎤 കോൺസേർട്ട് & സീറ്റ്", dragon: "🐉 പറക്കുന്ന ഡ്രാഗൺ", mech: "🤖 2-Player മെക്ക്", dino: "🦖 2-Player ദിനോസർ", friends: "🤝 സുഹൃത്തുക്കൾ", group: "💬 ഗ്രൂപ്പുകൾ" },
+      en: { server: "🌍 Server", lang: "⚙️ Lang", prof: "👤 Profile", parkour: "🌋 Volcano Top", concert: "🎤 Concert & Seats", dragon: "🐉 Flying Dragon", mech: "🤖 2-Player Mech", dino: "🦖 2-Player Dino", friends: "🤝 Friends", group: "💬 Lounges" },
+      hi: { server: "🌍 सर्वर", lang: "⚙️ भाषा", prof: "👤 प्रोफाइल", parkour: "🌋 ज्वालामुखी शीर्ष", concert: "🎤 कॉन्सर्ट", dragon: "🐉 उड़ने वाला ड्रैगन", mech: "🤖 2-प्लेयर मेक", dino: "🦖 2-प्लेयर डायनासोर", friends: "🤝 दोस्त", group: "💬 समूह" },
+      fa: { server: "🌍 سرور", lang: "⚙️ زبان", prof: "👤 پروفایل", parkour: "🌋 قله آتشفشان", concert: "🎤 کنسرت", dragon: "🐉 اژدهای پرنده", mech: "🤖 مک دو نفره", dino: "🦖 دایناسور دو نفره", friends: "🤝 دوستان", group: "💬 گروه‌ها" },
+      tg: { server: "🌍 Сервер", lang: "⚙️ Забон", prof: "👤 Профил", parkour: "🌋 Қуллаи вулқон", concert: "🎤 Консерт", dragon: "🐉 Аждаҳо", mech: "🤖 Мех 2-нафара", dino: "🦖 Динозавр", friends: "🤝 Дӯстон", group: "💬 Гурӯҳҳо" },
+      uz: { server: "🌍 Server", lang: "⚙️ Til", prof: "👤 Profil", parkour: "🌋 Vulqon cho‘qqisi", concert: "🎤 Konsert", dragon: "🐉 Ajdaho", mech: "🤖 2 kishilik Mex", dino: "🦖 Dinozavr", friends: "🤝 Do‘stlar", group: "💬 Guruhlar" },
+      ru: { server: "🌍 Сервер", lang: "⚙️ Язык", prof: "👤 Профиль", parkour: "🌋 Вершина вулкана", concert: "🎤 Концерт", dragon: "🐉 Дракон", mech: "🤖 2-местный Мех", dino: "🦖 Динозавр", friends: "🤝 Друзья", group: "💬 Группы" },
+      zh: { server: "🌍 服务器", lang: "⚙️ 语言", prof: "👤 个人资料", parkour: "🌋 火山之巅", concert: "🎤 音乐会", dragon: "🐉 飞龙", mech: "🤖 双人机甲", dino: "🦖 双人恐龙", friends: "🤝 好友", group: "💬 休息室" },
+      it: { server: "🌍 Server", lang: "⚙️ Lingua", prof: "👤 Profilo", parkour: "🌋 Cima Vulcano", concert: "🎤 Concerto", dragon: "🐉 Drago Volante", mech: "🤖 Mech 2 Giocatori", dino: "🦖 Dinosauro", friends: "🤝 Amici", group: "💬 Gruppi" },
+      my: { server: "🌍 ဆာဗာ", lang: "⚙️️ ဘာသာစကား", prof: "👤 ပရိုဖိုင်", parkour: "🌋 မီးတောင်ထိပ်", concert: "🎤 ဖျော်ဖြေပွဲ", dragon: "🐉 နဂါး", mech: "🤖 ၂ ယောက်စီး စက်ရုပ်", dino: "🦖 ဒိုင်နိုဆော", friends: "🤝 သူငယ်ချင်းများ", group: "💬 အဖွဲ့များ" },
+      id: { server: "🌍 Server", lang: "⚙️ Bahasa", prof: "👤 Profil", parkour: "🌋 Puncak Gunung", concert: "🎤 Konser", dragon: "🐉 Naga Terbang", mech: "🤖 Mech 2 Pemain", dino: "🦖 Dinosaurus", friends: "🤝 Teman", group: "💬 Grup" }
     };
 
     window.applyAppLanguage = (code) => {
@@ -615,7 +613,6 @@
       document.getElementById('ui-dock-dragon').innerText = t.dragon;
       document.getElementById('ui-dock-mech').innerText = t.mech;
       document.getElementById('ui-dock-dino').innerText = t.dino;
-      document.getElementById('ui-dock-whale').innerText = t.whale;
       document.getElementById('ui-dock-friends').innerText = t.friends;
       document.getElementById('ui-dock-group').innerText = t.group;
       alert(`UI Language switched to: ${code.toUpperCase()}`);
@@ -698,7 +695,6 @@
 
     window.shareToTelegram = () => window.open(`https://t.me/share/url?url=${encodeURIComponent(SHARE_URL)}&text=${encodeURIComponent("Join me on GlobeVibe 3D Metaverse!")}`);
     window.shareToWhatsApp = () => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent("Join GlobeVibe 3D Metaverse: " + SHARE_URL)}`);
-    window.shareToInstagram = () => { navigator.clipboard.writeText(SHARE_URL); alert("📋 Bot Link copied to clipboard!"); };
     window.copyMetaverseLink = () => { navigator.clipboard.writeText(SHARE_URL); alert("📋 Bot Link copied to clipboard!"); };
 
     window.saveUserProfile = () => {
@@ -727,10 +723,10 @@
       const kickBtn = document.getElementById('kick-ball-btn');
       if (dBall < 4.5) { kickBtn.style.display = 'flex'; } else { kickBtn.style.display = 'none'; }
 
-      // 2-Player Passenger Detection (മറ്റൊരു പ്ലെയർ ദിനോസറിലോ റോബോട്ടിലോ തിമിംഗലത്തിലോ ഇരിക്കുമ്പോൾ)
+      // 2-Player Passenger Detection (മറ്റൊരു പ്ലെയർ ദിനോസറിലോ റോബോട്ടിലോ ഇരിക്കുമ്പോൾ)
       for (let id in otherPlayers) {
         const p = otherPlayers[id];
-        if (['dino', 'mech', 'whale'].includes(p.activeRide)) {
+        if (['dino', 'mech'].includes(p.activeRide)) {
           const d = myPlayer.position.distanceTo(new THREE.Vector3(p.x, p.y, p.z));
           if (d < 5.5 && activeRide === 'walk') {
             nearbyTarget = { type: p.activeRide + '_passenger', hostId: id, name: p.name, rideType: p.activeRide };
@@ -742,7 +738,7 @@
         }
       }
 
-      // സ്റ്റേജിൽ പാട്ടുപാടാൻ
+      // സ്റ്റേജ്
       if (myPlayer.position.distanceTo(stageG.position) < 25) {
         nearbyTarget = { type: 'sing' };
         const pBtn = document.getElementById('proximity-prompt');
@@ -750,6 +746,7 @@
         pBtn.style.display = 'block';
         return;
       }
+      // കസേരകൾ
       for (let ch of chairsList) {
         if (myPlayer.position.distanceTo(ch.position) < 3.2) {
           nearbyTarget = { type: 'seat', pos: ch.position };
@@ -769,6 +766,22 @@
         if (found) { nearbyTarget = found; pBtn.innerText = found.prompt; pBtn.style.display = 'block'; return; }
         else { nearbyTarget = null; pBtn.style.display = 'none'; }
       }
+
+      let nearP = null;
+      for (let id in otherPlayers) {
+        if (id !== socket.id) {
+          const dist = myPlayer.position.distanceTo(new THREE.Vector3(otherPlayers[id].x, otherPlayers[id].y, otherPlayers[id].z));
+          if (dist < 5) { nearP = otherPlayers[id]; break; }
+        }
+      }
+      const pPrompt = document.getElementById('player-interact-prompt');
+      if (nearP) {
+        nearbyPlayerId = nearP.id;
+        pPrompt.innerText = `👤 Interact with ${nearP.name} (Tap)`;
+        pPrompt.style.display = 'block';
+      } else {
+        nearbyPlayerId = null; pPrompt.style.display = 'none';
+      }
     }
 
     window.interactWithNearbyTarget = () => {
@@ -784,7 +797,6 @@
         return;
       }
 
-      // സ്റ്റേജിൽ കൃത്യമായി ഉറച്ചുനിൽക്കുന്നു (Solid Stage Fix)
       if (nearbyTarget.type === 'sing') {
         currentBaseY = 2.0;
         myPlayer.position.set(0, 2.0, -320);
@@ -793,14 +805,16 @@
         alert("🎤 Standing on Concert Stage! Mic is LIVE!");
         return;
       }
+
+      // കസേരയിൽ കൃത്യമായി മുകളിൽ ഇരിക്കുന്നു (Proper Seating Fix)
       if (nearbyTarget.type === 'seat') {
-        currentBaseY = 1.0;
-        myPlayer.position.set(nearbyTarget.pos.x, 1.0, nearbyTarget.pos.z);
+        currentBaseY = 1.35; // കസേരയ്ക്ക് മുകളിലായി ഇരിക്കുന്നു
+        myPlayer.position.set(nearbyTarget.pos.x, 1.35, nearbyTarget.pos.z);
         document.getElementById('dismount-btn').style.display = 'block';
         return;
       }
 
-      if (['dragon', 'mech', 'dino', 'whale'].includes(nearbyTarget.type) && !unlockedBeast) {
+      if (['dragon', 'mech', 'dino'].includes(nearbyTarget.type) && !unlockedBeast) {
         openBox('stars-box'); alert("⭐ Unlock Giants & Rides with Stars Pass!"); return;
       }
 
@@ -858,7 +872,6 @@
     window.teleportDragonArea = () => { myPlayer.position.set(-60, 0, 30); currentBaseY = 0; alert("🐉 Reached Flying Dragon Nest!"); };
     window.teleportMechArea = () => { myPlayer.position.set(70, 0, 70); currentBaseY = 0; alert("🤖 Reached Giant Mech Bay!"); };
     window.teleportDinoArea = () => { myPlayer.position.set(50, 0, 90); currentBaseY = 0; alert("🦖 Reached Jurassic Dinosaur Zone!"); };
-    window.teleportWhaleSeaArea = () => { myPlayer.position.set(0, 0, 840); currentBaseY = 0; alert("🐋 Reached Sea Whale Oceanic Bay!"); };
     window.teleportParkourZone = () => { currentParkourIndex = 0; myPlayer.position.set(volcanoPlatforms[0].x, volcanoPlatforms[0].y + 1, volcanoPlatforms[0].z); currentBaseY = volcanoPlatforms[0].y; };
     window.teleportConcert = () => { myPlayer.position.set(0, 2.0, -315); currentBaseY = 2.0; alert("🎤 Landed safely on Concert Stage!"); };
     window.teleportFootballField = () => { myPlayer.position.set(0, 0, -35); currentBaseY = 0; };
@@ -955,15 +968,33 @@
         weatherMesh.geometry.attributes.position.needsUpdate = true;
       }
 
-      // സോളിഡ് ബ്രിഡ്ജ് & സ്റ്റേജ് കൊളീഷൻ (Solid Standing Logic)
-      const onBridge = Math.abs(myPlayer.position.x - 220) < 22 && Math.abs(myPlayer.position.z) < 8;
+      // നദിയിൽ നീന്തൽ & സോളിഡ് ബ്രിഡ്ജ് കൊളീഷൻ (River Swimming & Solid Bridge Surface Fix)
+      const onBridge = Math.abs(myPlayer.position.x - 220) < 24 && Math.abs(myPlayer.position.z) < 9.0;
+      const inRiverWater = Math.abs(myPlayer.position.x - 220) < 20 && !onBridge;
       const onStage = Math.abs(myPlayer.position.x) < 22 && Math.abs(myPlayer.position.z - (-320)) < 12;
-      if (onStage && activeRide === 'walk') {
-        currentBaseY = 2.0;
-      } else if (onBridge && activeRide === 'walk') {
-        currentBaseY = 1.0;
-      } else if (currentParkourIndex === -1 && activeRide === 'walk') {
-        currentBaseY = 0;
+      const swimEl = document.getElementById('swim-indicator');
+
+      if (inRiverWater && activeRide === 'walk') {
+        isSwimming = true;
+        currentBaseY = -1.2; // നദിയിലെ വെള്ളത്തിൽ ആഴ്ന്നു നീന്തുന്നു
+        swimEl.style.display = 'block';
+      } else {
+        isSwimming = false;
+        swimEl.style.display = 'none';
+
+        if (onStage && activeRide === 'walk') {
+          currentBaseY = 2.0;
+        } else if (onBridge) {
+          currentBaseY = 2.2; // പാലത്തിന് മുകളിൽ വ്യക്തമായി നിൽക്കുന്നു (ദിനോസറുകൾക്കും കളിക്കാരനും)
+        } else if (currentParkourIndex === -1 && activeRide === 'walk') {
+          currentBaseY = 0;
+        }
+      }
+
+      // സ്രാവ് നദിയിൽ നീന്തുന്നു
+      if (riverShark) {
+        riverShark.position.z += Math.sin(Date.now() * 0.002) * 0.4;
+        riverShark.rotation.y = Math.sin(Date.now() * 0.002) * 0.3;
       }
 
       // പൂക്കൾ
@@ -1016,14 +1047,6 @@
         dragonMesh.rotation.y = t + Math.PI / 2;
       }
 
-      // 🐋 തിമിംഗലം കടലിലൂടെ നീന്തുന്നു (Whale Oceanic Swimming)
-      if (whaleMesh && activeRide !== 'whale' && !activeRide.includes('whale_passenger')) {
-        const wt = Date.now() * 0.0008;
-        whaleMesh.position.x = Math.sin(wt) * 120;
-        whaleMesh.position.z = 880 + Math.cos(wt) * 60;
-        whaleMesh.rotation.y = Math.sin(wt) * 0.4;
-      }
-
       // 2-Player Passenger Sync
       if (activeRide.endsWith('_passenger') && currentHostVehicleId && otherPlayers[currentHostVehicleId]) {
         const host = otherPlayers[currentHostVehicleId];
@@ -1039,10 +1062,9 @@
           myPlayer.position.y = currentBaseY;
         }
 
-        const spd = (['dragon'].includes(activeRide) ? 1.8 : (['mech', 'dino', 'whale'].includes(activeRide) ? 1.2 : 0.45));
+        const spd = isSwimming ? 0.25 : ((['dragon'].includes(activeRide) ? 1.8 : (['mech', 'dino'].includes(activeRide) ? 1.2 : 0.45)));
 
         if (moveX !== 0 || moveZ !== 0) {
-          // കാമറയുടെ കോണിലേക്ക് പ്ലെയർ നേരെ തിരിഞ്ഞ് നടക്കുന്നു (Movement Direction Fix)
           const forwardX = moveX * Math.cos(cameraAngleX) + moveZ * Math.sin(cameraAngleX);
           const forwardZ = -moveX * Math.sin(cameraAngleX) + moveZ * Math.cos(cameraAngleX);
 
@@ -1051,7 +1073,7 @@
           myPlayer.rotation.y = Math.atan2(forwardX, forwardZ);
 
           if (nearbyTarget && activeRide !== 'walk' && nearbyTarget.mesh) {
-            nearbyTarget.mesh.position.set(myPlayer.position.x, nearbyTarget.isFlying ? myPlayer.position.y - nearbyTarget.seatY : (nearbyTarget.isSeaRide ? -1.5 : 0), myPlayer.position.z);
+            nearbyTarget.mesh.position.set(myPlayer.position.x, nearbyTarget.isFlying ? myPlayer.position.y - nearbyTarget.seatY : (onBridge ? 2.2 : 0), myPlayer.position.z);
             nearbyTarget.mesh.rotation.y = myPlayer.rotation.y;
           }
 
