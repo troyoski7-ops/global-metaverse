@@ -19,15 +19,17 @@ let pendingRequests = {};
 let allTimeUsers = new Set();
 
 bot.onText(/\/start(@\w+)?/, (msg) => {
-
   allTimeUsers.add(msg.chat.id);
   bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nConcerts, 2-Player Dinosaurs, Mech, Football, Video Calls & Telegram Stars!", {
     parse_mode: "Markdown",
     reply_markup: {
-      inline_keyboard: [[{ text: "🚀 Enter Metaverse", web_app: { url: WEB_APP_URL } }]]
+      inline_keyboard: [
+        [{ text: "🚀 Enter Metaverse", url: WEB_APP_URL }]
+      ]
     }
   });
 });
+
 
 bot.on('pre_checkout_query', (query) => bot.answerPreCheckoutQuery(query.id, true));
 
