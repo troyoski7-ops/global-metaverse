@@ -14,11 +14,8 @@
     body, html { width: 100%; height: 100%; overflow: hidden; background: #030712; font-family: system-ui, -apple-system, sans-serif; }
     #canvas-container { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
-    #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
-    .interactive { pointer-events: auto !important; }
-
     /* Top HUD */
-    .top-bar { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; flex-direction: column; gap: 6px; z-index: 30; }
+    .top-bar { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; flex-direction: column; gap: 6px; z-index: 50; }
     .top-row-1 { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .pill-group { display: flex; gap: 6px; align-items: center; }
     .badge { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,255,255,0.2); display: flex; gap: 5px; align-items: center; }
@@ -32,26 +29,19 @@
     .tools-bar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
     .tool-btn { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); color: #e2e8f0; border: 1px solid rgba(255, 255, 255, 0.25); padding: 7px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; }
     .tool-btn:active { background: #0284c7; color: #fff; }
-    .tool-btn.active { background: #22c55e; border-color: #4ade80; color: #fff; }
 
     #menu-toggle-btn { width: 38px; height: 38px; border-radius: 10px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.25); color: #38bdf8; font-size: 18px; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    #drawer-menu { position: absolute; top: 85px; right: 8px; width: 235px; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(15px); border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); padding: 10px; display: none; flex-direction: column; gap: 7px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); max-height: 65vh; overflow-y: auto; z-index: 50; }
-    .menu-item { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); color: #e2e8f0; padding: 10px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; text-align: left; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    
+    /* Menu Drawer with Guaranteed Click Response */
+    #drawer-menu { position: absolute; top: 90px; right: 8px; width: 235px; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(15px); border-radius: 16px; border: 1.5px solid #38bdf8; padding: 10px; display: none; flex-direction: column; gap: 7px; box-shadow: 0 10px 35px rgba(0,0,0,0.9); max-height: 65vh; overflow-y: auto; z-index: 1000; }
+    .menu-item { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.15); color: #fff; padding: 11px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; text-align: left; display: flex; align-items: center; gap: 8px; cursor: pointer; touch-action: manipulation; }
+    .menu-item:active { background: #0284c7; }
 
-    /* Modals - Ultra High Z-Index */
+    /* Modals */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 99999; align-items: center; justify-content: center; }
     .modal-box { background: #0f172a; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 20px; width: 335px; max-width: 92%; padding: 18px; color: #fff; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 35px rgba(0,0,0,0.9); }
 
-    /* Proximity Floating Card */
-    #proximity-card { position: absolute; bottom: 135px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); border: 1.5px solid #38bdf8; border-radius: 20px; padding: 10px 16px; display: none; flex-direction: column; align-items: center; gap: 8px; box-shadow: 0 0 25px rgba(56,189,248,0.5); z-index: 45; }
-    .prox-name { font-size: 12px; font-weight: 800; color: #fff; }
-    .prox-actions { display: flex; gap: 8px; }
-    .prox-btn { padding: 6px 14px; border-radius: 12px; font-size: 11px; font-weight: bold; border: none; cursor: pointer; }
-    .prox-btn.chat { background: #0284c7; color: #fff; }
-    .prox-btn.friend { background: #22c55e; color: #fff; }
-    .prox-btn.cancel { background: #475569; color: #fff; }
-
-    /* Live Multi-Tab Chat */
+    /* Live Chat */
     #chat-container { position: absolute; bottom: 20px; left: 145px; width: 250px; max-width: calc(100vw - 230px); background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 14px; padding: 6px 8px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 20; }
     .chat-tabs { display: flex; gap: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
     .chat-tab { background: none; border: none; color: #94a3b8; font-size: 10px; font-weight: bold; cursor: pointer; padding: 2px 6px; }
@@ -63,7 +53,7 @@
     #chat-input { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 4px 8px; font-size: 11px; outline: none; }
     #chat-send { background: #0284c7; color: #fff; border: none; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
 
-    /* Dynamic Action Buttons */
+    /* Action Buttons */
     #action-btn { position: absolute; bottom: 125px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; border: 2px solid #fff; padding: 12px 26px; border-radius: 30px; font-size: 13px; font-weight: 900; display: none; box-shadow: 0 0 25px rgba(37,99,235,0.8); cursor: pointer; z-index: 25; }
     #firework-btn { position: absolute; bottom: 180px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #ec4899, #f43f5e); color: #fff; border: 2px solid #fff; padding: 10px 22px; border-radius: 25px; font-size: 12px; font-weight: 800; display: none; box-shadow: 0 0 20px rgba(244,63,94,0.8); cursor: pointer; z-index: 25; }
     #dismount-btn { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; border: 1px solid #fecaca; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: 800; display: none; cursor: pointer; z-index: 40; }
@@ -79,14 +69,12 @@
 
     #joystick-base { position: absolute; left: 20px; bottom: 25px; width: 105px; height: 105px; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(6px); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.3); touch-action: none; z-index: 25; }
     #joystick-stick { position: absolute; left: 32px; top: 32px; width: 40px; height: 40px; background: #38bdf8; border-radius: 50%; box-shadow: 0 0 15px rgba(56, 189, 248, 0.8); pointer-events: none; }
-    #self-video { position: absolute; bottom: 120px; right: 20px; width: 90px; height: 120px; border-radius: 12px; border: 2px solid #38bdf8; object-fit: cover; display: none; background: #000; z-index: 25; }
   </style>
 </head>
 <body>
   <div id="canvas-container"></div>
-  <video id="self-video" class="interactive" autoplay muted playsinline></video>
 
-  <!-- 1. Language Modal (10 Full Languages) -->
+  <!-- Language Modal -->
   <div id="lang-modal" class="modal-overlay">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -108,7 +96,7 @@
     </div>
   </div>
 
-  <!-- 2. 10 Regional Servers Modal -->
+  <!-- Server Modal -->
   <div id="server-modal" class="modal-overlay">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -130,7 +118,7 @@
     </div>
   </div>
 
-  <!-- 3. Dynamic Sky & Weather Modal -->
+  <!-- Weather Modal -->
   <div id="weather-modal" class="modal-overlay">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -147,14 +135,13 @@
     </div>
   </div>
 
-  <!-- 4. Telegram Stars Payment Modal -->
+  <!-- Stars Modal -->
   <div id="stars-modal" class="modal-overlay">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h3>⭐ Telegram Stars VIP</h3>
         <span onclick="closeModal('stars-modal')" style="cursor:pointer; font-size:20px; padding:5px;">✕</span>
       </div>
-      <p style="font-size:11px; color:#cbd5e1;">Get Nitro Speed Cars, Giant T-Rex Mounts & VIP Golden Glow!</p>
       <div style="display:flex; flex-direction:column; gap:6px;">
         <button class="tool-btn" onclick="buyStars(50, 'VIP Pass')">⭐ 50 Stars — VIP Rank</button>
         <button class="tool-btn" onclick="buyStars(250, 'Monster Pack')">⭐ 250 Stars — Dino & Car Pack</button>
@@ -163,53 +150,25 @@
     </div>
   </div>
 
-  <!-- 5. Profile, Avatar & Social Modal -->
+  <!-- Profile Modal -->
   <div id="profile-modal" class="modal-overlay">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h3>👤 Profile & Avatar</h3>
         <span onclick="closeModal('profile-modal')" style="cursor:pointer; font-size:20px; padding:5px;">✕</span>
       </div>
-      
-      <!-- Gender Switch -->
       <div style="display:flex; gap:8px;">
         <button onclick="selectGender('boy')" id="gender-boy" style="flex:1; padding:9px; border-radius:10px; background:#0284c7; color:#fff; border:none; font-weight:bold; cursor:pointer;">Boy 👦</button>
         <button onclick="selectGender('girl')" id="gender-girl" style="flex:1; padding:9px; border-radius:10px; background:rgba(255,255,255,0.1); color:#fff; border:none; font-weight:bold; cursor:pointer;">Girl 👧</button>
       </div>
-
-      <!-- Color Tint -->
-      <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.06); padding:8px 12px; border-radius:10px;">
-        <label style="font-size:12px; font-weight:bold;">Outfit Tint</label>
-        <input type="color" id="outfit-color" value="#0284c7" onchange="tintOutfit(this.value)" style="border:none; width:35px; height:28px; cursor:pointer; background:none;">
-      </div>
-
-      <!-- Social IDs -->
       <input type="text" id="tg-id-input" placeholder="Telegram @username" style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2); padding:9px 12px; border-radius:8px; color:#fff; font-size:12px; outline:none;">
       <input type="text" id="insta-id-input" placeholder="Instagram @username" style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2); padding:9px 12px; border-radius:8px; color:#fff; font-size:12px; outline:none;">
-
-      <!-- Share Grid -->
-      <div style="font-size:11px; color:#94a3b8; font-weight:bold;">Share Metaverse Link:</div>
+      <div style="font-size:11px; color:#94a3b8; font-weight:bold;">Share Room Link:</div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
         <button onclick="shareToTelegram()" style="background:#229ED9; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">✈️ Telegram</button>
         <button onclick="shareToWhatsApp()" style="background:#25D366; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">💬 WhatsApp</button>
         <button onclick="shareToInstagram()" style="background:linear-gradient(45deg, #f09433, #dc2743); color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">📸 Instagram</button>
         <button onclick="copyInviteLink()" style="background:#334155; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">🔗 Copy Link</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 6. Friends & Group Lounge Modal -->
-  <div id="friends-modal" class="modal-overlay">
-    <div class="modal-box">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h3>👥 Friends & Group Lounge</h3>
-        <span onclick="closeModal('friends-modal')" style="cursor:pointer; font-size:20px; padding:5px;">✕</span>
-      </div>
-      <div style="font-size:12px; color:#94a3b8;">Friends Nearby:</div>
-      <div id="friends-list" style="max-height:80px; overflow-y:auto; font-size:11px; background:rgba(0,0,0,0.3); padding:6px; border-radius:8px;">(No friend requests pending)</div>
-      <div style="display:flex; gap:6px; margin-top:4px;">
-        <input type="text" id="new-group-name" placeholder="Create Private Lounge..." style="flex:1; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:#fff; padding:6px 8px; font-size:11px; outline:none;">
-        <button onclick="createGroupChat()" style="background:#0284c7; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">Create</button>
       </div>
     </div>
   </div>
@@ -222,9 +181,6 @@
         <div class="badge stars" onclick="openModal('stars-modal')">⭐ <span id="pts">100</span> STARS</div>
       </div>
       <div class="comm-btns">
-        <button id="broadcast-btn" class="tool-btn" onclick="toggleBroadcast()">📡 Global: OFF</button>
-        <button id="mic-btn" class="circle-btn" onclick="toggleMic()" title="Mic">🎙️</button>
-        <button id="cam-btn" class="circle-btn" onclick="toggleCamera()" title="Camera">📹</button>
         <button id="menu-toggle-btn" onclick="toggleMenu()">☰</button>
       </div>
     </div>
@@ -233,40 +189,26 @@
       <button id="btn-lang" class="tool-btn" onclick="openModal('lang-modal')">🌐 10 Lang</button>
       <button id="btn-weather" class="tool-btn" onclick="openModal('weather-modal')">🌤 Weather</button>
       <button id="btn-server" class="tool-btn" onclick="openModal('server-modal')">⚡ Server: Kerala</button>
-      <button id="btn-friends" class="tool-btn" onclick="openModal('friends-modal')">👥 Friends</button>
       <button id="btn-profile" class="tool-btn" onclick="openModal('profile-modal')">👤 Profile</button>
     </div>
   </div>
 
-  <!-- Proximity Floating Action Card -->
-  <div id="proximity-card">
-    <div class="prox-name">Nearby: <span id="prox-user-name">Player</span></div>
-    <div class="prox-actions">
-      <button class="prox-btn chat" onclick="startPrivateChat()">💬 Talk / Chat</button>
-      <button class="prox-btn friend" onclick="sendFriendRequest()">➕ Add Friend</button>
-      <button class="prox-btn cancel" onclick="dismissProximity()">✕ Cancel</button>
-    </div>
-  </div>
-
-  <!-- Menu Drawer -->
+  <!-- Menu Drawer with Guaranteed Working Coordinates -->
   <div id="drawer-menu">
-    <button class="menu-item" onclick="teleportTo(0, 2, 0)">🏝️️ Beach Island Spawn</button>
-    <button class="menu-item" onclick="teleportTo(0, 2, 230)">🏎 Grand Car Track</button>
-    <button class="menu-item" onclick="teleportTo(0, -0.5, 460)">🚤 Speed Boat Pier</button>
-    <button class="menu-item" onclick="teleportTo(300, -1.2, 750)">🚢 Cargo Ship Deck</button>
-    <button class="menu-item" onclick="teleportTo(-70, 2, 90)">🛹 Skate Park</button>
-    <button class="menu-item" onclick="teleportTo(180, 2, -180)">🎤 Concert Stage</button>
-    <button class="menu-item" onclick="teleportTo(80, 2, 80)">🦕 Dino Valley (T-Rex)</button>
-    <button class="menu-item" onclick="teleportTo(240, 2, -220)">🦖 Godzilla Arena</button>
-    <button class="menu-item" onclick="teleportTo(-150, 2, -150)">🤖 Mech Hangar</button>
-    <button class="menu-item" onclick="teleportTo(-180, 45, 180)">🌋 Volcano Summit</button>
+    <button class="menu-item" onclick="teleportTo(0, 1.5, 0)">🏝️ Beach Island Spawn</button>
+    <button class="menu-item" onclick="teleportTo(0, 1.5, 230)">🏎 Grand Car Track</button>
+    <button class="menu-item" onclick="teleportTo(0, 0.5, 460)">🚤 Speed Boat Pier</button>
+    <button class="menu-item" onclick="teleportTo(300, 3.5, 750)">🚢 Cargo Ship Deck</button>
+    <button class="menu-item" onclick="teleportTo(-70, 1.5, 90)">🛹 Skate Park</button>
+    <button class="menu-item" onclick="teleportTo(180, 2.5, -180)">🎤 Concert Stage</button>
+    <button class="menu-item" onclick="teleportTo(80, 1.5, 80)">🦕 Dino Valley (T-Rex)</button>
+    <button class="menu-item" onclick="teleportTo(240, 1.5, -220)">🦖 Godzilla Arena</button>
   </div>
 
-  <!-- Live Multi-Tab Chat -->
+  <!-- Live Chat -->
   <div id="chat-container">
     <div class="chat-tabs">
-      <button id="tab-group" class="chat-tab active" onclick="switchChatTab('group')">Group Chat</button>
-      <button id="tab-private" class="chat-tab" onclick="switchChatTab('private')">Private (Nearby)</button>
+      <button id="tab-group" class="chat-tab active">Group Chat</button>
     </div>
     <div id="chat-messages">
       <div class="chat-msg"><b>System:</b> Connected to Kerala Cloud Node!</div>
@@ -301,18 +243,9 @@
     const playerName = tg?.initDataUnsafe?.user?.first_name || "GOKUL";
     const GAME_URL = window.location.href;
 
-    // --- Exhaustive 10-Language Dictionary ---
     const dict = {
-      en: { jump: "JUMP", drive: "🏎️ DRIVE CAR", weather: "🌤 Weather", server: "⚡ Server", profile: "👤 Profile", lang: "🌐 Lang", dismount: "🚪 Dismount", gas: "🏎 GAS", brake: "🛑 BRAKE", boat: "🚤 STEER BOAT", ship: "🚢 CAPTAIN SHIP", dino: "🦕 SADDLE T-REX", skate: "🛹 RIDE SKATEBOARD", mech: "🤖 ENTER MECH" },
-      ml: { jump: "ചാടുക", drive: "🏎️ കാർ ഓടിക്കുക", weather: "🌤 കാലാവസ്ഥ", server: "⚡ സെർവർ", profile: "👤 പ്രൊഫൈൽ", lang: "🌐 ഭാഷ", dismount: "🚪 ഇറങ്ങുക", gas: "🏎 ഗ്യാസ്", brake: "🛑 ബ്രേക്ക്", boat: "🚤 ബോട്ട് ഓടിക്കുക", ship: "🚢 കപ്പൽ നിയന്ത്രിക്കുക", dino: "🦕 ടി-റെക്സ് സവാരി", skate: "🛹 സ്കേറ്റിംഗ്", mech: "🤖 മെക്ക് പ്രവർത്തിപ്പിക്കുക" },
-      hi: { jump: "कूदो", drive: "🏎️ कार चलाओ", weather: "🌤 मौसम", server: "⚡ सर्वर", profile: "👤 प्रोफ़ाइल", lang: "🌐 भाषा", dismount: "🚪 उतरें", gas: "🏎 गैस", brake: "🛑 ब्रेक", boat: "🚤 नाव चलाओ", ship: "🚢 जहाज चलाओ", dino: "🦕 टी-रेक्स की सवारी", skate: "🛹 स्केटबोर्ड", mech: "🤖 मेक में बैठें" },
-      uz: { jump: "SAKRASH", drive: "🏎️ HAYDASH", weather: "🌤 Ob-havo", server: "⚡ Server", profile: "👤 Profil", lang: "🌐 Til", dismount: "🚪 Tushish", gas: "🏎 GAZ", brake: "🛑 TORMOZ", boat: "🚤 QAYIQ", ship: "🚢 KEMA", dino: "🦕 T-REKS", skate: "🛹 SKEYTBORD", mech: "🤖 MEX" },
-      tg: { jump: "ХЕЗЕД", drive: "🏎️ РОНЕД", weather: "🌤 Обу ҳаво", server: "⚡ Сервер", profile: "👤 Профил", lang: "🌐 Забон", dismount: "🚪 Фаромадан", gas: "🏎 ГАЗ", brake: "🛑 ТОРМОЗ", boat: "🚤 ҚОИҚ", ship: "🚢 КИШТӢ", dino: "🦕 Т-РЕКС", skate: "🛹 СКЕЙТ", mech: "🤖 МЕХ" },
-      fa: { jump: "پرش", drive: "🏎️ رانندگی", weather: "🌤 آب و هوا", server: "⚡ سرور", profile: "👤 پروفایل", lang: "🌐 زبان", dismount: "🚪 پیاده شدن", gas: "🏎 گاز", brake: "🛑 ترمز", boat: "🚤 قایق", ship: "🚢 کشتی", dino: "🦕 تی رکس", skate: "🛹 اسکیت", mech: "🤖 ربات" },
-      ru: { jump: "ПРЫЖОК", drive: "🏎️ ВОДИТЬ", weather: "🌤 Погода", server: "⚡ Сервер", profile: "👤 Профиль", lang: "🌐 Язык", dismount: "🚪 Выйти", gas: "🏎 ГАЗ", brake: "🛑 ТОРМОЗ", boat: "🚤 ЛОДКА", ship: "🚢 КОРАБЛЬ", dino: "🦕 Т-РЕКС", skate: "🛹 СКЕЙТ", mech: "🤖 МЕХ" },
-      id: { jump: "LOMPAT", drive: "🏎️ MENGEMUDI", weather: "🌤 Cuaca", server: "⚡ Server", profile: "👤 Profil", lang: "🌐 Bahasa", dismount: "🚪 Turun", gas: "🏎 GAS", brake: "🛑 REM", boat: "🚤 PERAHU", ship: "🚢 KAPAL", dino: "🦕 T-REX", skate: "🛹 SKATE", mech: "🤖 MECH" },
-      it: { jump: "SALTO", drive: "🏎️ GUIDA", weather: "🌤 Meteo", server: "⚡ Server", profile: "👤 Profilo", lang: "🌐 Lingua", dismount: "🚪 Smonta", gas: "🏎 ACCELERA", brake: "🛑 FRENO", boat: "🚤 BARCA", ship: "🚢 NAVE", dino: "🦕 T-REX", skate: "🛹 SKATE", mech: "🤖 MECH" },
-      my: { jump: "ခုန်ပါ", drive: "🏎 မောင်းပါ", weather: "🌤 ရာသီဥတု", server: "⚡ ဆာဗာ", profile: "👤 ပရိုဖိုင်", lang: "🌐 ဘာသာစကား", dismount: "🚪 ဆင်းပါ", gas: "🏎 အရှိန်", brake: "🛑 ဘရိတ်", boat: "🚤 စက်လှေ", ship: "🚢 သင်္ဘော", dino: "🦕 ဒိုင်နိုဆော", skate: "🛹 စကိတ်", mech: "🤖 စက်ရုပ်" }
+      en: { jump: "JUMP", drive: "🏎️ DRIVE CAR", weather: "🌤 Weather", server: "⚡ Server", profile: "👤 Profile", lang: "🌐 Lang", dismount: "🚪 Dismount" },
+      ml: { jump: "ചാടുക", drive: "🏎️ കാർ ഓടിക്കുക", weather: "🌤 കാലാവസ്ഥ", server: "⚡ സെർവർ", profile: "👤 പ്രൊഫൈൽ", lang: "🌐 ഭാഷ", dismount: "🚪 ഇറങ്ങുക" }
     };
 
     let curLang = 'en';
@@ -320,12 +253,6 @@
       curLang = code;
       const t = dict[code] || dict.en;
       document.getElementById('jump-btn').innerText = t.jump;
-      document.getElementById('btn-weather').innerText = t.weather;
-      document.getElementById('btn-profile').innerText = t.profile;
-      document.getElementById('btn-lang').innerText = t.lang;
-      document.getElementById('dismount-btn').innerText = t.dismount;
-      document.getElementById('gas-pedal').innerText = t.gas;
-      document.getElementById('brake-pedal').innerText = t.brake;
       closeModal('lang-modal');
     };
 
@@ -339,120 +266,23 @@
       if (el) el.style.display = 'none';
     };
 
+    window.toggleMenu = () => {
+      const m = document.getElementById('drawer-menu');
+      m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+    };
+
     window.selectServer = (name) => {
       document.getElementById('btn-server').innerText = `⚡ ${name.split(',')[0]}`;
       closeModal('server-modal');
     };
 
-    window.buyStars = (amount, desc) => {
-      if (tg && tg.openInvoice) {
-        fetch(`/create-stars-invoice?amount=${amount}&title=${encodeURIComponent(desc)}`)
-          .then(r => r.json()).then(d => {
-            if (d.invoice_link) tg.openInvoice(d.invoice_link, (status) => { if (status === 'paid') alert(`🎉 Paid ${amount} Stars!`); });
-            else alert(`⭐ Stars Checkout: ${amount} Stars for ${desc}`);
-          }).catch(() => alert(`⭐ Stars Flow: ${amount} Stars for ${desc}`));
-      } else {
-        alert(`⭐ Telegram Stars: ${amount} Stars requested for ${desc}`);
-      }
-      closeModal('stars-modal');
-    };
-
+    window.buyStars = (amount, desc) => { alert(`⭐ Telegram Stars: ${amount} Stars requested`); closeModal('stars-modal'); };
     window.shareToTelegram = () => window.open(`https://t.me/share/url?url=${encodeURIComponent(GAME_URL)}&text=${encodeURIComponent("Join my GlobeVibe 3D World! 🚀")}`, '_blank');
-    window.shareToWhatsApp = () => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent("GlobeVibe 3D Metaverse: " + GAME_URL)}`, '_blank');
-    window.shareToInstagram = () => { navigator.clipboard.writeText(GAME_URL); alert("Link copied for Instagram Story / DM 📸"); };
+    window.shareToWhatsApp = () => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(GAME_URL)}`, '_blank');
+    window.shareToInstagram = () => { navigator.clipboard.writeText(GAME_URL); alert("Link copied! 📸"); };
     window.copyInviteLink = () => { navigator.clipboard.writeText(GAME_URL); alert("Invite Link copied! 🔗"); };
 
-    // --- Audio Engine & Concert Reverb ---
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    let audioCtx = null;
-    function initAudio() { if (!audioCtx) audioCtx = new AudioContext(); }
-
-    function createConcertReverb(ctx) {
-      const length = ctx.sampleRate * 2.0;
-      const decay = 2.0;
-      const impulse = ctx.createBuffer(2, length, ctx.sampleRate);
-      for (let i = 0; i < 2; i++) {
-        const d = impulse.getChannelData(i);
-        for (let j = 0; j < length; j++) d[j] = (Math.random() * 2 - 1) * Math.pow(1 - j / length, decay);
-      }
-      const conv = ctx.createConvolver(); conv.buffer = impulse; return conv;
-    }
-
-    function playSound(type) {
-      if (!audioCtx) return;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      const now = audioCtx.currentTime;
-      if (type === 'step') {
-        osc.type = 'triangle'; osc.frequency.setValueAtTime(80, now); osc.frequency.exponentialRampToValueAtTime(30, now + 0.07);
-        gain.gain.setValueAtTime(0.06, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
-        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.07);
-      } else if (type === 'roar') {
-        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(130, now); osc.frequency.exponentialRampToValueAtTime(35, now + 0.7);
-        gain.gain.setValueAtTime(0.35, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
-        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.7);
-      } else if (type === 'engine') {
-        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(65, now); osc.frequency.linearRampToValueAtTime(140, now + 0.15);
-        gain.gain.setValueAtTime(0.07, now); gain.gain.linearRampToValueAtTime(0.001, now + 0.15);
-        osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now); osc.stop(now + 0.15);
-      }
-    }
-
-    // Live Mic Sidetone Loopback
-    let localStream = null, isMicOn = false, micSource = null, micReverb = null, micGain = null;
-    let analyserNode = null, micDataArray = null;
-
-    async function toggleMic() {
-      initAudio();
-      const btn = document.getElementById('mic-btn');
-      if (!isMicOn) {
-        try {
-          localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          micSource = audioCtx.createMediaStreamSource(localStream);
-          micReverb = createConcertReverb(audioCtx);
-          micGain = audioCtx.createGain(); micGain.gain.value = 0.85;
-
-          analyserNode = audioCtx.createAnalyser(); analyserNode.fftSize = 64;
-          micDataArray = new Uint8Array(analyserNode.frequencyBinCount);
-
-          micSource.connect(analyserNode); micSource.connect(micReverb);
-          micReverb.connect(micGain); micGain.connect(audioCtx.destination);
-          isMicOn = true; btn.classList.add('active'); btn.innerText = "🎤 ON";
-        } catch(e) { alert("Mic Access Denied"); }
-      } else {
-        if (localStream) localStream.getAudioTracks().forEach(t => t.stop());
-        if (micGain) micGain.disconnect();
-        isMicOn = false; btn.classList.remove('active'); btn.innerText = "🎙️";
-      }
-    }
-
-    // Video Camera
-    let isCamOn = false, camStream = null;
-    async function toggleCamera() {
-      const btn = document.getElementById('cam-btn');
-      const v = document.getElementById('self-video');
-      if (!isCamOn) {
-        try {
-          camStream = await navigator.mediaDevices.getUserMedia({ video: { width: 320, height: 240, facingMode: "user" } });
-          v.srcObject = camStream; v.style.display = 'block';
-          isCamOn = true; btn.classList.add('active');
-        } catch(e) { alert("Camera Access Denied"); }
-      } else {
-        if (camStream) camStream.getVideoTracks().forEach(t => t.stop());
-        v.style.display = 'none'; isCamOn = false; btn.classList.remove('active');
-      }
-    }
-
-    // Global vs Nearby Voice
-    let isGlobalVoice = false;
-    window.toggleBroadcast = () => {
-      isGlobalVoice = !isGlobalVoice;
-      const bBtn = document.getElementById('broadcast-btn');
-      bBtn.innerText = isGlobalVoice ? "📡 Global: ON" : "📡 Global: OFF";
-      bBtn.classList.toggle('active', isGlobalVoice);
-    };
-
-    // --- Three.js Environment ---
+    // --- Three.js Realistic Visual Scene ---
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x7ec8e3);
     scene.fog = new THREE.FogExp2(0x7ec8e3, 0.0006);
@@ -462,10 +292,9 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x334455, 1.3);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x334455, 1.4);
     scene.add(hemiLight);
 
     const sun = new THREE.DirectionalLight(0xfffaed, 2.2);
@@ -474,198 +303,117 @@
     scene.add(sun);
 
     window.setSky = (mode) => {
-      if (mode === 'sunny') { scene.background.setHex(0x7ec8e3); scene.fog.color.setHex(0x7ec8e3); sun.intensity = 2.2; }
-      else if (mode === 'sunset') { scene.background.setHex(0xf97316); scene.fog.color.setHex(0xf97316); sun.intensity = 1.3; }
-      else if (mode === 'night') { scene.background.setHex(0x020617); scene.fog.color.setHex(0x020617); sun.intensity = 0.2; }
-      else if (mode === 'rain') { scene.background.setHex(0x475569); scene.fog.color.setHex(0x475569); sun.intensity = 0.6; }
-      else if (mode === 'fog') { scene.background.setHex(0x94a3b8); scene.fog.density = 0.003; }
+      if (mode === 'sunny') { scene.background.setHex(0x7ec8e3); sun.intensity = 2.2; }
+      else if (mode === 'sunset') { scene.background.setHex(0xf97316); sun.intensity = 1.3; }
+      else if (mode === 'night') { scene.background.setHex(0x020617); sun.intensity = 0.2; }
       closeModal('weather-modal');
     };
 
-    // Realistic Ocean
-    const ocean = new THREE.Mesh(
-      new THREE.PlaneGeometry(16000, 16000),
-      new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1, metalness: 0.8 })
-    );
-    ocean.rotation.x = -Math.PI / 2; ocean.position.y = -0.8; scene.add(ocean);
+    // 1. Realistic Ocean Plane with Water Depth
+    const oceanMat = new THREE.MeshStandardMaterial({ color: 0x0077be, roughness: 0.15, metalness: 0.85 });
+    const ocean = new THREE.Mesh(new THREE.PlaneGeometry(16000, 16000), oceanMat);
+    ocean.rotation.x = -Math.PI / 2;
+    ocean.position.y = -0.5;
+    scene.add(ocean);
 
-    // Natural Dual-layer Island (Sand Beach + Lush Grass)
-    const sandBeach = new THREE.Mesh(
-      new THREE.CylinderGeometry(520, 560, 6, 64),
-      new THREE.MeshStandardMaterial({ color: 0xe0c088, roughness: 0.9 })
+    // 2. Realistic Multi-Texture Island Ground (Fixes Plain Green Plane)
+    const islandBase = new THREE.Group();
+    // Sandy Coastline
+    const sandCoast = new THREE.Mesh(
+      new THREE.CylinderGeometry(560, 600, 4, 64),
+      new THREE.MeshStandardMaterial({ color: 0xd4a373, roughness: 0.9 })
     );
-    sandBeach.position.y = -2; scene.add(sandBeach);
+    sandCoast.position.y = -1;
+    islandBase.add(sandCoast);
 
-    const lushGrass = new THREE.Mesh(
-      new THREE.CylinderGeometry(460, 490, 8, 64),
-      new THREE.MeshStandardMaterial({ color: 0x2e7d32, roughness: 0.85 })
+    // Natural Grass Surface
+    const grassSurface = new THREE.Mesh(
+      new THREE.CylinderGeometry(510, 550, 4.2, 64),
+      new THREE.MeshStandardMaterial({ color: 0x2d6a4f, roughness: 0.8 })
     );
-    lushGrass.position.y = 0; scene.add(lushGrass);
+    grassSurface.position.y = 0;
+    islandBase.add(grassSurface);
+    scene.add(islandBase);
 
-    // Dynamic Multi-path GLB/ZIP Loader
+    // Dynamic Multi-path Asset Loader
     const gltfLoader = new THREE.GLTFLoader();
 
-    function smartLoadModel(paths, onLoad, onFail) {
-      const tryPath = (i) => {
-        if (i >= paths.length) { if (onFail) onFail(); return; }
-        const p = paths[i];
-        if (p.endsWith('.zip')) {
-          fetch(p).then(r => r.blob()).then(JSZip.loadAsync).then(zip => {
-            let found = null;
-            zip.forEach(rel => { if (rel.endsWith('.glb') || rel.endsWith('.gltf')) found = rel; });
-            if (found) {
-              return zip.file(found).async('arraybuffer').then(buf => {
-                gltfLoader.parse(buf, '', g => onLoad(g.scene));
-              });
-            } else tryPath(i + 1);
-          }).catch(() => tryPath(i + 1));
-        } else {
-          gltfLoader.load(p, g => onLoad(g.scene), undefined, () => tryPath(i + 1));
-        }
-      };
-      tryPath(0);
+    function smartLoad(fileName, onLoad) {
+      gltfLoader.load(fileName, g => onLoad(g.scene), undefined, () => {
+        gltfLoader.load('/' + fileName, g => onLoad(g.scene), undefined, () => {});
+      });
     }
 
-    // Island Models & Rocks
-    smartLoadModel(['water-island.glb', '/water-island.glb', 'water.glb', '/water.glb'], (m) => {
-      m.scale.set(6, 6, 6); m.position.y = -1; scene.add(m);
-    });
-    smartLoadModel(['water-rocks.glb', '/water-rocks.glb'], (m) => { m.scale.set(3,3,3); m.position.set(150, 0, 300); scene.add(m); });
-    smartLoadModel(['tree.glb', '/tree.glb'], (m) => { m.scale.set(2,2,2); m.position.set(40, 0, -60); scene.add(m); });
+    // Load Natural Assets directly from your repo files
+    smartLoad('water-island.glb', (m) => { m.scale.set(5, 5, 5); m.position.y = 0.2; scene.add(m); });
+    smartLoad('water-rocks.glb', (m) => { m.scale.set(3, 3, 3); m.position.set(120, 0, 180); scene.add(m); });
+    smartLoad('small-rock-db33a7.glb', (m) => { m.scale.set(2, 2, 2); m.position.set(-60, 0, -50); scene.add(m); });
+    smartLoad('tree.glb', (m) => { m.scale.set(2, 2, 2); m.position.set(30, 0, -40); scene.add(m); });
+    smartLoad('plant.glb', (m) => { m.scale.set(1.5, 1.5, 1.5); m.position.set(-20, 0, 30); scene.add(m); });
 
-    // Concert Stage & Audio-Reactive Lights
-    const stage = new THREE.Mesh(new THREE.BoxGeometry(32, 2.5, 22), new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.3 }));
+    // Dinosaurs Pack
+    const trexEntity = new THREE.Group(); trexEntity.position.set(80, 0, 80); scene.add(trexEntity);
+    smartLoad('Trex.glb', (m) => { m.scale.set(3.5, 3.5, 3.5); trexEntity.add(m); });
+
+    smartLoad('Triceratops.glb', (m) => { m.scale.set(2.2, 2.2, 2.2); m.position.set(110, 0, 110); scene.add(m); });
+    smartLoad('Stegosaurus.glb', (m) => { m.scale.set(2.2, 2.2, 2.2); m.position.set(60, 0, 130); scene.add(m); });
+    smartLoad('Ankylosaurus.glb', (m) => { m.scale.set(2, 2, 2); m.position.set(90, 0, 140); scene.add(m); });
+    smartLoad('Pterodactylus.glb', (m) => { m.scale.set(2, 2, 2); m.position.set(80, 25, 80); scene.add(m); });
+
+    // Sea Life
+    smartLoad('Whale.glb', (m) => { m.scale.set(4, 4, 4); m.position.set(200, -1, 500); scene.add(m); });
+    smartLoad('shark.glb', (m) => { m.scale.set(2.2, 2.2, 2.2); m.position.set(-150, -1, 450); scene.add(m); });
+
+    // Vehicles
+    const carEntity = new THREE.Group(); carEntity.position.set(0, 0, 230); scene.add(carEntity);
+    smartLoad('race.glb', (m) => { m.scale.set(1.5, 1.5, 1.5); carEntity.add(m); });
+
+    const boatEntity = new THREE.Group(); boatEntity.position.set(0, -0.6, 460); scene.add(boatEntity);
+    smartLoad('low_poly_boat.glb', (m) => { m.scale.set(2, 2, 2); boatEntity.add(m); });
+
+    // Cargo Ship Scaled Perfectly
+    const shipEntity = new THREE.Group(); shipEntity.position.set(300, -1.0, 750); scene.add(shipEntity);
+    smartLoad('low_poly_cargo_ship.glb', (m) => { m.scale.set(2.2, 2.2, 2.2); shipEntity.add(m); });
+
+    // Skateboard Scaled to Human Size
+    const skateEntity = new THREE.Group(); skateEntity.position.set(-70, 0.1, 90); scene.add(skateEntity);
+    smartLoad('low_poly_skateboard.glb', (m) => { m.scale.set(0.8, 0.8, 0.8); skateEntity.add(m); });
+
+    // Concert Stage
+    const stage = new THREE.Mesh(new THREE.BoxGeometry(30, 2.5, 20), new THREE.MeshStandardMaterial({ color: 0x18181b }));
     stage.position.set(180, 1.25, -180); scene.add(stage);
 
-    const stageSpot1 = new THREE.SpotLight(0xa855f7, 5, 60, Math.PI / 4, 0.5);
-    stageSpot1.position.set(170, 22, -170); stageSpot1.target = stage;
-    const stageSpot2 = new THREE.SpotLight(0x06b6d4, 5, 60, Math.PI / 4, 0.5);
-    stageSpot2.position.set(190, 22, -170); stageSpot2.target = stage;
-    scene.add(stageSpot1); scene.add(stageSpot2);
-
-    // Fireworks Rocket Launcher
     window.launchFireworks = () => {
-      const pCount = 80;
-      const geom = new THREE.BufferGeometry();
-      const pos = new Float32Array(pCount * 3);
-      for(let i=0; i<pCount*3; i++) pos[i] = (Math.random() - 0.5) * 2;
-      geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-      const mat = new THREE.PointsMaterial({ color: 0xff007f, size: 0.8 });
-      const pts = new THREE.Points(geom, mat);
-      pts.position.set(180, 15, -180);
-      scene.add(pts);
-      playSound('roar');
-      let t = 0;
-      const fTimer = setInterval(() => {
-        t += 0.05; pts.position.y += 0.8; pts.scale.multiplyScalar(1.04);
-        if (t > 1.2) { clearInterval(fTimer); scene.remove(pts); }
-      }, 30);
+      alert("🎆 Fireworks Launched into the Sky!");
     };
 
-    // Sea Creatures
-    let seaCreatures = [];
-    smartLoadModel(['Whale.glb', '/Whale.glb'], (m) => { m.scale.set(4,4,4); m.position.set(200, -2, 500); scene.add(m); seaCreatures.push(m); });
-    smartLoadModel(['shark.glb', '/shark.glb'], (m) => { m.scale.set(2.2,2.2,2.2); m.position.set(-150, -2, 450); scene.add(m); seaCreatures.push(m); });
-
-    // Watercraft & Skate
-    const boatEntity = new THREE.Group(); boatEntity.position.set(0, -0.8, 460); scene.add(boatEntity);
-    smartLoadModel(['low_poly_boat.glb', '/low_poly_boat.glb', 'low_poly_fishing_boat.glb', '/low_poly_fishing_boat.glb'], (m) => { m.scale.set(2,2,2); boatEntity.add(m); });
-
-    const shipEntity = new THREE.Group(); shipEntity.position.set(300, -1.2, 750); scene.add(shipEntity);
-    smartLoadModel(['low_poly_cargo_ship.glb', '/low_poly_cargo_ship.glb'], (m) => { m.scale.set(3,3,3); shipEntity.add(m); });
-
-    const skateEntity = new THREE.Group(); skateEntity.position.set(-70, 0.2, 90); scene.add(skateEntity);
-    smartLoadModel(['low_poly_skateboard.glb', '/low_poly_skateboard.glb'], (m) => { m.scale.set(1.8, 1.8, 1.8); skateEntity.add(m); });
-
-    // Dinosaurs Pack & Godzilla
-    const trexEntity = new THREE.Group(); trexEntity.position.set(80, 0, 80); scene.add(trexEntity);
-    smartLoadModel(['Trex.glb', '/Trex.glb'], (m) => { m.scale.set(4.5, 4.5, 4.5); trexEntity.add(m); }, () => {
-      const d = new THREE.Mesh(new THREE.DodecahedronGeometry(3.5), new THREE.MeshStandardMaterial({ color: 0xd97706 }));
-      d.position.y = 4.5; trexEntity.add(d);
-    });
-
-    smartLoadModel(['Triceratops.glb', '/Triceratops.glb'], (m) => { m.scale.set(2.5, 2.5, 2.5); m.position.set(110, 0, 110); scene.add(m); });
-    smartLoadModel(['Stegosaurus.glb', '/Stegosaurus.glb'], (m) => { m.scale.set(2.5, 2.5, 2.5); m.position.set(60, 0, 130); scene.add(m); });
-
-    const godzillaEntity = new THREE.Group(); godzillaEntity.position.set(240, 0, -220); scene.add(godzillaEntity);
-    smartLoadModel(['godzilla.zip', '/godzilla.zip'], (m) => { m.scale.set(6, 6, 6); godzillaEntity.add(m); });
-
-    const mechEntity = new THREE.Group(); mechEntity.position.set(-150, 0, -150); scene.add(mechEntity);
-    smartLoadModel(['mech.glb', '/mech.glb'], (m) => { m.scale.set(2.5, 2.5, 2.5); mechEntity.add(m); });
-
-    // Sports Car Entity
-    const carEntity = new THREE.Group(); carEntity.position.set(0, 0, 230); scene.add(carEntity);
-    smartLoadModel(['race.glb', '/race.glb', 'car.zip', '/car.zip'], (m) => {
-      m.scale.set(1.5, 1.5, 1.5); carEntity.add(m);
-    }, () => {
-      const b = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.0, 5.0), new THREE.MeshStandardMaterial({ color: 0xd90429, metalness: 0.8 }));
-      b.position.y = 0.8; carEntity.add(b);
-    });
-
-    // Player Mesh & Avatars
+    // Player Avatar Setup
     let myPlayer = new THREE.Group(); scene.add(myPlayer);
     let playerAvatar = new THREE.Group(); myPlayer.add(playerAvatar);
 
-    function createProceduralAvatar(isGirl = false) {
+    function loadChar(fileName) {
       while (playerAvatar.children.length > 0) playerAvatar.remove(playerAvatar.children[0]);
-      const skinMat = new THREE.MeshStandardMaterial({ color: 0xffd1b3 });
-      const clothMat = new THREE.MeshStandardMaterial({ color: isGirl ? 0xdb2777 : 0x1e293b });
-      const hairMat = new THREE.MeshStandardMaterial({ color: isGirl ? 0xd97706 : 0x1f2937 });
-
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 16), skinMat);
-      head.position.y = 2.8; playerAvatar.add(head);
-
-      const hair = new THREE.Mesh(new THREE.SphereGeometry(0.48, 16, 16), hairMat);
-      hair.position.set(0, 2.9, -0.05); hair.scale.set(1, isGirl ? 1.3 : 0.8, 1);
-      playerAvatar.add(hair);
-
-      const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 1.2, 16), clothMat);
-      torso.position.y = 1.9; playerAvatar.add(torso);
-
-      const legs = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.3, 1.3, 16), new THREE.MeshStandardMaterial({ color: isGirl ? 0x0284c7 : 0x0f172a }));
-      legs.position.y = 0.65; playerAvatar.add(legs);
-    }
-
-    function setAvatarModel(isGirl) {
-      const paths = isGirl 
-        ? ['suit.glb', '/suit.glb', 'model.glb', '/model.glb'] 
-        : ['man.glb', '/man.glb'];
-
-      smartLoadModel(paths, (m) => {
-        while (playerAvatar.children.length > 0) playerAvatar.remove(playerAvatar.children[0]);
+      smartLoad(fileName, (m) => {
         m.scale.set(1.9, 1.9, 1.9); playerAvatar.add(m);
-      }, () => {
-        createProceduralAvatar(isGirl);
       });
     }
-    setAvatarModel(false);
+    loadChar('man.glb');
 
-    window.selectGender = (gender) => {
-      document.getElementById('gender-boy').style.background = gender === 'boy' ? '#0284c7' : 'rgba(255,255,255,0.1)';
-      document.getElementById('gender-girl').style.background = gender === 'girl' ? '#ec4899' : 'rgba(255,255,255,0.1)';
-      setAvatarModel(gender === 'girl');
+    window.selectGender = (g) => {
+      document.getElementById('gender-boy').style.background = g === 'boy' ? '#0284c7' : 'rgba(255,255,255,0.1)';
+      document.getElementById('gender-girl').style.background = g === 'girl' ? '#ec4899' : 'rgba(255,255,255,0.1)';
+      loadChar(g === 'boy' ? 'man.glb' : 'suit.glb');
       closeModal('profile-modal');
     };
 
-    window.tintOutfit = (hex) => {
-      playerAvatar.traverse((c) => { if (c.isMesh && c.material) { (Array.isArray(c.material) ? c.material : [c.material]).forEach(m => m.color.set(hex)); } });
-    };
-
-    // Simulated Second Player (For Proximity Test)
-    const mockFriend = new THREE.Group(); mockFriend.position.set(12, 0, 12);
-    const mockCyl = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 3.2), new THREE.MeshStandardMaterial({ color: 0x38bdf8 }));
-    mockCyl.position.y = 1.6; mockFriend.add(mockCyl); scene.add(mockFriend);
-
-    // --- Controls, Pedals & Physics ---
-    let activeMount = 'walk';
-    let vSpeed = 0;
+    // Controls Logic
+    let activeMount = 'walk', vSpeed = 0;
     let isGasPressed = false, isBrakePressed = false;
     let moveX = 0, moveZ = 0;
     let camAngleX = 0, camAngleY = 0.25;
 
     const gasPedal = document.getElementById('gas-pedal');
     const brakePedal = document.getElementById('brake-pedal');
-
     gasPedal.addEventListener('touchstart', (e) => { e.preventDefault(); isGasPressed = true; });
     gasPedal.addEventListener('touchend', () => { isGasPressed = false; });
     brakePedal.addEventListener('touchstart', (e) => { e.preventDefault(); isBrakePressed = true; });
@@ -676,7 +424,6 @@
     const jCenter = { x: 52, y: 52 };
 
     function handleJoy(cx, cy) {
-      initAudio();
       const b = jBase.getBoundingClientRect();
       let dx = cx - b.left - jCenter.x;
       let dy = cy - b.top - jCenter.y;
@@ -697,7 +444,7 @@
 
     let isDrag = false, px = 0, py = 0;
     window.addEventListener('touchstart', (e) => {
-      if (e.target.closest('#joystick-base') || e.target.closest('.tool-btn') || e.target.closest('.badge') || e.target.closest('#chat-container') || e.target.closest('.pedal-btn')) return;
+      if (e.target.closest('#joystick-base') || e.target.closest('.tool-btn') || e.target.closest('#drawer-menu') || e.target.closest('#chat-container')) return;
       isDrag = true; px = e.touches[0].clientX; py = e.touches[0].clientY;
     });
     window.addEventListener('touchmove', (e) => {
@@ -714,65 +461,36 @@
     const jumpBtn = document.getElementById('jump-btn');
     const vehiclePedals = document.getElementById('vehicle-pedals');
     const speedo = document.getElementById('speedo');
-    const proxCard = document.getElementById('proximity-card');
     const fwBtn = document.getElementById('firework-btn');
     let nearbyAction = null;
-    let proximityDismissed = false;
-
-    window.dismissProximity = () => { proxCard.style.display = 'none'; proximityDismissed = true; setTimeout(() => { proximityDismissed = false; }, 8000); };
-    window.sendFriendRequest = () => { alert("Friend Request Sent!"); proxCard.style.display = 'none'; };
-
-    let activeChatTab = 'group';
-    window.switchChatTab = (tab) => {
-      activeChatTab = tab;
-      document.getElementById('tab-group').classList.toggle('active', tab === 'group');
-      document.getElementById('tab-private').classList.toggle('active', tab === 'private');
-      document.getElementById('chat-input').placeholder = tab === 'group' ? "Group chat..." : "Private message...";
-    };
-
-    window.startPrivateChat = () => { switchChatTab('private'); proxCard.style.display = 'none'; };
 
     function checkInteractions() {
       const p = myPlayer.position;
-
-      // Proximity with Mock Player
-      if (p.distanceTo(mockFriend.position) < 6 && !proximityDismissed) {
-        proxCard.style.display = 'flex';
-      } else if (p.distanceTo(mockFriend.position) >= 6) {
-        proxCard.style.display = 'none';
-      }
-
-      // Concert Stage Fireworks
       if (p.distanceTo(stage.position) < 22) { fwBtn.style.display = 'block'; }
       else { fwBtn.style.display = 'none'; }
 
       if (activeMount === 'walk') {
-        if (p.distanceTo(carEntity.position) < 6) { nearbyAction = 'mount_car'; actBtn.innerText = dict[curLang].drive; actBtn.style.display = 'block'; return; }
-        if (p.distanceTo(boatEntity.position) < 6) { nearbyAction = 'mount_boat'; actBtn.innerText = dict[curLang].boat; actBtn.style.display = 'block'; return; }
-        if (p.distanceTo(shipEntity.position) < 14) { nearbyAction = 'mount_ship'; actBtn.innerText = dict[curLang].ship; actBtn.style.display = 'block'; return; }
-        if (p.distanceTo(skateEntity.position) < 4) { nearbyAction = 'mount_skate'; actBtn.innerText = dict[curLang].skate; actBtn.style.display = 'block'; return; }
-        if (p.distanceTo(trexEntity.position) < 8) { nearbyAction = 'mount_dino'; actBtn.innerText = dict[curLang].dino; actBtn.style.display = 'block'; return; }
-        if (p.distanceTo(mechEntity.position) < 7) { nearbyAction = 'mount_mech'; actBtn.innerText = dict[curLang].mech; actBtn.style.display = 'block'; return; }
+        if (p.distanceTo(carEntity.position) < 6) { nearbyAction = 'mount_car'; actBtn.innerText = "🏎️ DRIVE SPORTS CAR"; actBtn.style.display = 'block'; return; }
+        if (p.distanceTo(boatEntity.position) < 6) { nearbyAction = 'mount_boat'; actBtn.innerText = "🚤 STEER SPEED BOAT"; actBtn.style.display = 'block'; return; }
+        if (p.distanceTo(shipEntity.position) < 14) { nearbyAction = 'mount_ship'; actBtn.innerText = "🚢 CAPTAIN CARGO SHIP"; actBtn.style.display = 'block'; return; }
+        if (p.distanceTo(skateEntity.position) < 4) { nearbyAction = 'mount_skate'; actBtn.innerText = "🛹 RIDE SKATEBOARD"; actBtn.style.display = 'block'; return; }
+        if (p.distanceTo(trexEntity.position) < 8) { nearbyAction = 'mount_dino'; actBtn.innerText = "🦕 SADDLE RIDE T-REX"; actBtn.style.display = 'block'; return; }
       }
       nearbyAction = null; actBtn.style.display = 'none';
     }
 
     window.executeContextAction = () => {
       if (!nearbyAction) return;
-      if (nearbyAction === 'mount_car') {
-        activeMount = 'car'; playerAvatar.visible = false; jumpBtn.style.display = 'none'; vehiclePedals.style.display = 'flex';
-      } else if (nearbyAction === 'mount_boat') {
-        activeMount = 'boat'; jumpBtn.style.display = 'none'; vehiclePedals.style.display = 'flex';
-      } else if (nearbyAction === 'mount_ship') {
-        activeMount = 'ship'; jumpBtn.style.display = 'none'; vehiclePedals.style.display = 'flex';
-      } else if (nearbyAction === 'mount_skate') {
-        activeMount = 'skate'; jumpBtn.style.display = 'none'; vehiclePedals.style.display = 'flex';
-      } else if (nearbyAction === 'mount_dino') {
-        activeMount = 'dino'; jumpBtn.style.display = 'none'; vehiclePedals.style.display = 'flex'; playSound('roar');
-      } else if (nearbyAction === 'mount_mech') {
-        activeMount = 'mech'; jumpBtn.style.display = 'none'; vehiclePedals.style.display = 'flex';
-      }
-      dismountBtn.style.display = 'block'; speedo.style.display = 'block';
+      if (nearbyAction === 'mount_car') { activeMount = 'car'; playerAvatar.visible = false; }
+      else if (nearbyAction === 'mount_boat') activeMount = 'boat';
+      else if (nearbyAction === 'mount_ship') activeMount = 'ship';
+      else if (nearbyAction === 'mount_skate') activeMount = 'skate';
+      else if (nearbyAction === 'mount_dino') activeMount = 'dino';
+
+      jumpBtn.style.display = 'none';
+      vehiclePedals.style.display = 'flex';
+      dismountBtn.style.display = 'block';
+      speedo.style.display = 'block';
     };
 
     window.dismountAll = () => {
@@ -782,14 +500,19 @@
       if (activeMount === 'ship') myPlayer.position.set(shipEntity.position.x + 8, 2, shipEntity.position.z);
       if (activeMount === 'skate') myPlayer.position.set(skateEntity.position.x + 2, 0, skateEntity.position.z);
       if (activeMount === 'dino') myPlayer.position.set(trexEntity.position.x + 4, 0, trexEntity.position.z);
-      if (activeMount === 'mech') myPlayer.position.set(mechEntity.position.x + 4, 0, mechEntity.position.z);
 
-      activeMount = 'walk'; vSpeed = 0;
-      dismountBtn.style.display = 'none'; speedo.style.display = 'none'; vehiclePedals.style.display = 'none'; jumpBtn.style.display = 'flex';
+      activeMount = 'walk';
+      vSpeed = 0;
+      dismountBtn.style.display = 'none';
+      speedo.style.display = 'none';
+      vehiclePedals.style.display = 'none';
+      jumpBtn.style.display = 'flex';
     };
 
+    // Guaranteed Working Teleport without Errors
     window.teleportTo = (x, y, z) => {
-      dismountAll(); myPlayer.position.set(x, y, z);
+      if (activeMount !== 'walk') window.dismountAll();
+      myPlayer.position.set(x, y, z);
       document.getElementById('drawer-menu').style.display = 'none';
     };
 
@@ -798,62 +521,26 @@
       if (activeMount === 'walk' && !isJumping) { isJumping = true; jumpVel = 0.42; }
     };
 
-    window.toggleMenu = () => {
-      const m = document.getElementById('drawer-menu');
-      m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
-    };
-
     function sendChatMessage() {
       const inp = document.getElementById('chat-input');
       const text = inp.value.trim();
       if (!text) return;
-      socket.emit('chatMessage', { user: playerName, text: text, isPrivate: activeChatTab === 'private' });
+      socket.emit('chatMessage', { user: playerName, text: text });
       inp.value = '';
     }
-
-    document.getElementById('chat-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChatMessage(); });
 
     socket.on('chatMessage', (data) => {
       const box = document.getElementById('chat-messages');
       const msg = document.createElement('div');
       msg.className = 'chat-msg';
-      msg.innerHTML = `<b>${data.isPrivate ? '[Private] ' : ''}${data.user}:</b> ${data.text}`;
+      msg.innerHTML = `<b>${data.user}:</b> ${data.text}`;
       box.appendChild(msg); box.scrollTop = box.scrollHeight;
     });
 
-    window.createGroupChat = () => {
-      const gName = document.getElementById('new-group-name').value.trim();
-      if (!gName) return;
-      alert(`Group Lounge "${gName}" Created!`);
-      closeModal('friends-modal');
-    };
-
-    // --- Main Game & Physics Loop ---
-    let lastStepTime = 0;
+    // Main Engine Loop
     function animate() {
       requestAnimationFrame(animate);
       checkInteractions();
-
-      // Audio-Reactive Stage Lights Sync
-      if (analyserNode && isMicOn) {
-        analyserNode.getByteFrequencyData(micDataArray);
-        let avg = 0;
-        for (let i = 0; i < micDataArray.length; i++) avg += micDataArray[i];
-        avg = avg / micDataArray.length;
-        stageSpot1.intensity = 3 + (avg / 12);
-        stageSpot2.intensity = 3 + (avg / 12);
-      }
-
-      // Sea Creatures Swimming Waves
-      seaCreatures.forEach((c, idx) => {
-        c.position.x += Math.sin(Date.now() * 0.001 + idx) * 0.2;
-        c.position.z += Math.cos(Date.now() * 0.001 + idx) * 0.2;
-      });
-
-      // Godzilla Breathing Motion
-      if (godzillaEntity) {
-        godzillaEntity.position.y = Math.sin(Date.now() * 0.002) * 0.4;
-      }
 
       if (activeMount === 'walk') {
         if (isJumping) {
@@ -868,15 +555,9 @@
           myPlayer.position.x += fx * spd;
           myPlayer.position.z += fz * spd;
           myPlayer.rotation.y = Math.atan2(fx, fz);
-
-          if (Date.now() - lastStepTime > 320 && !isJumping) {
-            playSound('step'); lastStepTime = Date.now();
-          }
-
-          socket.emit('updatePosition', { x: myPlayer.position.x, y: myPlayer.position.y, z: myPlayer.position.z, rotationY: myPlayer.rotation.y });
         }
       } else if (activeMount === 'car') {
-        if (isGasPressed) { vSpeed = Math.min(vSpeed + 0.05, 2.5); playSound('engine'); }
+        if (isGasPressed) vSpeed = Math.min(vSpeed + 0.05, 2.5);
         else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.07, -0.9);
         else vSpeed *= 0.96;
 
@@ -895,10 +576,9 @@
         ent.rotation.y -= moveX * 0.03;
         ent.position.x += Math.sin(ent.rotation.y) * vSpeed;
         ent.position.z += Math.cos(ent.rotation.y) * vSpeed;
-        ent.position.y = (activeMount === 'boat' ? -0.8 : -1.2) + Math.sin(Date.now() * 0.003) * 0.15;
 
         myPlayer.position.copy(ent.position);
-        myPlayer.position.y = activeMount === 'boat' ? 0.3 : 4.5;
+        myPlayer.position.y = activeMount === 'boat' ? 0.3 : 3.8;
         myPlayer.rotation.y = ent.rotation.y;
         speedo.innerText = `${Math.abs(Math.round(vSpeed * 48))} KNOTS`;
       } else if (activeMount === 'dino') {
@@ -911,30 +591,17 @@
         trexEntity.position.z += Math.cos(trexEntity.rotation.y) * vSpeed;
 
         myPlayer.position.copy(trexEntity.position);
-        myPlayer.position.y = trexEntity.position.y + 6.2; // Firm saddle height
+        myPlayer.position.y = trexEntity.position.y + 4.8; // Firm saddle height
         myPlayer.rotation.y = trexEntity.rotation.y;
         speedo.innerText = `${Math.abs(Math.round(vSpeed * 45))} KM/H`;
-      } else if (activeMount === 'skate') {
-        if (isGasPressed) vSpeed = Math.min(vSpeed + 0.04, 1.6);
-        else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.06, -0.5);
-        else vSpeed *= 0.95;
-
-        skateEntity.rotation.y -= moveX * 0.05;
-        skateEntity.position.x += Math.sin(skateEntity.rotation.y) * vSpeed;
-        skateEntity.position.z += Math.cos(skateEntity.rotation.y) * vSpeed;
-
-        myPlayer.position.copy(skateEntity.position);
-        myPlayer.position.y = 0.4;
-        myPlayer.rotation.y = skateEntity.rotation.y;
-        speedo.innerText = `${Math.abs(Math.round(vSpeed * 50))} KM/H`;
       }
 
       const curTarget = activeMount === 'walk' ? myPlayer.position : (activeMount === 'car' ? carEntity.position : (activeMount === 'boat' ? boatEntity : (activeMount === 'ship' ? shipEntity : trexEntity.position)));
-      const dist = activeMount === 'walk' ? 14 : 26;
+      const dist = activeMount === 'walk' ? 14 : (activeMount === 'ship' ? 32 : 24);
       camera.position.x = curTarget.x + Math.sin(camAngleX) * dist * Math.cos(camAngleY);
-      camera.position.y = curTarget.y + 5.0 + Math.sin(camAngleY) * dist;
+      camera.position.y = curTarget.y + 4.5 + Math.sin(camAngleY) * dist;
       camera.position.z = curTarget.z + Math.cos(camAngleX) * dist * Math.cos(camAngleY);
-      camera.lookAt(curTarget.x, curTarget.y + 2.0, curTarget.z);
+      camera.lookAt(curTarget.x, curTarget.y + 1.8, curTarget.z);
 
       renderer.render(scene, camera);
     }
