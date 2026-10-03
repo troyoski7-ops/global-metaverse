@@ -13,57 +13,49 @@
     body, html { width: 100%; height: 100%; overflow: hidden; background: #030712; font-family: system-ui, -apple-system, sans-serif; }
     #canvas-container { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
-    #ui-layer { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
-    .interactive { pointer-events: auto; }
-
     /* Top HUD */
-    .top-bar { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .top-bar { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; flex-direction: column; gap: 6px; z-index: 20; }
     .top-row-1 { display: flex; justify-content: space-between; align-items: center; width: 100%; }
     .pill-group { display: flex; gap: 6px; align-items: center; }
-    .badge { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); color: #fff; padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,255,255,0.15); display: flex; gap: 5px; align-items: center; }
+    .badge { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid rgba(255,255,255,0.2); display: flex; gap: 5px; align-items: center; }
     .badge.owner { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 900; }
     .badge.stars { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; font-weight: 900; cursor: pointer; border: 1px solid #fef08a; }
 
     .tools-bar { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
-    .tool-btn { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); color: #e2e8f0; border: 1px solid rgba(255, 255, 255, 0.15); padding: 5px 11px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; }
-
-    .comm-btns { display: flex; gap: 6px; }
-    .circle-btn { width: 38px; height: 38px; border-radius: 50%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 1.5px solid rgba(255,255,255,0.25); color: #fff; font-size: 15px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .circle-btn.active { background: #22c55e; border-color: #4ade80; color: #fff; }
+    .tool-btn { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); color: #e2e8f0; border: 1px solid rgba(255, 255, 255, 0.25); padding: 7px 12px; border-radius: 12px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+    .tool-btn:active { background: #0284c7; color: #fff; }
 
     #menu-toggle-btn { width: 38px; height: 38px; border-radius: 10px; background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255,255,255,0.25); color: #38bdf8; font-size: 18px; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    #drawer-menu { position: absolute; top: 85px; right: 8px; width: 230px; background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(15px); border-radius: 16px; border: 1px solid rgba(255,255,255,0.15); padding: 10px; display: none; flex-direction: column; gap: 7px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); max-height: 65vh; overflow-y: auto; }
-    .menu-item { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.08); color: #e2e8f0; padding: 9px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; text-align: left; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    #drawer-menu { position: absolute; top: 85px; right: 8px; width: 230px; background: rgba(15, 23, 42, 0.96); backdrop-filter: blur(15px); border-radius: 16px; border: 1px solid rgba(255,255,255,0.2); padding: 10px; display: none; flex-direction: column; gap: 7px; box-shadow: 0 10px 30px rgba(0,0,0,0.9); max-height: 65vh; overflow-y: auto; z-index: 50; }
+    .menu-item { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); color: #e2e8f0; padding: 10px 12px; border-radius: 10px; font-size: 12px; font-weight: 700; text-align: left; display: flex; align-items: center; gap: 8px; cursor: pointer; }
 
-    /* Modals */
-    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.78); backdrop-filter: blur(10px); z-index: 100; align-items: center; justify-content: center; }
-    .modal-box { background: #0f172a; border: 1px solid rgba(255,255,255,0.18); border-radius: 20px; width: 330px; max-width: 92%; padding: 18px; color: #fff; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 35px rgba(0,0,0,0.8); }
+    /* Modals - Ultra High Z-Index */
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 99999; align-items: center; justify-content: center; }
+    .modal-box { background: #0f172a; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 20px; width: 330px; max-width: 92%; padding: 18px; color: #fff; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 12px 35px rgba(0,0,0,0.9); }
 
     /* Chat */
-    #chat-container { position: absolute; bottom: 20px; left: 145px; width: 250px; max-width: calc(100vw - 230px); background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 14px; padding: 6px 8px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
-    #chat-messages { height: 60px; overflow-y: auto; font-size: 11px; color: #fff; display: flex; flex-direction: column; gap: 3px; }
+    #chat-container { position: absolute; bottom: 20px; left: 145px; width: 250px; max-width: calc(100vw - 230px); background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 14px; padding: 6px 8px; display: flex; flex-direction: column; gap: 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 20; }
+    #chat-messages { height: 55px; overflow-y: auto; font-size: 11px; color: #fff; display: flex; flex-direction: column; gap: 3px; }
     .chat-msg { background: rgba(255,255,255,0.08); padding: 3px 6px; border-radius: 6px; word-break: break-word; }
     .chat-msg b { color: #38bdf8; }
     .chat-input-row { display: flex; gap: 4px; }
     #chat-input { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; padding: 4px 8px; font-size: 11px; outline: none; }
     #chat-send { background: #0284c7; color: #fff; border: none; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
 
-    /* Mount & Action Buttons */
-    #action-btn { position: absolute; bottom: 125px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; border: 2px solid #fff; padding: 12px 26px; border-radius: 30px; font-size: 13px; font-weight: 900; display: none; box-shadow: 0 0 25px rgba(37,99,235,0.8); cursor: pointer; }
-    #dismount-btn { position: absolute; top: 85px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; border: 1px solid #fecaca; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: 800; display: none; cursor: pointer; }
-    #speedo { position: absolute; bottom: 125px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.5); padding: 6px 20px; border-radius: 20px; font-size: 15px; font-weight: 900; display: none; }
+    /* Mount & Controls */
+    #action-btn { position: absolute; bottom: 125px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #0284c7, #2563eb); color: #fff; border: 2px solid #fff; padding: 12px 26px; border-radius: 30px; font-size: 13px; font-weight: 900; display: none; box-shadow: 0 0 25px rgba(37,99,235,0.8); cursor: pointer; z-index: 25; }
+    #dismount-btn { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; border: 1px solid #fecaca; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: 800; display: none; cursor: pointer; z-index: 40; }
+    #speedo { position: absolute; bottom: 125px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.5); padding: 6px 20px; border-radius: 20px; font-size: 15px; font-weight: 900; display: none; z-index: 25; }
 
-    /* Walking Controls */
-    #jump-btn { position: absolute; bottom: 35px; right: 20px; width: 65px; height: 65px; border-radius: 50%; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); border: 2px solid rgba(255,255,255,0.3); color: #fff; font-size: 13px; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    #jump-btn { position: absolute; bottom: 35px; right: 20px; width: 65px; height: 65px; border-radius: 50%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 2px solid rgba(255,255,255,0.3); color: #fff; font-size: 13px; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 25; }
 
-    /* Driving Pedals (Gas & Brake) */
-    .vehicle-pedals { position: absolute; bottom: 25px; right: 20px; display: none; flex-direction: column; gap: 12px; }
-    .pedal-btn { width: 68px; height: 55px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.4); font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+    /* Driving Pedals */
+    .vehicle-pedals { position: absolute; bottom: 25px; right: 20px; display: none; flex-direction: column; gap: 12px; z-index: 25; }
+    .pedal-btn { width: 68px; height: 55px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.4); font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; }
     #gas-pedal { background: linear-gradient(135deg, #22c55e, #16a34a); box-shadow: 0 4px 15px rgba(34,197,94,0.4); }
     #brake-pedal { background: linear-gradient(135deg, #ef4444, #b91c1c); box-shadow: 0 4px 15px rgba(239,68,68,0.4); }
 
-    /* Steering Joystick */
-    #joystick-base { position: absolute; left: 20px; bottom: 25px; width: 105px; height: 105px; background: rgba(15, 23, 42, 0.45); backdrop-filter: blur(6px); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.2); touch-action: none; }
+    #joystick-base { position: absolute; left: 20px; bottom: 25px; width: 105px; height: 105px; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(6px); border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.3); touch-action: none; z-index: 25; }
     #joystick-stick { position: absolute; left: 32px; top: 32px; width: 40px; height: 40px; background: #38bdf8; border-radius: 50%; box-shadow: 0 0 15px rgba(56, 189, 248, 0.8); pointer-events: none; }
   </style>
 </head>
@@ -71,11 +63,11 @@
   <div id="canvas-container"></div>
 
   <!-- Language Modal -->
-  <div id="lang-modal" class="modal-overlay interactive">
+  <div id="lang-modal" class="modal-overlay">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h3>🌐 Select Language</h3>
-        <span onclick="closeModal('lang-modal')" style="cursor:pointer; font-size:18px;">✕</span>
+        <span onclick="closeModal('lang-modal')" style="cursor:pointer; font-size:20px; padding:5px;">✕</span>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
         <button class="tool-btn" onclick="setLanguage('en')">English 🇺🇸</button>
@@ -93,11 +85,11 @@
   </div>
 
   <!-- Server Modal -->
-  <div id="server-modal" class="modal-overlay interactive">
+  <div id="server-modal" class="modal-overlay">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h3>⚡ Select Server Node</h3>
-        <span onclick="closeModal('server-modal')" style="cursor:pointer; font-size:18px;">✕</span>
+        <h3>⚡ Select Server Region</h3>
+        <span onclick="closeModal('server-modal')" style="cursor:pointer; font-size:20px; padding:5px;">✕</span>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; max-height:240px; overflow-y:auto;">
         <button class="tool-btn" onclick="selectServer('Kerala, India')">🌴 Kerala, India</button>
@@ -115,11 +107,11 @@
   </div>
 
   <!-- Weather Modal -->
-  <div id="weather-modal" class="modal-overlay interactive">
+  <div id="weather-modal" class="modal-overlay">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h3>🌤 Atmosphere & Weather</h3>
-        <span onclick="closeModal('weather-modal')" style="cursor:pointer; font-size:18px;">✕</span>
+        <h3>🌤 Weather & Atmosphere</h3>
+        <span onclick="closeModal('weather-modal')" style="cursor:pointer; font-size:20px; padding:5px;">✕</span>
       </div>
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
         <button class="tool-btn" onclick="setSky('sunny')">☀️ Sunny Day</button>
@@ -131,95 +123,104 @@
     </div>
   </div>
 
-  <!-- Stars Modal -->
-  <div id="stars-modal" class="modal-overlay interactive">
+  <!-- Telegram Stars Modal -->
+  <div id="stars-modal" class="modal-overlay">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h3>⭐ Telegram Stars VIP</h3>
-        <span onclick="closeModal('stars-modal')" style="cursor:pointer; font-size:18px;">✕</span>
+        <span onclick="closeModal('stars-modal')" style="cursor:pointer; font-size:20px; padding:5px;">✕</span>
       </div>
-      <p style="font-size:11px; color:#cbd5e1;">Get Exclusive Nitro Sports Cars, Giant T-Rex & VIP Badges!</p>
+      <p style="font-size:11px; color:#cbd5e1;">Get Nitro Speed Cars, Giant T-Rex Mounts & VIP Golden Glow!</p>
       <div style="display:flex; flex-direction:column; gap:6px;">
         <button class="tool-btn" onclick="buyStars(50, 'VIP Pass')">⭐ 50 Stars — VIP Rank</button>
-        <button class="tool-btn" onclick="buyStars(250, 'Monster Mounts')">⭐ 250 Stars — Dino & Car Pack</button>
+        <button class="tool-btn" onclick="buyStars(250, 'Monster Pack')">⭐ 250 Stars — Dino & Car Pack</button>
         <button class="tool-btn" onclick="buyStars(500, 'Metaverse God')">⭐ 500 Stars — All Mounts Unlocked</button>
       </div>
     </div>
   </div>
 
-  <!-- Profile Modal -->
-  <div id="profile-modal" class="modal-overlay interactive">
+  <!-- FULL PROFILE & SOCIAL MODAL -->
+  <div id="profile-modal" class="modal-overlay">
     <div class="modal-box">
       <div style="display:flex; justify-content:space-between; align-items:center;">
         <h3>👤 Profile & Avatar</h3>
-        <span onclick="closeModal('profile-modal')" style="cursor:pointer; font-size:18px;">✕</span>
+        <span onclick="closeModal('profile-modal')" style="cursor:pointer; font-size:20px; padding:5px;">✕</span>
       </div>
+      
+      <!-- Gender Switch -->
       <div style="display:flex; gap:8px;">
-        <button onclick="selectGender('boy')" id="gender-boy" style="flex:1; padding:8px; border-radius:10px; background:#0284c7; color:#fff; border:none; font-weight:bold; cursor:pointer;">Boy 👦</button>
-        <button onclick="selectGender('girl')" id="gender-girl" style="flex:1; padding:8px; border-radius:10px; background:rgba(255,255,255,0.1); color:#fff; border:none; font-weight:bold; cursor:pointer;">Girl 👧</button>
+        <button onclick="selectGender('boy')" id="gender-boy" style="flex:1; padding:9px; border-radius:10px; background:#0284c7; color:#fff; border:none; font-weight:bold; cursor:pointer;">Boy 👦</button>
+        <button onclick="selectGender('girl')" id="gender-girl" style="flex:1; padding:9px; border-radius:10px; background:rgba(255,255,255,0.1); color:#fff; border:none; font-weight:bold; cursor:pointer;">Girl 👧</button>
       </div>
-      <input type="text" id="tg-id-input" placeholder="Telegram @username" style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.15); padding:8px; border-radius:8px; color:#fff; font-size:12px;">
+
+      <!-- Social IDs -->
+      <input type="text" id="tg-id-input" placeholder="Telegram @username" style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2); padding:9px 12px; border-radius:8px; color:#fff; font-size:12px; outline:none;">
+      <input type="text" id="insta-id-input" placeholder="Instagram @username" style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2); padding:9px 12px; border-radius:8px; color:#fff; font-size:12px; outline:none;">
+
+      <!-- Share Grid -->
+      <div style="font-size:11px; color:#94a3b8; font-weight:bold;">Share Metaverse Link:</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+        <button onclick="shareToTelegram()" style="background:#229ED9; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">✈️ Telegram</button>
+        <button onclick="shareToWhatsApp()" style="background:#25D366; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">💬 WhatsApp</button>
+        <button onclick="shareToInstagram()" style="background:linear-gradient(45deg, #f09433, #dc2743); color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">📸 Instagram</button>
+        <button onclick="copyInviteLink()" style="background:#334155; color:#fff; border:none; padding:8px; border-radius:8px; font-size:11px; font-weight:bold; cursor:pointer;">🔗 Copy Link</button>
+      </div>
     </div>
   </div>
 
-  <!-- UI Overlay -->
-  <div id="ui-layer">
-    <div class="top-bar">
-      <div class="top-row-1">
-        <div class="pill-group interactive">
-          <div class="badge owner">👑 OWNER</div>
-          <div class="badge stars" onclick="openModal('stars-modal')">⭐ <span id="pts">100</span> STARS</div>
-        </div>
-        <div class="comm-btns interactive">
-          <button id="broadcast-btn" class="tool-btn" onclick="toggleBroadcast()">📡 Global: OFF</button>
-          <button id="mic-btn" class="circle-btn" onclick="toggleMic()">🎙️</button>
-          <button id="menu-toggle-btn" onclick="toggleMenu()">☰</button>
-        </div>
+  <!-- UI Top Bar -->
+  <div class="top-bar">
+    <div class="top-row-1">
+      <div class="pill-group">
+        <div class="badge owner">👑 OWNER</div>
+        <div class="badge stars" onclick="openModal('stars-modal')">⭐ <span id="pts">100</span> STARS</div>
       </div>
-
-      <div class="tools-bar interactive">
-        <button id="btn-lang" class="tool-btn" onclick="openModal('lang-modal')">🌐 10 Lang</button>
-        <button id="btn-weather" class="tool-btn" onclick="openModal('weather-modal')">🌤 Weather</button>
-        <button id="btn-server" class="tool-btn" onclick="openModal('server-modal')">⚡ Server: Kerala</button>
-        <button id="btn-profile" class="tool-btn" onclick="openModal('profile-modal')">👤 Profile</button>
+      <div class="comm-btns">
+        <button id="menu-toggle-btn" onclick="toggleMenu()">☰</button>
       </div>
     </div>
 
-    <div id="drawer-menu" class="interactive">
-      <button class="menu-item" onclick="teleportTo(0, 0, 0)">🏝️ Beach Island Spawn</button>
-      <button class="menu-item" onclick="teleportTo(0, 0, 230)">🏎 Grand Car Track</button>
-      <button class="menu-item" onclick="teleportTo(0, -1, 460)">🚤 Speed Boat Pier</button>
-      <button class="menu-item" onclick="teleportTo(120, 0, 120)">🦕 Dino Valley (T-Rex)</button>
-      <button class="menu-item" onclick="teleportTo(240, 2, -220)">🦖 Godzilla City Arena</button>
+    <div class="tools-bar">
+      <button id="btn-lang" class="tool-btn" onclick="openModal('lang-modal')">🌐 10 Lang</button>
+      <button id="btn-weather" class="tool-btn" onclick="openModal('weather-modal')">🌤 Weather</button>
+      <button id="btn-server" class="tool-btn" onclick="openModal('server-modal')">⚡ Server: Kerala</button>
+      <button id="btn-profile" class="tool-btn" onclick="openModal('profile-modal')">👤 Profile</button>
     </div>
+  </div>
 
-    <div id="chat-container" class="interactive">
-      <div id="chat-messages">
-        <div class="chat-msg"><b>System:</b> Connected to Kerala Cloud Node!</div>
-      </div>
-      <div class="chat-input-row">
-        <input type="text" id="chat-input" placeholder="Type message..." maxlength="80">
-        <button id="chat-send" onclick="sendChatMessage()">Send</button>
-      </div>
+  <!-- Menu Drawer -->
+  <div id="drawer-menu">
+    <button class="menu-item" onclick="teleportTo(0, 2, 0)">🏝️ Beach Island Spawn</button>
+    <button class="menu-item" onclick="teleportTo(0, 2, 230)">🏎 Grand Car Track</button>
+    <button class="menu-item" onclick="teleportTo(0, -0.5, 460)">🚤 Speed Boat Pier</button>
+    <button class="menu-item" onclick="teleportTo(80, 2, 80)">🦕 Dino Valley (T-Rex)</button>
+    <button class="menu-item" onclick="teleportTo(240, 2, -220)">🦖 Godzilla Arena</button>
+  </div>
+
+  <!-- Live Group Chat -->
+  <div id="chat-container">
+    <div id="chat-messages">
+      <div class="chat-msg"><b>System:</b> Connected to Kerala Cloud Node!</div>
     </div>
-
-    <div id="speedo">0 KM/H</div>
-    <button id="dismount-btn" class="interactive" onclick="dismountAll()">🚪 Dismount</button>
-    <button id="action-btn" class="interactive" onclick="executeContextAction()">ACTION</button>
-    
-    <!-- Walking Jump Button -->
-    <button id="jump-btn" class="interactive" onclick="playerJump()">JUMP</button>
-
-    <!-- Driving Gas & Brake Pedals -->
-    <div id="vehicle-pedals" class="vehicle-pedals interactive">
-      <button id="gas-pedal" class="pedal-btn">🏎️ GAS</button>
-      <button id="brake-pedal" class="pedal-btn">🛑 BRAKE</button>
+    <div class="chat-input-row">
+      <input type="text" id="chat-input" placeholder="Type message..." maxlength="80">
+      <button id="chat-send" onclick="sendChatMessage()">Send</button>
     </div>
+  </div>
 
-    <!-- Steering Joystick -->
-    <div id="joystick-base" class="interactive">
-      <div id="joystick-stick"></div>
-    </div>
+  <div id="speedo">0 KM/H</div>
+  <button id="dismount-btn" onclick="dismountAll()">🚪 Dismount</button>
+  <button id="action-btn" onclick="executeContextAction()">ACTION</button>
+  
+  <button id="jump-btn" onclick="playerJump()">JUMP</button>
+
+  <div id="vehicle-pedals" class="vehicle-pedals">
+    <button id="gas-pedal" class="pedal-btn">🏎 GAS</button>
+    <button id="brake-pedal" class="pedal-btn">🛑 BRAKE</button>
+  </div>
+
+  <div id="joystick-base">
+    <div id="joystick-stick"></div>
   </div>
 
   <script>
@@ -228,8 +229,9 @@
     if (tg) { tg.ready(); tg.expand(); }
 
     const playerName = tg?.initDataUnsafe?.user?.first_name || "GOKUL";
+    const GAME_URL = window.location.href;
 
-    // 10 Language Localization
+    // Language Localization
     const dict = {
       en: { jump: "JUMP", drive: "🏎️ DRIVE CAR", weather: "🌤 Weather", server: "⚡ Server", profile: "👤 Profile", lang: "🌐 Lang", dismount: "🚪 Dismount" },
       ml: { jump: "ചാടുക", drive: "🏎️ കാർ ഓടിക്കുക", weather: "🌤 കാലാവസ്ഥ", server: "⚡ സെർവർ", profile: "👤 പ്രൊഫൈൽ", lang: "🌐 ഭാഷ", dismount: "🚪 ഇറങ്ങുക" },
@@ -240,7 +242,7 @@
       ru: { jump: "ПРЫЖОК", drive: "🏎️ ВОДИТЬ", weather: "🌤 Погода", server: "⚡ Сервер", profile: "👤 Профиль", lang: "🌐 Язык", dismount: "🚪 Выйти" },
       id: { jump: "LOMPAT", drive: "🏎️ MENGEMUDI", weather: "🌤 Cuaca", server: "⚡ Server", profile: "👤 Profil", lang: "🌐 Bahasa", dismount: "🚪 Turun" },
       it: { jump: "SALTO", drive: "🏎️ GUIDA", weather: "🌤 Meteo", server: "⚡ Server", profile: "👤 Profilo", lang: "🌐 Lingua", dismount: "🚪 Smonta" },
-      my: { jump: "ခုန်ပါ", drive: "🏎️ မောင်းပါ", weather: "🌤 ရာသီဥတု", server: "⚡ ဆာဗာ", profile: "👤 ပရိုဖိုင်", lang: "🌐 ဘာသာစကား", dismount: "🚪 ဆင်းပါ" }
+      my: { jump: "ခုန်ပါ", drive: "🏎️️ မောင်းပါ", weather: "🌤 ရာသီဥတု", server: "⚡ ဆာဗာ", profile: "👤 ပရိုဖိုင်", lang: "🌐 ဘာသာစကား", dismount: "🚪 ဆင်းပါ" }
     };
 
     let curLang = 'en';
@@ -255,8 +257,16 @@
       closeModal('lang-modal');
     };
 
-    window.openModal = (id) => document.getElementById(id).style.display = 'flex';
-    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
+    // Modal Control Functions (Instant Touch Fix)
+    window.openModal = (id) => {
+      document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+      const target = document.getElementById(id);
+      if (target) target.style.display = 'flex';
+    };
+    window.closeModal = (id) => {
+      const target = document.getElementById(id);
+      if (target) target.style.display = 'none';
+    };
 
     window.selectServer = (name) => {
       document.getElementById('btn-server').innerText = `⚡ ${name.split(',')[0]}`;
@@ -264,11 +274,16 @@
     };
 
     window.buyStars = (amount, desc) => {
-      alert(`⭐ Telegram Stars: Requesting ${amount} Stars for ${desc}`);
+      alert(`⭐ Telegram Stars: ${amount} Stars requested for ${desc}`);
       closeModal('stars-modal');
     };
 
-    // Three.js Scene Setup
+    window.shareToTelegram = () => window.open(`https://t.me/share/url?url=${encodeURIComponent(GAME_URL)}&text=${encodeURIComponent("Join my GlobeVibe 3D World! 🚀")}`, '_blank');
+    window.shareToWhatsApp = () => window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent("GlobeVibe 3D Metaverse: " + GAME_URL)}`, '_blank');
+    window.shareToInstagram = () => { navigator.clipboard.writeText(GAME_URL); alert("Link copied for Instagram Story / DM 📸"); };
+    window.copyInviteLink = () => { navigator.clipboard.writeText(GAME_URL); alert("Invite Link copied! 🔗"); };
+
+    // --- Procedural 3D World (No Missing Models) ---
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x7ec8e3);
     scene.fog = new THREE.FogExp2(0x7ec8e3, 0.0006);
@@ -280,17 +295,17 @@
     renderer.shadowMap.enabled = true;
     document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x334455, 1.2);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x334455, 1.3);
     scene.add(hemiLight);
 
-    const sun = new THREE.DirectionalLight(0xfffaed, 2.0);
+    const sun = new THREE.DirectionalLight(0xfffaed, 2.2);
     sun.position.set(300, 500, 200);
     sun.castShadow = true;
     scene.add(sun);
 
     window.setSky = (mode) => {
-      if (mode === 'sunny') { scene.background.setHex(0x7ec8e3); scene.fog.color.setHex(0x7ec8e3); sun.intensity = 2.0; }
-      else if (mode === 'sunset') { scene.background.setHex(0xf97316); scene.fog.color.setHex(0xf97316); sun.intensity = 1.2; }
+      if (mode === 'sunny') { scene.background.setHex(0x7ec8e3); scene.fog.color.setHex(0x7ec8e3); sun.intensity = 2.2; }
+      else if (mode === 'sunset') { scene.background.setHex(0xf97316); scene.fog.color.setHex(0xf97316); sun.intensity = 1.3; }
       else if (mode === 'night') { scene.background.setHex(0x020617); scene.fog.color.setHex(0x020617); sun.intensity = 0.2; }
       else if (mode === 'rain') { scene.background.setHex(0x475569); scene.fog.color.setHex(0x475569); sun.intensity = 0.6; }
       else if (mode === 'fog') { scene.background.setHex(0x94a3b8); scene.fog.density = 0.003; }
@@ -298,62 +313,101 @@
     };
 
     // Realistic Ocean
-    const ocean = new THREE.Mesh(
-      new THREE.PlaneGeometry(18000, 18000),
-      new THREE.MeshStandardMaterial({ color: 0x0077be, roughness: 0.1, metalness: 0.85 })
-    );
-    ocean.rotation.x = -Math.PI / 2; ocean.position.y = -1.2; scene.add(ocean);
+    const oceanMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.1, metalness: 0.8 });
+    const ocean = new THREE.Mesh(new THREE.PlaneGeometry(16000, 16000), oceanMat);
+    ocean.rotation.x = -Math.PI / 2; ocean.position.y = -0.8; scene.add(ocean);
 
-    // Island Terrain
-    const island = new THREE.Mesh(
-      new THREE.CylinderGeometry(550, 600, 14, 64),
-      new THREE.MeshStandardMaterial({ color: 0x2e7d32, roughness: 0.8 })
+    // Natural Grass Island & Sand Beach
+    const islandGroup = new THREE.Group();
+    const sandBeach = new THREE.Mesh(
+      new THREE.CylinderGeometry(520, 560, 6, 64),
+      new THREE.MeshStandardMaterial({ color: 0xe0c088, roughness: 0.9 })
     );
-    island.position.y = -6; island.receiveShadow = true; scene.add(island);
+    sandBeach.position.y = -2; islandGroup.add(sandBeach);
+
+    const lushGrass = new THREE.Mesh(
+      new THREE.CylinderGeometry(460, 490, 8, 64),
+      new THREE.MeshStandardMaterial({ color: 0x2e7d32, roughness: 0.85 })
+    );
+    lushGrass.position.y = 0; islandGroup.add(lushGrass);
+    scene.add(islandGroup);
+
+    // Add Natural Trees & Rocks Procedurally
+    for (let i = 0; i < 40; i++) {
+      const rock = new THREE.Mesh(
+        new THREE.DodecahedronGeometry(2 + Math.random() * 3),
+        new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.9 })
+      );
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 80 + Math.random() * 320;
+      rock.position.set(Math.sin(angle) * radius, 2, Math.cos(angle) * radius);
+      scene.add(rock);
+    }
 
     const gltfLoader = new THREE.GLTFLoader();
-    gltfLoader.load('/water-island.glb', (g) => {
-      g.scene.scale.set(6, 6, 6); g.scene.position.y = -1.5; scene.add(g.scene);
-    });
 
-    // Avatar
+    // Player Mesh Group (Instant Switch Boy / Girl)
     let myPlayer = new THREE.Group(); scene.add(myPlayer);
-    let playerMesh = null;
-    function loadAvatar(path, scale = 1.9) {
-      if (playerMesh) myPlayer.remove(playerMesh);
-      gltfLoader.load(path, (g) => {
-        playerMesh = g.scene; playerMesh.scale.set(scale, scale, scale);
-        myPlayer.add(playerMesh);
-      });
+    let playerAvatar = new THREE.Group(); myPlayer.add(playerAvatar);
+
+    function buildProceduralAvatar(isGirl = false) {
+      while (playerAvatar.children.length > 0) playerAvatar.remove(playerAvatar.children[0]);
+
+      const skinMat = new THREE.MeshStandardMaterial({ color: 0xffd1b3 });
+      const clothMat = new THREE.MeshStandardMaterial({ color: isGirl ? 0xdb2777 : 0x1e293b });
+      const hairMat = new THREE.MeshStandardMaterial({ color: isGirl ? 0xd97706 : 0x1f2937 });
+
+      // Body & Head
+      const head = new THREE.Mesh(new THREE.SphereGeometry(0.45, 16, 16), skinMat);
+      head.position.y = 2.8; playerAvatar.add(head);
+
+      const hair = new THREE.Mesh(new THREE.SphereGeometry(0.48, 16, 16), hairMat);
+      hair.position.set(0, 2.9, -0.05); hair.scale.set(1, isGirl ? 1.3 : 0.8, 1);
+      playerAvatar.add(hair);
+
+      const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.45, 1.2, 16), clothMat);
+      torso.position.y = 1.9; playerAvatar.add(torso);
+
+      const legs = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.3, 1.3, 16), new THREE.MeshStandardMaterial({ color: isGirl ? 0x0284c7 : 0x0f172a }));
+      legs.position.y = 0.65; playerAvatar.add(legs);
     }
-    loadAvatar('/man.glb');
+    buildProceduralAvatar(false);
 
     window.selectGender = (gender) => {
       document.getElementById('gender-boy').style.background = gender === 'boy' ? '#0284c7' : 'rgba(255,255,255,0.1)';
       document.getElementById('gender-girl').style.background = gender === 'girl' ? '#ec4899' : 'rgba(255,255,255,0.1)';
-      if (gender === 'boy') loadAvatar('/man.glb', 1.9);
-      else loadAvatar('/low_poly_character_rigg...glb', 1.9);
+      buildProceduralAvatar(gender === 'girl');
       closeModal('profile-modal');
     };
 
-    // Realistic Sports Car
+    // Realistic Car Entity
     const carEntity = new THREE.Group(); carEntity.position.set(0, 0, 230); scene.add(carEntity);
-    gltfLoader.load('/race.glb', (g) => { g.scene.scale.set(1.5, 1.5, 1.5); carEntity.add(g.scene); });
+    const carBody = new THREE.Mesh(new THREE.BoxGeometry(2.6, 1.0, 5.0), new THREE.MeshStandardMaterial({ color: 0xd90429, metalness: 0.8, roughness: 0.2 }));
+    carBody.position.y = 0.8; carEntity.add(carBody);
+    const carRoof = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.8, 2.6), new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.1 }));
+    carRoof.position.set(0, 1.6, -0.2); carEntity.add(carRoof);
+    // Wheels
+    for (let x of [-1.3, 1.3]) {
+      for (let z of [-1.5, 1.5]) {
+        const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.45, 0.35, 16), new THREE.MeshStandardMaterial({ color: 0x111827 }));
+        wheel.rotation.z = Math.PI / 2; wheel.position.set(x, 0.45, z); carEntity.add(wheel);
+      }
+    }
 
-    // Mega T-Rex
+    // Giant T-Rex Entity
     const dinoEntity = new THREE.Group(); dinoEntity.position.set(80, 0, 80); scene.add(dinoEntity);
-    gltfLoader.load('/Trex.glb', (g) => { g.scene.scale.set(4.5, 4.5, 4.5); dinoEntity.add(g.scene); });
+    const dinoBody = new THREE.Mesh(new THREE.DodecahedronGeometry(3.5), new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.8 }));
+    dinoBody.position.y = 5; dinoEntity.add(dinoBody);
+    const dinoHead = new THREE.Mesh(new THREE.BoxGeometry(2.2, 2.2, 3.2), new THREE.MeshStandardMaterial({ color: 0xb45309 }));
+    dinoHead.position.set(0, 7.5, 2.5); dinoEntity.add(dinoHead);
 
-    // Controls & Driving State
-    let activeMount = 'walk'; // walk, car, dino
-    let vSpeed = 0; // Forward velocity
-    let isGasPressed = false;
-    let isBrakePressed = false;
-
-    let moveX = 0, moveZ = 0; // Steering / Walking
+    // Controls Logic
+    let activeMount = 'walk';
+    let vSpeed = 0;
+    let isGasPressed = false, isBrakePressed = false;
+    let moveX = 0, moveZ = 0;
     let camAngleX = 0, camAngleY = 0.25;
 
-    // Pedals Listeners (Gas & Brake)
     const gasPedal = document.getElementById('gas-pedal');
     const brakePedal = document.getElementById('brake-pedal');
 
@@ -362,7 +416,6 @@
     brakePedal.addEventListener('touchstart', (e) => { e.preventDefault(); isBrakePressed = true; });
     brakePedal.addEventListener('touchend', () => { isBrakePressed = false; });
 
-    // Joystick Touch
     const jBase = document.getElementById('joystick-base');
     const jStick = document.getElementById('joystick-stick');
     const jCenter = { x: 52, y: 52 };
@@ -386,10 +439,9 @@
     jBase.addEventListener('touchend', resetJoy);
     jBase.addEventListener('touchcancel', resetJoy);
 
-    // Orbit Camera
     let isDrag = false, px = 0, py = 0;
     window.addEventListener('touchstart', (e) => {
-      if (e.target.closest('#joystick-base') || e.target.closest('.interactive')) return;
+      if (e.target.closest('#joystick-base') || e.target.closest('.tool-btn') || e.target.closest('.badge')) return;
       isDrag = true; px = e.touches[0].clientX; py = e.touches[0].clientY;
     });
     window.addEventListener('touchmove', (e) => {
@@ -425,9 +477,9 @@
       if (!nearbyAction) return;
       if (nearbyAction === 'mount_car') {
         activeMount = 'car';
-        if (playerMesh) playerMesh.visible = false; // Player sits inside car
+        playerAvatar.visible = false;
         jumpBtn.style.display = 'none';
-        vehiclePedals.style.display = 'flex'; // Show Gas & Brake Pedals
+        vehiclePedals.style.display = 'flex';
       } else if (nearbyAction === 'mount_dino') {
         activeMount = 'dino';
         jumpBtn.style.display = 'none';
@@ -438,7 +490,7 @@
     };
 
     window.dismountAll = () => {
-      if (playerMesh) playerMesh.visible = true;
+      playerAvatar.visible = true;
       if (activeMount === 'car') myPlayer.position.set(carEntity.position.x + 3, 0, carEntity.position.z);
       if (activeMount === 'dino') myPlayer.position.set(dinoEntity.position.x + 4, 0, dinoEntity.position.z);
       activeMount = 'walk';
@@ -480,7 +532,7 @@
       box.appendChild(msg); box.scrollTop = box.scrollHeight;
     });
 
-    // Realistic Physics Game Loop
+    // Animation Loop
     function animate() {
       requestAnimationFrame(animate);
       checkInteractions();
@@ -500,12 +552,10 @@
           myPlayer.rotation.y = Math.atan2(fx, fz);
         }
       } else if (activeMount === 'car') {
-        // Realistic Vehicle Accelerate & Brake Physics
-        if (isGasPressed) vSpeed = Math.min(vSpeed + 0.05, 2.5); // Max speed forward
-        else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.07, -0.9); // Reverse / Hard Brake
-        else vSpeed *= 0.96; // Rolling friction
+        if (isGasPressed) vSpeed = Math.min(vSpeed + 0.05, 2.5);
+        else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.07, -0.9);
+        else vSpeed *= 0.96;
 
-        // Steering via joystick X
         carEntity.rotation.y -= moveX * 0.045 * (vSpeed >= 0 ? 1 : -1);
         carEntity.position.x += Math.sin(carEntity.rotation.y) * vSpeed;
         carEntity.position.z += Math.cos(carEntity.rotation.y) * vSpeed;
@@ -522,18 +572,17 @@
         dinoEntity.position.z += Math.cos(dinoEntity.rotation.y) * vSpeed;
 
         myPlayer.position.copy(dinoEntity.position);
-        myPlayer.position.y = dinoEntity.position.y + 3.2; // Firm saddle mount
+        myPlayer.position.y = dinoEntity.position.y + 5.5; // Saddle Height
         myPlayer.rotation.y = dinoEntity.rotation.y;
         speedo.innerText = `${Math.abs(Math.round(vSpeed * 45))} KM/H`;
       }
 
-      // Camera Track
       const curTarget = activeMount === 'walk' ? myPlayer.position : (activeMount === 'car' ? carEntity.position : dinoEntity.position);
-      const dist = activeMount === 'walk' ? 14 : 24;
+      const dist = activeMount === 'walk' ? 14 : 26;
       camera.position.x = curTarget.x + Math.sin(camAngleX) * dist * Math.cos(camAngleY);
-      camera.position.y = curTarget.y + 4.5 + Math.sin(camAngleY) * dist;
+      camera.position.y = curTarget.y + 5.0 + Math.sin(camAngleY) * dist;
       camera.position.z = curTarget.z + Math.cos(camAngleX) * dist * Math.cos(camAngleY);
-      camera.lookAt(curTarget.x, curTarget.y + 1.8, curTarget.z);
+      camera.lookAt(curTarget.x, curTarget.y + 2.0, curTarget.z);
 
       renderer.render(scene, camera);
     }
