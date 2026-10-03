@@ -18,7 +18,8 @@ let customChatRooms = ["General", "Kerala Hub", "Dubai Lounge", "Global Arena"];
 let pendingRequests = {};
 let allTimeUsers = new Set();
 
-bot.onText(/\/start/, (msg) => {
+bot.onText(/\/start(@\w+)?/, (msg) => {
+
   allTimeUsers.add(msg.chat.id);
   bot.sendMessage(msg.chat.id, "🌍 **GlobeVibe 3D Metaverse Live!**\n\nConcerts, 2-Player Dinosaurs, Mech, Football, Video Calls & Telegram Stars!", {
     parse_mode: "Markdown",
