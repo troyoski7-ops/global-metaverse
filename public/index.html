@@ -71,7 +71,7 @@
     #dismount-btn { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: #ef4444; color: #fff; border: 1px solid #fecaca; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: 800; display: none; z-index: 40; }
     #speedo { position: absolute; bottom: 135px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); color: #38bdf8; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 900; display: none; z-index: 25; }
 
-    /* Clear Isolated JUMP Button on Right Side */
+    /* JUMP Button on Right Side */
     #jump-btn { 
       position: absolute; 
       bottom: 45px; 
@@ -250,6 +250,54 @@
     let playerName = tg?.initDataUnsafe?.user?.first_name || "GOKUL";
     document.getElementById('username-input').value = playerName;
 
+    // --- High Fidelity Sound Effects Engine (Web Audio API) ---
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    const actx = new AudioContext();
+
+    function playSound(type) {
+      if (actx.state === 'suspended') actx.resume();
+      const osc = actx.createOscillator();
+      const gain = actx.createGain();
+      osc.connect(gain);
+      gain.connect(actx.destination);
+
+      const now = actx.currentTime;
+      if (type === 'jump') {
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(450, now + 0.15);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        osc.start(now); osc.stop(now + 0.15);
+      } else if (type === 'wing') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(90, now);
+        osc.frequency.exponentialRampToValueAtTime(160, now + 0.25);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc.start(now); osc.stop(now + 0.25);
+      } else if (type === 'engine') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(65, now);
+        osc.frequency.linearRampToValueAtTime(130, now + 0.2);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+        osc.start(now); osc.stop(now + 0.2);
+      } else if (type === 'splash') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(50, now + 0.35);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+        osc.start(now); osc.stop(now + 0.35);
+      } else if (type === 'chat') {
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.setValueAtTime(850, now + 0.08);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        osc.start(now); osc.stop(now + 0.15);
+      }
+    }
+
     window.openModal = (id) => document.getElementById(id).style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
     window.toggleMenu = () => {
@@ -289,7 +337,7 @@
       closeModal('weather-modal');
     };
 
-    // Ocean Surface
+    // Realistic Ocean
     const ocean = new THREE.Mesh(
       new THREE.PlaneGeometry(6000, 6000),
       new THREE.MeshStandardMaterial({ color: 0x0077be, roughness: 0.2, metalness: 0.8 })
@@ -298,7 +346,7 @@
     ocean.position.y = -0.5;
     scene.add(ocean);
 
-    // Main Island Surface
+    // Green Island Flat Base (No Black Artifacts)
     const island = new THREE.Mesh(
       new THREE.CylinderGeometry(200, 210, 2, 48),
       new THREE.MeshStandardMaterial({ color: 0x2d6a4f, roughness: 0.85 })
@@ -331,7 +379,7 @@
     }
 
     // ==========================================
-    // ALL 40+ GLB MODELS LOADED SAFELY
+    // ALL 40+ GLB MODELS LOADED SAFELY (NO OVERHEAD CLIPPING)
     // ==========================================
 
     // 1. Natural Terrain & Plenty of Grass on Ground
@@ -357,8 +405,10 @@
     loadGLBWithAnim('nature_pack.glb', (m) => { m.scale.set(1.2, 1.2, 1.2); m.position.set(-30, 0, -35); scene.add(m); });
     loadGLBWithAnim('boulder.glb', (m) => { m.scale.set(1.2, 1.2, 1.2); m.position.set(40, 0, -30); scene.add(m); });
     loadGLBWithAnim('small_rock.glb', (m) => { m.scale.set(1.0, 1.0, 1.0); m.position.set(35, 0, -25); scene.add(m); });
-    loadGLBWithAnim('mountains.glb', (m) => { m.scale.set(3.5, 3.5, 3.5); m.position.set(0, 0, -220); scene.add(m); });
-    loadGLBWithAnim('mountain_single.glb', (m) => { m.scale.set(2.5, 2.5, 2.5); m.position.set(-180, 0, -120); scene.add(m); });
+
+    // FIXED: Mountains pushed safely far back to edge (No clipping over spawn)
+    loadGLBWithAnim('mountains.glb', (m) => { m.scale.set(2.5, 2.5, 2.5); m.position.set(0, 0, -320); scene.add(m); });
+    loadGLBWithAnim('mountain_single.glb', (m) => { m.scale.set(2.0, 2.0, 2.0); m.position.set(-240, 0, -150); scene.add(m); });
 
     // 2. City, Dock & Theme Park
     loadGLBWithAnim('city.glb', (m) => { m.scale.set(1.4, 1.4, 1.4); m.position.set(50, 0, 0); scene.add(m); });
@@ -404,8 +454,8 @@
     loadGLBWithAnim('elephant.glb', (m) => { m.scale.set(1.4, 1.4, 1.4); m.position.set(-15, 0, -35); scene.add(m); });
 
     // 6. Vehicles, Aircrafts & Safe Scaled Skateboard
-    // Safe racing track placement
-    loadGLBWithAnim('racing_track.glb', (m) => { m.scale.set(1.2, 1.2, 1.2); m.position.set(0, 0.05, 50); scene.add(m); });
+    // FIXED: Racing track is placed neatly away on ground level
+    loadGLBWithAnim('racing_track.glb', (m) => { m.scale.set(1.1, 1.1, 1.1); m.position.set(0, 0.05, 50); scene.add(m); });
     const carEntity = new THREE.Group(); carEntity.position.set(10, 0.2, 20); scene.add(carEntity);
     loadGLBWithAnim('car.glb', (m) => { m.scale.set(1.1, 1.1, 1.1); carEntity.add(m); });
     loadGLBWithAnim('khronos-toycar.glb', (m) => { m.scale.set(0.8, 0.8, 0.8); m.position.set(18, 0.2, 22); scene.add(m); });
@@ -476,7 +526,7 @@
     document.getElementById('brake-pedal').addEventListener('touchend', () => isBrakePressed = false);
 
     const flyUpBtn = document.getElementById('fly-up-pedal');
-    flyUpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); isAscendPressed = true; });
+    flyUpBtn.addEventListener('touchstart', (e) => { e.preventDefault(); isAscendPressed = true; playSound('wing'); });
     flyUpBtn.addEventListener('touchend', () => isAscendPressed = false);
 
     const jBase = document.getElementById('joystick-base');
@@ -517,7 +567,7 @@
 
       // Swimming Transition (Outside island radius 180)
       if (distFromIsland > 180 && activeMount === 'walk') {
-        if (!isSwimming) { isSwimming = true; document.getElementById('jump-btn').style.display = 'none'; }
+        if (!isSwimming) { isSwimming = true; document.getElementById('jump-btn').style.display = 'none'; playSound('splash'); }
         myPlayer.position.y = -0.4 + Math.sin(Date.now() * 0.004) * 0.08;
       } else if (distFromIsland <= 180 && isSwimming) {
         isSwimming = false; myPlayer.position.y = 0; document.getElementById('jump-btn').style.display = 'flex';
@@ -570,7 +620,12 @@
       document.getElementById('drawer-menu').style.display = 'none';
     };
 
-    window.playerJump = () => { if (myPlayer.position.y <= 0.1 && !isSwimming) myPlayer.position.y = 2.2; };
+    window.playerJump = () => {
+      if (myPlayer.position.y <= 0.1 && !isSwimming) {
+        myPlayer.position.y = 2.2;
+        playSound('jump');
+      }
+    };
 
     // Concert Mic
     let isMicOn = false;
@@ -601,14 +656,15 @@
       if (!text) return;
       socket.emit('chatMessage', { sender: playerName, text: text, isPrivate: chatTab === 'private' });
       inp.value = '';
+      playSound('chat');
     }
 
     socket.emit('joinGame', { name: playerName });
     socket.on('initWorld', (d) => { document.getElementById('online-count').innerText = d.count; });
     socket.on('playerJoined', (d) => { document.getElementById('online-count').innerText = d.count; appendChat("System", `${d.player.name} joined!`); });
     socket.on('playerLeft', (d) => { document.getElementById('online-count').innerText = d.count; appendChat("System", "Player left"); });
-    socket.on('groupMessage', (d) => appendChat(d.sender, d.text));
-    socket.on('privateMessage', (d) => appendChat(`[Private] ${d.sender}`, d.text));
+    socket.on('groupMessage', (d) => { appendChat(d.sender, d.text); playSound('chat'); });
+    socket.on('privateMessage', (d) => { appendChat(`[Private] ${d.sender}`, d.text); playSound('chat'); });
 
     function appendChat(s, t) {
       const box = document.getElementById('chat-messages');
@@ -651,7 +707,7 @@
         }
       } else if (activeMount === 'dragon' || activeMount === 'heli' || activeMount === 'space') {
         const ent = activeMount === 'dragon' ? dragonEntity : (activeMount === 'heli' ? heliEntity : spaceEntity);
-        if (isGasPressed) vSpeed = Math.min(vSpeed + 0.06, activeMount === 'space' ? 3.5 : 2.4);
+        if (isGasPressed) { vSpeed = Math.min(vSpeed + 0.06, activeMount === 'space' ? 3.5 : 2.4); playSound('engine'); }
         else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.06, -0.6);
         else vSpeed *= 0.96;
 
@@ -667,7 +723,7 @@
         if (activeMount === 'dragon') myPlayer.position.y += 2.2;
         document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 85))} KM/H | ALT: ${Math.round(vAltitude)}M`;
       } else if (activeMount === 'car') {
-        if (isGasPressed) vSpeed = Math.min(vSpeed + 0.05, 2.0);
+        if (isGasPressed) { vSpeed = Math.min(vSpeed + 0.05, 2.0); playSound('engine'); }
         else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.05, -0.6);
         else vSpeed *= 0.95;
 
@@ -678,7 +734,7 @@
         document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 60))} KM/H`;
       } else if (activeMount === 'boat' || activeMount === 'ship') {
         const ent = activeMount === 'boat' ? boatEntity : shipEntity;
-        if (isGasPressed) vSpeed = Math.min(vSpeed + 0.03, 1.2);
+        if (isGasPressed) { vSpeed = Math.min(vSpeed + 0.03, 1.2); playSound('splash'); }
         else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.04, -0.4);
         else vSpeed *= 0.94;
 
@@ -713,7 +769,7 @@
         document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 45))} KM/H`;
       }
 
-      // Safe Distance Third-Person Camera (Zero Tunneling/Clipping)
+      // Safe Distance Camera (No Tunneling/Clipping)
       const target = activeMount === 'walk' ? myPlayer.position : (activeMount === 'dragon' ? dragonEntity.position : (activeMount === 'heli' ? heliEntity.position : (activeMount === 'space' ? spaceEntity.position : (activeMount === 'car' ? carEntity.position : trexEntity.position))));
       const camDist = 18;
       camera.position.x = target.x + Math.sin(camAngleX) * camDist * Math.cos(camAngleY);
