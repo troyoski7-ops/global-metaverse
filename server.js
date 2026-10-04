@@ -13,52 +13,70 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
 const PORT = process.env.PORT || 3000;
-const BOT_TOKEN = process.env.BOT_TOKEN || "";
+// നിങ്ങളുടെ നൽകിയ Bot Token ചേർത്തത്:
+const BOT_TOKEN = process.env.BOT_TOKEN || "8592382374:AAGB2NTv2bU1-99i95d5_sd_rkcM_QbfVc4";
 const GAME_URL = process.env.RENDER_EXTERNAL_URL || "https://vibe-metaverse.onrender.com";
 
-// Telegram Bot Webhook Integration
-app.post('/api/telegram', (req, res) => {
-  const update = req.body;
-  if (update && update.message && update.message.text) {
-    const chatId = update.message.chat.id;
-    const text = update.message.text.trim();
-    const firstName = update.message.from.first_name || "GOKUL";
+// Direct Long-Polling Engine for Telegram (ഏതൊരു സെർവറിലും 100% വർക്കാകും)
+let offset = 0;
+function pollTelegram() {
+  if (!BOT_TOKEN) return;
 
-    if (text.startsWith('/start') && BOT_TOKEN) {
-      const payload = JSON.stringify({
-        chat_id: chatId,
-        text: `👋 ഹലോ ${firstName}!\n\n🌍 GlobeVibe Ultra 3D Metaverse-ലേക്ക് സ്വാഗതം!\nനിങ്ങളുടെ വാഹനം ഓടിക്കാനും, ജീവികളെ നിയന്ത്രിക്കാനും, സുഹൃത്തുക്കളുമായി സംസാരിക്കാനും താഴെയുള്ള ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക:`,
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "🚀 Enter Metaverse", web_app: { url: GAME_URL } }],
-            [{ text: "🌐 Open in Browser", url: GAME_URL }]
-          ]
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${offset}&timeout=20`;
+  https.get(url, (res) => {
+    let raw = '';
+    res.on('data', chunk => raw += chunk);
+    res.on('end', () => {
+      try {
+        const data = JSON.parse(raw);
+        if (data.ok && data.result.length > 0) {
+          data.result.forEach(u => {
+            offset = u.update_id + 1;
+            if (u.message && u.message.text && u.message.text.startsWith('/start')) {
+              sendStartButton(u.message.chat.id, u.message.from.first_name || "Player");
+            }
+          });
         }
-      });
+      } catch (err) {}
+      setTimeout(pollTelegram, 1000);
+    });
+  }).on('error', () => {
+    setTimeout(pollTelegram, 3000);
+  });
+}
 
-      const options = {
-        hostname: 'api.telegram.org',
-        path: `/bot${BOT_TOKEN}/sendMessage`,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(payload)
-        }
-      };
-
-      const tgReq = https.request(options, (tgRes) => {
-        tgRes.on('data', () => {});
-      });
-      tgReq.on('error', (e) => console.error("Telegram API Error:", e.message));
-      tgReq.write(payload);
-      tgReq.end();
+function sendStartButton(chatId, name) {
+  const payload = JSON.stringify({
+    chat_id: chatId,
+    text: `👋 ഹലോ ${name}!\n\n🌍 GlobeVibe Ultra 3D Metaverse-ലേക്ക് സ്വാഗതം!\n\n🐉 ഡ്രാഗൺ പറത്താനും, കാർ ഓടിക്കാനും, ഫുട്ബോൾ സ്റ്റേഡിയം സന്ദർശിക്കാനും താഴെയുള്ള ബട്ടൺ ക്ലിക്ക് ചെയ്യുക:`,
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: "🚀 Enter Metaverse", web_app: { url: GAME_URL } }],
+        [{ text: "🌐 Open in Browser", url: GAME_URL }]
+      ]
     }
-  }
-  res.sendStatus(200);
-});
+  });
 
+  const opt = {
+    hostname: 'api.telegram.org',
+    path: `/bot${BOT_TOKEN}/sendMessage`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(payload)
+    }
+  };
+
+  const req = https.request(opt);
+  req.on('error', (e) => console.error(e));
+  req.write(payload);
+  req.end();
+}
+
+pollTelegram();
+
+// Multiplayer Realtime Sockets
 let players = {};
-
 io.on('connection', (socket) => {
   socket.on('joinGame', (data) => {
     players[socket.id] = {
@@ -84,8 +102,8 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('voiceStream', (audioChunk) => {
-    socket.broadcast.emit('incomingVoice', { id: socket.id, audio: audioChunk });
+  socket.on('voiceStream', (chunk) => {
+    socket.broadcast.emit('incomingVoice', { id: socket.id, audio: chunk });
   });
 
   socket.on('chatMessage', (data) => {
@@ -104,5 +122,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`GlobeVibe Master Server live on port ${PORT}`);
+  console.log(`GlobeVibe Master Live on port ${PORT}`);
 });
