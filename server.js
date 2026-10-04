@@ -13,46 +13,49 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
 const PORT = process.env.PORT || 3000;
-// നിങ്ങളുടെ പുതിയ Bot Token:
 const BOT_TOKEN = "8592382374:AAGP1RJLcWgIhHU0cTk5fZZqqqwsPOLuEug";
 const GAME_URL = process.env.RENDER_EXTERNAL_URL || "https://vibe-metaverse.onrender.com";
 
-// 1. പഴയ Stuck Webhooks & Channel Prompts പൂർണ്ണമായി ഡിലീറ്റ് ചെയ്യുന്നു
-function clearAndStart() {
-  https.get(`https://api.telegram.org/bot${BOT_TOKEN}/deleteWebhook?drop_pending_updates=true`, (res) => {
-    console.log("Old telegram hooks cleared! Engine running fresh.");
-    runPolling();
-  }).on('error', () => runPolling());
+// Delete Old Webhooks & Pending Promotion Updates
+function initTelegramBot() {
+  https.get(`https://api.telegram.org/bot${BOT_TOKEN}/deleteWebhook?drop_pending_updates=true`, () => {
+    console.log("[Telegram] Webhook cleared. Dedicated Polling running...");
+    pollUpdates();
+  }).on('error', (err) => {
+    console.error("[Telegram Error]", err.message);
+    setTimeout(initTelegramBot, 4000);
+  });
 }
 
-// 2. Direct Polling (വേറെ ഒരു ചാനൽ മെസ്സേജും വരില്ല, വെറും ഗെയിം ബട്ടൺ മാത്രം വരും)
-let offset = 0;
-function runPolling() {
-  const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${offset}&timeout=15`;
-  https.get(url, (res) => {
-    let raw = '';
-    res.on('data', chunk => raw += chunk);
+let updateOffset = 0;
+function pollUpdates() {
+  const reqUrl = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${updateOffset}&timeout=20`;
+  https.get(reqUrl, (res) => {
+    let body = '';
+    res.on('data', chunk => body += chunk);
     res.on('end', () => {
       try {
-        const data = JSON.parse(raw);
-        if (data.ok && data.result.length > 0) {
-          data.result.forEach(u => {
-            offset = u.update_id + 1;
-            if (u.message && u.message.text && u.message.text.startsWith('/start')) {
-              sendGameInvite(u.message.chat.id, u.message.from.first_name || "Player");
+        const json = JSON.parse(body);
+        if (json.ok && Array.isArray(json.result)) {
+          json.result.forEach(update => {
+            updateOffset = update.update_id + 1;
+            if (update.message && update.message.text && update.message.text.startsWith('/start')) {
+              dispatchStartCard(update.message.chat.id, update.message.from.first_name || "Explorer");
             }
           });
         }
       } catch (e) {}
-      setTimeout(runPolling, 1000);
+      setTimeout(pollUpdates, 800);
     });
-  }).on('error', () => setTimeout(runPolling, 3000));
+  }).on('error', () => {
+    setTimeout(pollUpdates, 3000);
+  });
 }
 
-function sendGameInvite(chatId, name) {
+function dispatchStartCard(chatId, userName) {
   const payload = JSON.stringify({
     chat_id: chatId,
-    text: `👋 ഹലോ ${name}!\n\n🌍 GlobeVibe Ultra 3D Metaverse-ലേക്ക് സ്വാഗതം!\n\n🐉 ഡ്രാഗൺ പറത്താനും, കാറുകൾ ഓടിക്കാനും, ശബ്ദത്തോടുകൂടിയ 3D ലോകത്ത് കളിക്കാനും താഴെ ക്ലിക്ക് ചെയ്യുക:`,
+    text: `🌍 ഹലോ ${userName}!\n\nGlobeVibe Ultra 3D Metaverse-ലേക്ക് സ്വാഗതം!\n\n🐉 ഡ്രാഗൺ പറത്താനും, കാറുകൾ ഓടിക്കാനും, ഫുട്ബോൾ സ്റ്റേഡിയം സന്ദർശിക്കാനും താഴെയുള്ള ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക:`,
     reply_markup: {
       inline_keyboard: [
         [{ text: "🚀 Enter Metaverse", web_app: { url: GAME_URL } }],
@@ -61,7 +64,7 @@ function sendGameInvite(chatId, name) {
     }
   });
 
-  const opt = {
+  const req = https.request({
     hostname: 'api.telegram.org',
     path: `/bot${BOT_TOKEN}/sendMessage`,
     method: 'POST',
@@ -69,62 +72,59 @@ function sendGameInvite(chatId, name) {
       'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(payload)
     }
-  };
-
-  const req = https.request(opt);
-  req.on('error', (e) => console.error(e));
+  });
+  req.on('error', (err) => console.error("[Telegram Send Error]", err));
   req.write(payload);
   req.end();
 }
 
-clearAndStart();
+initTelegramBot();
 
-// Realtime Multiplayer Sockets
-let players = {};
+// Multiplayer Realtime Node Architecture
+const activePlayers = new Map();
+
 io.on('connection', (socket) => {
-  socket.on('joinGame', (data) => {
-    players[socket.id] = {
+  socket.on('joinGame', (userData) => {
+    activePlayers.set(socket.id, {
       id: socket.id,
-      name: data.name || "GOKUL",
-      gender: data.gender || "boy",
-      x: data.x || 0,
-      y: data.y || 1.2,
-      z: data.z || 0,
+      name: userData.name || "GOKUL",
+      gender: userData.gender || "boy",
+      x: userData.x || 0,
+      y: userData.y || 1.2,
+      z: userData.z || 0,
       rotY: 0
-    };
-    socket.emit('initWorld', { count: Object.keys(players).length });
-    io.emit('playerJoined', { player: players[socket.id], count: Object.keys(players).length });
+    });
+    socket.emit('initWorld', { count: activePlayers.size });
+    io.emit('playerJoined', { player: activePlayers.get(socket.id), count: activePlayers.size });
   });
 
-  socket.on('playerMove', (data) => {
-    if (players[socket.id]) {
-      players[socket.id].x = data.x;
-      players[socket.id].y = data.y;
-      players[socket.id].z = data.z;
-      players[socket.id].rotY = data.rotY;
-      socket.broadcast.emit('playerMoved', players[socket.id]);
+  socket.on('playerMove', (pos) => {
+    const cur = activePlayers.get(socket.id);
+    if (cur) {
+      cur.x = pos.x; cur.y = pos.y; cur.z = pos.z; cur.rotY = pos.rotY;
+      socket.broadcast.emit('playerMoved', cur);
     }
   });
 
-  socket.on('voiceStream', (chunk) => {
-    socket.broadcast.emit('incomingVoice', { id: socket.id, audio: chunk });
+  socket.on('voiceStream', (audioBuffer) => {
+    socket.broadcast.emit('incomingVoice', { id: socket.id, audio: audioBuffer });
   });
 
-  socket.on('chatMessage', (data) => {
-    if (data.isPrivate) {
-      io.emit('privateMessage', { sender: data.sender, text: data.text });
+  socket.on('chatMessage', (msg) => {
+    if (msg.isPrivate) {
+      io.emit('privateMessage', { sender: msg.sender, text: msg.text });
     } else {
-      io.emit('groupMessage', { sender: data.sender, text: data.text });
+      io.emit('groupMessage', { sender: msg.sender, text: msg.text });
     }
   });
 
   socket.on('disconnect', () => {
-    const p = players[socket.id];
-    delete players[socket.id];
-    io.emit('playerLeft', { id: socket.id, name: p?.name, count: Object.keys(players).length });
+    const leaving = activePlayers.get(socket.id);
+    activePlayers.delete(socket.id);
+    io.emit('playerLeft', { id: socket.id, name: leaving?.name, count: activePlayers.size });
   });
 });
 
 server.listen(PORT, () => {
-  console.log(`GlobeVibe Master Live on port ${PORT}`);
+  console.log(`[Server] GlobeVibe Core Architecture operational on port ${PORT}`);
 });
