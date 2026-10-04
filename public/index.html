@@ -1116,3 +1116,146 @@
   </script>
 </body>
 </html>
+    // =========================================================================
+    // APPEND BLOCK: FIXES FOR SHIP, BRIDGE, SEATS & MULTIPLAYER RE-SYNC
+    // =========================================================================
+
+    // 1. കപ്പൽ (Ship) ഫിക്സ് - വായുവിൽ നിൽക്കുന്നത് മാറ്റി വെള്ളത്തിൽ ഉറപ്പിക്കുന്നു & ബോർഡിംഗ് സുഗമമാക്കുന്നു
+    if (typeof cargoShip !== 'undefined') {
+      cargoShip.position.set(0, -0.3, 70); // വെള്ളത്തിന്റെ ലെവലിൽ ശരിയായി ഇരുത്തുന്നു
+      if (multiVehicles && multiVehicles['ship']) {
+        multiVehicles['ship'].offsets = [
+          new THREE.Vector3(0, 3.8, 1.2),   // Deck Center
+          new THREE.Vector3(-1.2, 3.8, 0.2), // Deck Left
+          new THREE.Vector3(1.2, 3.8, 0.2),  // Deck Right
+          new THREE.Vector3(0, 3.8, -1.8)    // Deck Rear
+        ];
+      }
+    }
+
+    // 2. ആന, സ്പേസ് ജെറ്റ്, ഹെലികോപ്റ്റർ ഇരിപ്പിടങ്ങൾ പുനഃക്രമീകരിക്കുന്നു (Proper Seat Offsets)
+    if (typeof multiVehicles !== 'undefined') {
+      if (multiVehicles['elephant']) {
+        multiVehicles['elephant'].offsets = [
+          new THREE.Vector3(0, 1.85, 0.4),  // ആനപ്പുറത്ത് കൃത്യമായി ഇരിക്കുന്നു
+          new THREE.Vector3(0, 1.8, -0.3),
+          new THREE.Vector3(-0.35, 1.75, -0.8),
+          new THREE.Vector3(0.35, 1.75, -0.8)
+        ];
+      }
+      if (multiVehicles['jet']) {
+        multiVehicles['jet'].offsets = [
+          new THREE.Vector3(0, 0.45, 0.1),  // തല പുറത്തേക്ക് തുളയാതെ കാബിനിൽ
+          new THREE.Vector3(0, 0.45, -0.5),
+          new THREE.Vector3(-0.35, 0.45, -0.9),
+          new THREE.Vector3(0.35, 0.45, -0.9)
+        ];
+      }
+      if (multiVehicles['heli']) {
+        multiVehicles['heli'].offsets = [
+          new THREE.Vector3(-0.35, 0.45, 0.3), // കോക്ക്പിറ്റ് സീറ്റിൽ
+          new THREE.Vector3(0.35, 0.45, 0.3),
+          new THREE.Vector3(-0.35, 0.45, -0.3),
+          new THREE.Vector3(0.35, 0.45, -0.3)
+        ];
+      }
+    }
+
+    // 3. കൺസേർട്ട് സ്റ്റേജിലെ ഇരിപ്പിടങ്ങൾ വൃത്തിയാക്കൽ
+    if (typeof benchPositions !== 'undefined') {
+      benchPositions.length = 0; // പഴയ അലൈൻമെന്റ് ക്ലിയർ ചെയ്യുന്നു
+      scene.traverse((child) => {
+        if (child.isMesh && child.name && child.name.includes('bench')) {
+          scene.remove(child);
+        }
+      });
+      // സ്റ്റേജിന് മുന്നിൽ കൃത്യമായ 2 നിര ബെഞ്ചുകൾ
+      loadGLB('park_bench.glb', 2.2, (m) => {
+        for (let row = 0; row < 2; row++) {
+          for (let col = -1; col <= 1; col++) {
+            const b = m.clone();
+            b.position.set(30 + col * 4.5, 0.1, -12 + row * 3.5);
+            b.rotation.y = Math.PI; // സ്റ്റേജിലേക്ക് തിരിഞ്ഞുനിൽക്കുന്നു
+            scene.add(b);
+            benchPositions.push(b.position.clone());
+          }
+        }
+      });
+    }
+
+    // 4. ഇന്ററാക്ഷൻ പരിശോധന & പാലത്തിന്റെ തറ ഉയരം ഓവർറൈഡ് ചെയ്യുന്നു
+    const originalCheckInteractions = window.checkInteractions;
+    window.checkInteractions = function() {
+      if (currentActiveSeat) {
+        if (actBtn) actBtn.style.display = 'none';
+        return;
+      }
+      const p = localPlayer.position;
+
+      // കപ്പലിലേക്ക് കയറാനുള്ള വലിയ ഡിസ്റ്റൻസ് ചെക്കിംഗ്
+      if (typeof cargoShip !== 'undefined') {
+        const distShip = p.distanceTo(cargoShip.position);
+        if (distShip < 22) { // എളുപ്പത്തിൽ കയറാൻ പരിധി കൂട്ടി
+          actBtn.innerText = "🚢 BOARD SHIP (DECK)";
+          actBtn.style.display = 'block';
+          actBtn.onclick = () => {
+            const v = multiVehicles['ship'];
+            const sIdx = v.passengers.length;
+            if (sIdx >= v.maxSeats) { alert("Ship is full!"); return; }
+            v.passengers.push(myPlayerId);
+            currentActiveSeat = { rigKey: 'ship', isDriver: (sIdx === 0), seatIndex: sIdx };
+
+            cargoShip.add(localAvatar);
+            localAvatar.position.copy(v.offsets[sIdx]);
+            localAvatar.rotation.set(0, 0, 0);
+
+            document.getElementById('vehicle-pedals').style.display = 'flex';
+            document.getElementById('speedo').style.display = 'block';
+            document.getElementById('dismount-btn').style.display = 'block';
+          };
+          return;
+        }
+      }
+
+      // മറ്റ് പരിശോധനകൾ നിലനിർത്തുന്നു
+      if (typeof originalCheckInteractions === 'function') {
+        originalCheckInteractions();
+      }
+    };
+
+    // 5. ബ്രിഡ്ജ്/ജെട്ടി തറനിരപ്പ് ശരിയാക്കൽ (y = 1.6 ഫ്ലോർ ലോക്ക്)
+    const originalAnimate = window.animate;
+    // പ്ലെയർ പാലത്തിലാണെങ്കിൽ താഴെ പോകാതെ കൃത്യമായി നിലനിർത്തുന്നു
+    setInterval(() => {
+      if (!currentActiveSeat && localPlayer) {
+        const distToDock = localPlayer.position.distanceTo(new THREE.Vector3(0, 0, 48));
+        if (distToDock < 10.0) {
+          // പാലത്തിന്റെ മുകളിലൂടെ മാത്രം നടക്കാൻ ഉയരം ലോക്ക് ചെയ്യുന്നു
+          if (localPlayer.position.y < 1.6) {
+            localPlayer.position.y = 1.6;
+          }
+        }
+      }
+    }, 16);
+
+    // 6. മൾട്ടിപ്ലെയർ റീ-കണക്ഷൻ & സിങ്ക് ഹാക്ക് (Online count & Live sync)
+    if (socket) {
+      // സെർവറിലേക്ക് ജോയിൻ ചെയ്ത വിവരം ഉടനടി ബ്രോഡ്കാസ്റ്റ് ചെയ്യുന്നു
+      socket.emit('requestWorldSync', { name: playerName });
+      
+      socket.on('connect', () => {
+        document.getElementById('hud-online').innerText = "1";
+        socket.emit('playerMoved', {
+          room: currentRoom,
+          x: localPlayer.position.x,
+          y: localPlayer.position.y,
+          z: localPlayer.position.z,
+          rotY: localPlayer.rotation.y
+        });
+      });
+
+      socket.on('updatePlayerCount', (count) => {
+        const hud = document.getElementById('hud-online');
+        if (hud) hud.innerText = count;
+      });
+    }
