@@ -40,7 +40,7 @@
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); z-index: 99999; align-items: center; justify-content: center; }
     .modal-box { background: #0f172a; border: 1.5px solid rgba(255,255,255,0.25); border-radius: 20px; width: 335px; max-width: 92%; padding: 18px; color: #fff; display: flex; flex-direction: column; gap: 12px; }
 
-    /* Live Chat - Safely Separated from Right Side */
+    /* Live Chat Position */
     #chat-container { 
       position: absolute; 
       bottom: 22px; 
@@ -66,12 +66,12 @@
     #chat-input { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: #fff; padding: 4px 6px; font-size: 10px; outline: none; }
     #chat-send { background: #0284c7; color: #fff; border: none; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; cursor: pointer; }
 
-    /* Action & Pedals */
+    /* Controls */
     #action-btn { position: absolute; bottom: 135px; left: 50%; transform: translateX(-50%); background: #0284c7; color: #fff; border: 2px solid #fff; padding: 12px 24px; border-radius: 30px; font-size: 13px; font-weight: 900; display: none; z-index: 25; }
     #dismount-btn { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: #ef4444; color: #fff; border: 1px solid #fecaca; padding: 8px 20px; border-radius: 20px; font-size: 12px; font-weight: 800; display: none; z-index: 40; }
     #speedo { position: absolute; bottom: 135px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); color: #38bdf8; padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: 900; display: none; z-index: 25; }
 
-    /* Standalone Isolated JUMP Button on Right Side */
+    /* Clear Isolated JUMP Button on Right Side */
     #jump-btn { 
       position: absolute; 
       bottom: 45px; 
@@ -159,7 +159,20 @@
     </div>
   </div>
 
-  <!-- 4. Profile Modal -->
+  <!-- 4. Telegram Stars Modal -->
+  <div id="stars-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3>⭐ Telegram Stars VIP</h3>
+      <div style="display:flex; flex-direction:column; gap:6px;">
+        <button class="tool-btn" onclick="buyStars(50)">⭐ 50 Stars — VIP Rank</button>
+        <button class="tool-btn" onclick="buyStars(250)">⭐ 250 Stars — Dragon Rider</button>
+        <button class="tool-btn" onclick="buyStars(500)">⭐ 500 Stars — God Mode</button>
+      </div>
+      <button class="tool-btn" onclick="closeModal('stars-modal')">Close</button>
+    </div>
+  </div>
+
+  <!-- 5. Profile Modal -->
   <div id="profile-modal" class="modal-overlay">
     <div class="modal-box">
       <h3>👤 Profile & Avatar</h3>
@@ -177,7 +190,7 @@
     <div class="top-row-1">
       <div class="pill-group">
         <div class="badge owner">👑 OWNER</div>
-        <div class="badge stars">⭐ 100 STARS</div>
+        <div class="badge stars" onclick="openModal('stars-modal')">⭐ 100 STARS</div>
         <div class="badge online">🟢 <span id="online-count">1</span> Online</div>
       </div>
       <div class="comm-btns">
@@ -196,12 +209,12 @@
   <!-- Fast Travel Drawer -->
   <div id="drawer-menu">
     <button class="menu-item" onclick="teleportTo(0, 1.5, 0)">🏝 Island Spawn</button>
-    <button class="menu-item" onclick="teleportTo(45, 1.5, 0)">🏙 City Center</button>
+    <button class="menu-item" onclick="teleportTo(50, 1.5, 0)">🏙 City Center</button>
     <button class="menu-item" onclick="teleportTo(-60, 1.5, -50)">⚽ Sports Stadium</button>
-    <button class="menu-item" onclick="teleportTo(-30, 1.5, 30)">🦖 Jurassic Dino Valley</button>
+    <button class="menu-item" onclick="teleportTo(-30, 1.5, 30)">🦖 Dino Valley</button>
+    <button class="menu-item" onclick="teleportTo(-75, 1.5, 60)">🐉 Flying Dragon Peak</button>
     <button class="menu-item" onclick="teleportTo(-80, 1.5, 0)">💥 Godzilla Arena</button>
     <button class="menu-item" onclick="teleportTo(70, 1.5, 20)">🚀 Spaceship Port</button>
-    <button class="menu-item" onclick="teleportTo(0, 0.5, 95)">🚤 Harbor Dock</button>
   </div>
 
   <div id="chat-container">
@@ -222,7 +235,7 @@
   <button id="jump-btn" onclick="playerJump()">JUMP</button>
 
   <div id="vehicle-pedals" class="vehicle-pedals">
-    <button id="fly-up-pedal" class="pedal-btn" style="display:none;">🛫 ASCEND</button>
+    <button id="fly-up-pedal" class="pedal-btn" style="display:none;">🛫 FLY UP</button>
     <button id="gas-pedal" class="pedal-btn">🏎 GAS</button>
     <button id="brake-pedal" class="pedal-btn">🛑 BRAKE</button>
   </div>
@@ -246,6 +259,7 @@
 
     window.setLanguage = (code) => { closeModal('lang-modal'); };
     window.selectServer = (name) => { closeModal('server-modal'); };
+    window.buyStars = (amt) => { alert(`⭐ Stars Request: ${amt}`); closeModal('stars-modal'); };
     window.saveProfile = () => {
       const n = document.getElementById('username-input').value.trim();
       if (n) playerName = n;
@@ -275,7 +289,7 @@
       closeModal('weather-modal');
     };
 
-    // Realistic Ocean Floor
+    // Ocean Surface
     const ocean = new THREE.Mesh(
       new THREE.PlaneGeometry(6000, 6000),
       new THREE.MeshStandardMaterial({ color: 0x0077be, roughness: 0.2, metalness: 0.8 })
@@ -292,7 +306,6 @@
     island.position.y = -0.1;
     scene.add(island);
 
-    // Animation Mixers List
     const mixers = [];
     const clock = new THREE.Clock();
 
@@ -318,17 +331,17 @@
     }
 
     // ==========================================
-    // ALL YOUR 40+ GLB MODELS LOADED & ANIMATED
+    // ALL 40+ GLB MODELS LOADED SAFELY
     // ==========================================
 
-    // 1. Terrain, Water & Grass
+    // 1. Natural Terrain & Plenty of Grass on Ground
     loadGLBWithAnim('water-island.glb', (m) => { m.scale.set(4, 4, 4); m.position.set(0, -0.4, 0); scene.add(m); });
     loadGLBWithAnim('water.glb', (m) => { m.scale.set(3, 3, 3); m.position.set(0, -0.2, 0); scene.add(m); });
     loadGLBWithAnim('water-rocks.glb', (m) => { m.scale.set(1.5, 1.5, 1.5); m.position.set(80, 0, 70); scene.add(m); });
     loadGLBWithAnim('water_poly_1.glb', (m) => { m.scale.set(2, 2, 2); m.position.set(100, -0.3, 100); scene.add(m); });
     loadGLBWithAnim('water_poly_2.glb', (m) => { m.scale.set(2, 2, 2); m.position.set(-100, -0.3, 100); scene.add(m); });
 
-    // 60+ Clusters of Natural Grass on Island
+    // Grass Sprinkled Natural Across the Entire Ground
     loadGLBWithAnim('grass.glb', (m) => {
       for (let i = 0; i < 60; i++) {
         const c = m.clone();
@@ -363,7 +376,7 @@
     loadGLBWithAnim('concert_stage.glb', (m) => { m.scale.set(1.5, 1.5, 1.5); m.position.set(45, 0, -50); scene.add(m); });
     loadGLBWithAnim('concert_pack.glb', (m) => { m.scale.set(1.2, 1.2, 1.2); m.position.set(40, 0, -60); scene.add(m); });
 
-    // 4. Jurassic Dino Valley & Creatures (Animated)
+    // 4. Dinosaurs (Walking on Ground)
     const trexEntity = new THREE.Group(); trexEntity.position.set(-30, 0, 30); scene.add(trexEntity);
     loadGLBWithAnim('Trex.glb', (m) => { m.scale.set(1.3, 1.3, 1.3); trexEntity.add(m); });
     loadGLBWithAnim('Ankylosaurus.glb', (m) => { m.scale.set(1.1, 1.1, 1.1); m.position.set(-40, 0, 45); scene.add(m); });
@@ -374,7 +387,7 @@
     loadGLBWithAnim('pachycephalosaurus.glb', (m) => { m.scale.set(1.1, 1.1, 1.1); m.position.set(-35, 0, 20); scene.add(m); });
     loadGLBWithAnim('Pterodactylus.glb', (m) => { m.scale.set(1.2, 1.2, 1.2); m.position.set(-30, 12, 30); scene.add(m); });
 
-    // FIXED: Godzilla Fully Animated with Live Movement
+    // Live Animated Godzilla
     let godzillaMesh = null;
     loadGLBWithAnim('godzilla.glb', (m) => { 
       m.scale.set(2.2, 2.2, 2.2); 
@@ -383,28 +396,33 @@
       godzillaMesh = m;
     });
 
-    loadGLBWithAnim('dragon.glb', (m) => { m.scale.set(1.6, 1.6, 1.6); m.position.set(-75, 0, 60); scene.add(m); });
+    // 5. FLYING DRAGON (Sky Mounted Flight Creature)
+    const dragonEntity = new THREE.Group(); dragonEntity.position.set(-75, 0.5, 60); scene.add(dragonEntity);
+    loadGLBWithAnim('dragon.glb', (m) => { m.scale.set(1.6, 1.6, 1.6); dragonEntity.add(m); });
+
     loadGLBWithAnim('mech.glb', (m) => { m.scale.set(1.4, 1.4, 1.4); m.position.set(-60, 0, 70); scene.add(m); });
     loadGLBWithAnim('elephant.glb', (m) => { m.scale.set(1.4, 1.4, 1.4); m.position.set(-15, 0, -35); scene.add(m); });
 
-    // 5. Vehicles, Aircrafts & Scaled Skateboard
-    loadGLBWithAnim('racing_track.glb', (m) => { m.scale.set(1.4, 1.4, 1.4); m.position.set(0, 0.05, 50); scene.add(m); });
+    // 6. Vehicles, Aircrafts & Safe Scaled Skateboard
+    // Safe racing track placement
+    loadGLBWithAnim('racing_track.glb', (m) => { m.scale.set(1.2, 1.2, 1.2); m.position.set(0, 0.05, 50); scene.add(m); });
     const carEntity = new THREE.Group(); carEntity.position.set(10, 0.2, 20); scene.add(carEntity);
     loadGLBWithAnim('car.glb', (m) => { m.scale.set(1.1, 1.1, 1.1); carEntity.add(m); });
     loadGLBWithAnim('khronos-toycar.glb', (m) => { m.scale.set(0.8, 0.8, 0.8); m.position.set(18, 0.2, 22); scene.add(m); });
     loadGLBWithAnim('race.glb', (m) => { m.scale.set(1.1, 1.1, 1.1); m.position.set(10, 0.2, 30); scene.add(m); });
 
+    // FIXED: Realistic Small Scaled Skateboard
     const skateEntity = new THREE.Group(); skateEntity.position.set(-8, 0.1, 12); scene.add(skateEntity);
-    loadGLBWithAnim('low_poly_skateboard.glb', (m) => { m.scale.set(0.35, 0.35, 0.35); skateEntity.add(m); });
+    loadGLBWithAnim('low_poly_skateboard.glb', (m) => { m.scale.set(0.28, 0.28, 0.28); skateEntity.add(m); });
 
-    // Flyable Aircrafts
+    // Aircrafts (Heli & Spaceship)
     const heliEntity = new THREE.Group(); heliEntity.position.set(-45, 0.2, -15); scene.add(heliEntity);
     loadGLBWithAnim('helicopter.glb', (m) => { m.scale.set(1.4, 1.4, 1.4); heliEntity.add(m); });
 
     const spaceEntity = new THREE.Group(); spaceEntity.position.set(70, 0.2, 20); scene.add(spaceEntity);
     loadGLBWithAnim('spaceship.glb', (m) => { m.scale.set(1.5, 1.5, 1.5); spaceEntity.add(m); });
 
-    // Water Vehicles & Ships
+    // Ships & Water Vehicles
     const boatEntity = new THREE.Group(); boatEntity.position.set(0, -0.4, 115); scene.add(boatEntity);
     loadGLBWithAnim('low_poly_boat.glb', (m) => { m.scale.set(1.6, 1.6, 1.6); boatEntity.add(m); });
     loadGLBWithAnim('low_poly_fishing_boat.glb', (m) => { m.scale.set(1.6, 1.6, 1.6); m.position.set(25, -0.4, 125); scene.add(m); });
@@ -424,7 +442,7 @@
     loadGLBWithAnim('model_3.glb', (m) => { m.scale.set(1.5, 1.5, 1.5); m.position.set(16, 0, 5); scene.add(m); });
     loadGLBWithAnim('model_4.glb', (m) => { m.scale.set(1.5, 1.5, 1.5); m.position.set(18, 0, 7); scene.add(m); });
 
-    // 6. Character Setup & Equipped Weapons
+    // 7. Character Setup
     let myPlayer = new THREE.Group(); myPlayer.position.set(0, 0, 0); scene.add(myPlayer);
     let playerAvatar = new THREE.Group(); myPlayer.add(playerAvatar);
 
@@ -506,6 +524,7 @@
       }
 
       if (activeMount === 'walk') {
+        if (p.distanceTo(dragonEntity.position) < 8) { nearbyAction = 'mount_dragon'; actBtn.innerText = "🐉 FLY DRAGON"; actBtn.style.display = 'block'; return; }
         if (p.distanceTo(heliEntity.position) < 7) { nearbyAction = 'mount_heli'; actBtn.innerText = "🚁 FLY HELICOPTER"; actBtn.style.display = 'block'; return; }
         if (p.distanceTo(spaceEntity.position) < 8) { nearbyAction = 'mount_space'; actBtn.innerText = "🚀 LAUNCH SPACESHIP"; actBtn.style.display = 'block'; return; }
         if (p.distanceTo(carEntity.position) < 6) { nearbyAction = 'mount_car'; actBtn.innerText = "🏎 DRIVE CAR"; actBtn.style.display = 'block'; return; }
@@ -518,6 +537,7 @@
     }
 
     window.executeContextAction = () => {
+      if (nearbyAction === 'mount_dragon') { activeMount = 'dragon'; flyUpBtn.style.display = 'flex'; }
       if (nearbyAction === 'mount_heli') { activeMount = 'heli'; flyUpBtn.style.display = 'flex'; }
       if (nearbyAction === 'mount_space') { activeMount = 'space'; flyUpBtn.style.display = 'flex'; }
       if (nearbyAction === 'mount_car') activeMount = 'car';
@@ -534,6 +554,7 @@
 
     window.dismountAll = () => {
       flyUpBtn.style.display = 'none';
+      if (activeMount === 'dragon') myPlayer.position.set(dragonEntity.position.x + 4, 0, dragonEntity.position.z);
       if (activeMount === 'heli') myPlayer.position.set(heliEntity.position.x + 3, 0, heliEntity.position.z);
       if (activeMount === 'space') myPlayer.position.set(spaceEntity.position.x + 3, 0, spaceEntity.position.z);
       activeMount = 'walk'; vSpeed = 0; vAltitude = 0;
@@ -565,7 +586,7 @@
       }
     };
 
-    // Chat Logic
+    // Chat
     let chatTab = 'group';
     window.switchChat = (t) => {
       chatTab = t;
@@ -596,7 +617,7 @@
       box.appendChild(m); box.scrollTop = box.scrollHeight;
     }
 
-    // Animation Physics Loop
+    // Main Engine Loop
     function animate() {
       requestAnimationFrame(animate);
       checkInteractions();
@@ -604,12 +625,11 @@
       const delta = clock.getDelta();
       mixers.forEach(mixer => mixer.update(delta));
 
-      // Alive Movements
       if (ferrisWheel) ferrisWheel.rotation.y += 0.005;
       if (whaleMesh) whaleMesh.position.x += Math.sin(Date.now() * 0.001) * 0.1;
       if (sharkMesh) sharkMesh.position.z += Math.cos(Date.now() * 0.001) * 0.1;
 
-      // Natural Breathing Movement for Godzilla
+      // Godzilla Live Alive Movements
       if (godzillaMesh) {
         godzillaMesh.rotation.y = Math.sin(Date.now() * 0.0008) * 0.3;
         godzillaMesh.position.y = Math.sin(Date.now() * 0.002) * 0.08;
@@ -629,22 +649,23 @@
           myPlayer.rotation.y = Math.atan2(fx, fz);
           socket.emit('playerMove', { x: myPlayer.position.x, y: myPlayer.position.y, z: myPlayer.position.z, rotY: myPlayer.rotation.y });
         }
-      } else if (activeMount === 'heli' || activeMount === 'space') {
-        const ent = activeMount === 'heli' ? heliEntity : spaceEntity;
-        if (isGasPressed) vSpeed = Math.min(vSpeed + 0.06, activeMount === 'space' ? 3.5 : 2.2);
+      } else if (activeMount === 'dragon' || activeMount === 'heli' || activeMount === 'space') {
+        const ent = activeMount === 'dragon' ? dragonEntity : (activeMount === 'heli' ? heliEntity : spaceEntity);
+        if (isGasPressed) vSpeed = Math.min(vSpeed + 0.06, activeMount === 'space' ? 3.5 : 2.4);
         else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.06, -0.6);
         else vSpeed *= 0.96;
 
-        if (isAscendPressed) vAltitude = Math.min(vAltitude + 0.2, 50);
+        if (isAscendPressed) vAltitude = Math.min(vAltitude + 0.25, 60);
         else vAltitude = Math.max(vAltitude - 0.05, 0);
 
         ent.rotation.y -= moveX * 0.04;
         ent.position.x += Math.sin(ent.rotation.y) * vSpeed;
         ent.position.z += Math.cos(ent.rotation.y) * vSpeed;
-        ent.position.y = 0.2 + vAltitude;
+        ent.position.y = 0.5 + vAltitude;
 
         myPlayer.position.copy(ent.position);
-        document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 90))} KM/H | ALT: ${Math.round(vAltitude)}M`;
+        if (activeMount === 'dragon') myPlayer.position.y += 2.2;
+        document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 85))} KM/H | ALT: ${Math.round(vAltitude)}M`;
       } else if (activeMount === 'car') {
         if (isGasPressed) vSpeed = Math.min(vSpeed + 0.05, 2.0);
         else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.05, -0.6);
@@ -668,6 +689,7 @@
         myPlayer.position.y = activeMount === 'boat' ? 0.2 : 3.0;
         document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 40))} KNOTS`;
       } else if (activeMount === 'dino') {
+        // T-Rex Walk on ground (NOT Flying)
         if (isGasPressed) vSpeed = Math.min(vSpeed + 0.03, 1.0);
         else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.03, -0.3);
         else vSpeed *= 0.92;
@@ -691,8 +713,8 @@
         document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 45))} KM/H`;
       }
 
-      // Third Person Camera Far Back (No Tunneling/Clipping)
-      const target = activeMount === 'walk' ? myPlayer.position : (activeMount === 'heli' ? heliEntity.position : (activeMount === 'space' ? spaceEntity.position : (activeMount === 'car' ? carEntity.position : trexEntity.position)));
+      // Safe Distance Third-Person Camera (Zero Tunneling/Clipping)
+      const target = activeMount === 'walk' ? myPlayer.position : (activeMount === 'dragon' ? dragonEntity.position : (activeMount === 'heli' ? heliEntity.position : (activeMount === 'space' ? spaceEntity.position : (activeMount === 'car' ? carEntity.position : trexEntity.position))));
       const camDist = 18;
       camera.position.x = target.x + Math.sin(camAngleX) * camDist * Math.cos(camAngleY);
       camera.position.y = target.y + 6 + Math.sin(camAngleY) * camDist;
