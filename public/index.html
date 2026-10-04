@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GlobeVibe Ultra 3D Metaverse</title>
+  <title>GlobeVibe Ultra Realistic 3D Metaverse</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-    body, html { width: 100%; height: 100%; overflow: hidden; background: #38bdf8; font-family: system-ui, -apple-system, sans-serif; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: system-ui, -apple-system, sans-serif; }
     #canvas-container { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
     /* Top HUD Bar */
@@ -238,12 +238,12 @@
   <!-- Fast Travel Drawer -->
   <div id="drawer-menu">
     <button class="menu-item" onclick="teleportTo(0, 0, 0)">🏝 Island Central Plaza</button>
-    <button class="menu-item" onclick="teleportTo(0, 0, -40)">🏙 City Center</button>
-    <button class="menu-item" onclick="teleportTo(-10, 0, -5)">🛹 Skatepark Zone</button>
-    <button class="menu-item" onclick="teleportTo(25, 0, -20)">🎤 Live Concert Stage</button>
-    <button class="menu-item" onclick="teleportTo(-60, 0, -50)">⚽ Sports Stadium</button>
-    <button class="menu-item" onclick="teleportTo(-45, 0, -75)">🏀 Basketball Court</button>
-    <button class="menu-item" onclick="teleportTo(0, -0.6, 95)">🎣 Fishing Dock</button>
+    <button class="menu-item" onclick="teleportTo(0, 0, -35)">🏙 City Center</button>
+    <button class="menu-item" onclick="teleportTo(-14, 0, -5)">🛹 Skatepark Zone</button>
+    <button class="menu-item" onclick="teleportTo(30, 0, -20)">🎤 Live Concert Arena</button>
+    <button class="menu-item" onclick="teleportTo(-55, 0, -45)">⚽ Sports Stadium</button>
+    <button class="menu-item" onclick="teleportTo(-40, 0, -65)">🏀 Basketball Court</button>
+    <button class="menu-item" onclick="teleportTo(0, -0.6, 95)">🎣 Fishing Harbor</button>
     <button class="menu-item" onclick="teleportTo(0, 4, -280)">🌊 Waterfall Mist</button>
     <button class="menu-item" onclick="teleportTo(-25, 0, 30)">🦖 Dino Safari</button>
     <button class="menu-item" onclick="teleportTo(-45, 0, 40)">🤖 Robot Mech Base</button>
@@ -447,50 +447,93 @@
       closeModal('profile-modal');
     };
 
-    // --- 3D Scene Initialization ---
+    // ========================================================
+    // 1. ADVANCED THREE.JS LIGHTING, PBR & TONE-MAPPING SETUP
+    // ========================================================
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x7ec8e3);
+    scene.background = new THREE.Color(0x87ceeb); // Atmospheric Sky Blue
+    scene.fog = new THREE.FogExp2(0x87ceeb, 0.0035); // Depth blend fog
 
     const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 3000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    // Realistic Tone Mapping, Color Space & Soft Shadow Maps
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
     document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x445566, 1.4);
+    // Natural Sunlight & Atmospheric Ambient
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x445566, 1.2);
     scene.add(hemiLight);
-    const sun = new THREE.DirectionalLight(0xffffff, 1.8);
-    sun.position.set(100, 200, 100);
+
+    const sun = new THREE.DirectionalLight(0xfffaed, 2.0);
+    sun.position.set(120, 220, 100);
+    sun.castShadow = true;
+    sun.shadow.mapSize.width = 2048;
+    sun.shadow.mapSize.height = 2048;
+    sun.shadow.camera.near = 10;
+    sun.shadow.camera.far = 600;
+    sun.shadow.camera.left = -180;
+    sun.shadow.camera.right = 180;
+    sun.shadow.camera.top = 180;
+    sun.shadow.camera.bottom = -180;
+    sun.shadow.bias = -0.0005;
     scene.add(sun);
 
-    // ==========================================
-    // 1. കടൽ (OCEAN) - താഴത്തെ ലെവലിൽ (y = -1.2)
-    // ==========================================
-    const oceanGeom = new THREE.PlaneGeometry(6000, 6000, 64, 64);
+    // ========================================================
+    // 2. MOBILE-FRIENDLY REALISTIC WATER SHADER & OCEAN
+    // ========================================================
+    const oceanGeom = new THREE.PlaneGeometry(6000, 6000, 80, 80);
     oceanGeom.rotateX(-Math.PI / 2);
-    const oceanMat = new THREE.MeshStandardMaterial({ color: 0x0077be, roughness: 0.15, metalness: 0.85 });
+    const oceanMat = new THREE.MeshStandardMaterial({
+      color: 0x006699,
+      roughness: 0.15,
+      metalness: 0.8,
+      transparent: true,
+      opacity: 0.88
+    });
     const ocean = new THREE.Mesh(oceanGeom, oceanMat);
     ocean.position.y = -1.2;
+    ocean.receiveShadow = true;
     scene.add(ocean);
     const oceanPosAttr = oceanGeom.attributes.position;
 
-    // ==========================================
-    // 2. കര (MAIN ISLAND LAND) - കടലിന് മുകളിൽ (y = 0.0)
-    // ==========================================
+    // ========================================================
+    // 3. MAIN ISLAND LAND & NATURAL BEACH EMBANKMENT
+    // ========================================================
+    // Grass Island Top (y = 0.0 to 1.0)
     const island = new THREE.Mesh(
-      new THREE.CylinderGeometry(200, 215, 2.0, 64),
-      new THREE.MeshStandardMaterial({ color: 0x2e8b57, roughness: 0.8, metalness: 0.1 })
+      new THREE.CylinderGeometry(200, 225, 2.2, 64),
+      new THREE.MeshStandardMaterial({ color: 0x3d7e35, roughness: 0.85, metalness: 0.05 })
     );
     island.position.y = 0.0;
+    island.receiveShadow = true;
     scene.add(island);
 
-    // സിറ്റി പ്ലാസ ടാർ റോഡ്
+    // Sandy Shoreline Ring (Beach transition into water)
+    const beachRing = new THREE.Mesh(
+      new THREE.RingGeometry(180, 228, 64),
+      new THREE.MeshStandardMaterial({ color: 0xe2c992, roughness: 0.9, side: THREE.DoubleSide })
+    );
+    beachRing.rotateX(-Math.PI / 2);
+    beachRing.position.y = 0.95;
+    beachRing.receiveShadow = true;
+    scene.add(beachRing);
+
+    // Central City Plaza Asphalt Ground
     const plazaRoad = new THREE.Mesh(
       new THREE.PlaneGeometry(80, 160),
       new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 })
     );
     plazaRoad.rotateX(-Math.PI / 2);
     plazaRoad.position.set(0, 1.02, -15);
+    plazaRoad.receiveShadow = true;
     scene.add(plazaRoad);
 
     // Waterfall Cascade Particles
@@ -521,7 +564,13 @@
     const rainSystem = new THREE.Points(rainParticles, rainMat);
     scene.add(rainSystem);
 
-    // City Neon Street Lights
+    // Moving Spotlights & Neon Lighting for Stage & City
+    const stageSpotlight = new THREE.SpotLight(0xec4899, 0, 120, Math.PI / 4, 0.4);
+    stageSpotlight.position.set(30, 25, -20);
+    stageSpotlight.target.position.set(30, 2, -20);
+    scene.add(stageSpotlight);
+    scene.add(stageSpotlight.target);
+
     const cityLights = [];
     [[15, 5, -15], [-15, 5, -15], [15, 5, 10], [-15, 5, 10]].forEach(p => {
       const pl = new THREE.PointLight(0x38bdf8, 0, 30);
@@ -535,34 +584,42 @@
     window.applyClimate = (mode) => {
       const wBtn = document.getElementById('btn-weather-top');
       if (mode === 'sunny') {
-        scene.background.setHex(0x7ec8e3);
-        sun.intensity = 1.8;
+        scene.background.setHex(0x87ceeb);
+        scene.fog.color.setHex(0x87ceeb);
+        sun.intensity = 2.0;
         isRaining = false;
         rainMat.opacity = 0;
+        stageSpotlight.intensity = 0;
         cityLights.forEach(l => l.intensity = 0);
         wBtn.innerText = "🌤 Weather: Sunny";
         playSound('birds');
       } else if (mode === 'sunset') {
         scene.background.setHex(0xf97316);
+        scene.fog.color.setHex(0xf97316);
         sun.intensity = 1.0;
         isRaining = false;
         rainMat.opacity = 0;
+        stageSpotlight.intensity = 2.0;
         cityLights.forEach(l => l.intensity = 0.8);
         wBtn.innerText = "🌅 Weather: Sunset";
         playSound('wind');
       } else if (mode === 'storm') {
         scene.background.setHex(0x334155);
-        sun.intensity = 0.5;
+        scene.fog.color.setHex(0x334155);
+        sun.intensity = 0.4;
         isRaining = true;
         rainMat.opacity = 0.85;
+        stageSpotlight.intensity = 1.0;
         cityLights.forEach(l => l.intensity = 1.2);
         wBtn.innerText = "⛈️ Weather: Storm";
         playSound('thunder');
       } else if (mode === 'night') {
         scene.background.setHex(0x020617);
+        scene.fog.color.setHex(0x020617);
         sun.intensity = 0.2;
         isRaining = false;
         rainMat.opacity = 0;
+        stageSpotlight.intensity = 4.0;
         cityLights.forEach(l => l.intensity = 2.0);
         wBtn.innerText = "🌙 Weather: Night";
         playSound('crickets');
@@ -573,11 +630,28 @@
     const mixers = [];
     const clock = new THREE.Clock();
 
-    // Normalized Loader (BBox Scaled - Prevents Giant Artifacts)
+    // ========================================================
+    // 4. PBR MATERIAL NORMALIZING GLB LOADER (Shadows & Metalness)
+    // ========================================================
     const gltfLoader = new THREE.GLTFLoader();
     function loadGLBNormalized(file, targetHeight, onLoad) {
       const run = (gltf) => {
         const root = gltf.scene;
+        
+        // PBR Material & Shadow Enforcement
+        root.traverse(child => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+            if (child.material) {
+              child.material.metalness = child.material.metalness ?? 0.15;
+              child.material.roughness = child.material.roughness ?? 0.6;
+              child.material.envMapIntensity = 1.0;
+              child.material.needsUpdate = true;
+            }
+          }
+        });
+
         const bbox = new THREE.Box3().setFromObject(root);
         const size = new THREE.Vector3();
         bbox.getSize(size);
@@ -598,11 +672,11 @@
       });
     }
 
-    // ==========================================
-    // ALL MODELS EXACTLY PLACED ON LAND (y >= 1.0)
-    // ==========================================
+    // ========================================================
+    // 5. ZONED WORLD LAYOUT (NO EMPTY SPACE, DENSE ACTIVE MAP)
+    // ========================================================
 
-    // Natural Environment & Scattered Trees
+    // ZONE A: Natural Environment & Scattered Flora
     loadGLBNormalized('water-island.glb', 20, (m) => { m.position.set(0, 0.6, 0); scene.add(m); });
     loadGLBNormalized('water.glb', 12, (m) => { m.position.set(0, 0.8, 0); scene.add(m); });
     loadGLBNormalized('water-rocks.glb', 4, (m) => { m.position.set(80, 0, 70); scene.add(m); });
@@ -621,60 +695,99 @@
     loadGLBNormalized('mountains.glb', 40, (m) => { m.position.set(0, 0.0, -320); scene.add(m); });
     loadGLBNormalized('mountain_single.glb', 30, (m) => { m.position.set(-240, 0.0, -150); scene.add(m); });
 
-    // City Buildings, Park & Harbor Dock
+    // ZONE B: Central City & Commercial Center
     loadGLBNormalized('city.glb', 16, (m) => { m.position.set(0, 1.0, -40); scene.add(m); });
     loadGLBNormalized('park.glb', 8, (m) => { m.position.set(25, 1.0, 5); scene.add(m); });
     loadGLBNormalized('dock.glb', 5, (m) => { m.position.set(0, -0.2, 95); scene.add(m); });
 
-    // Live Concert Stage & Fireworks (Right Side of Plaza)
-    loadGLBNormalized('concert_stage.glb', 10, (m) => { m.position.set(25, 1.0, -20); scene.add(m); });
-    loadGLBNormalized('concert_pack.glb', 5, (m) => { m.position.set(22, 1.0, -25); scene.add(m); });
-    loadGLBNormalized('firework_model.glb', 6, (m) => { m.position.set(25, 15, -20); scene.add(m); });
+    // ZONE C: REALISTIC CONCERT ARENA (Stage, LED Wall, Speakers & Audience Seats)
+    const concertGroup = new THREE.Group();
+    concertGroup.position.set(30, 1.0, -20);
+    scene.add(concertGroup);
 
-    // Sports Arenas & Interactive Basketball
-    loadGLBNormalized('football_stadium.glb', 18, (m) => { m.position.set(-60, 1.0, -50); scene.add(m); });
-    loadGLBNormalized('football.glb', 0.6, (m) => { m.position.set(-60, 1.3, -50); scene.add(m); });
+    loadGLBNormalized('concert_stage.glb', 10, (m) => concertGroup.add(m));
+    loadGLBNormalized('concert_pack.glb', 5, (m) => { m.position.set(-3, 0, -4); concertGroup.add(m); });
+    loadGLBNormalized('firework_model.glb', 6, (m) => { m.position.set(0, 14, 0); concertGroup.add(m); });
+
+    // Animated LED Video Backdrop Screen
+    const ledScreenGeom = new THREE.PlaneGeometry(12, 6);
+    const ledScreenMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    const ledScreen = new THREE.Mesh(ledScreenGeom, ledScreenMat);
+    ledScreen.position.set(30, 5.5, -25);
+    scene.add(ledScreen);
+
+    // Audience Seats Rows in Front of Stage
+    const seatRowGeom = new THREE.BoxGeometry(10, 0.5, 0.8);
+    const seatRowMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
+    for (let s = 0; s < 5; s++) {
+      const seatRow = new THREE.Mesh(seatRowGeom, seatRowMat);
+      seatRow.position.set(30, 1.25, -12 + (s * 2.5));
+      seatRow.castShadow = true;
+      seatRow.receiveShadow = true;
+      scene.add(seatRow);
+    }
+
+    // ZONE D: Sports Arenas, Basketball & Ballpark
+    loadGLBNormalized('football_stadium.glb', 18, (m) => { m.position.set(-55, 1.0, -45); scene.add(m); });
+    loadGLBNormalized('football.glb', 0.6, (m) => { m.position.set(-55, 1.3, -45); scene.add(m); });
     loadGLBNormalized('ballpark.glb', 15, (m) => { m.position.set(-75, 1.0, -75); scene.add(m); });
 
     const bballGroup = new THREE.Group();
-    bballGroup.position.set(-45, 1.0, -75);
+    bballGroup.position.set(-40, 1.0, -65);
     scene.add(bballGroup);
     loadGLBNormalized('basketball.glb', 0.65, (m) => bballGroup.add(m));
 
-    // ==========================================
-    // UNIVERSAL MOUNTABLE REGISTRY (ON LAND)
-    // ==========================================
+    // ZONE E: Ferris Wheel Theme Park Asset
+    let ferrisWheel = null;
+    loadGLBNormalized('ferris_wheel.glb', 14, (m) => {
+      m.position.set(65, 1.0, -40);
+      scene.add(m);
+      ferrisWheel = m;
+    });
+
+    // ========================================================
+    // 6. UNIVERSAL MOUNT REGISTRY WITH PROPER SEAT OFFSETS
+    // ========================================================
     const mountables = [];
-    function registerMountable(mesh, type, name, seatHeight, speed, isFlying) {
-      mountables.push({ mesh, type, name, seatHeight, speed, isFlying });
+    function registerMountable(mesh, type, name, seatHeight, forwardOffset, speed, isFlying) {
+      mountables.push({ mesh, type, name, seatHeight, forwardOffset, speed, isFlying });
     }
 
-    // Skateboard (On Land Plaza Left Side)
+    // ZONE F: Skatepark & Realistic Skateboard
     const skateEntity = new THREE.Group();
-    skateEntity.position.set(-10, 1.1, -5);
+    skateEntity.position.set(-14, 1.05, -5);
     scene.add(skateEntity);
     loadGLBNormalized('low_poly_skateboard.glb', 0.8, (m) => {
       skateEntity.add(m);
-      registerMountable(skateEntity, 'skate', '🛹 RIDE SKATEBOARD', 0.25, 1.6, false);
+      registerMountable(skateEntity, 'skate', '🛹 RIDE SKATEBOARD', 0.15, 0, 1.6, false);
     });
 
-    // Robot Mech (On Land)
+    // Concrete Ramp for Skatepark
+    const rampGeom = new THREE.BoxGeometry(6, 1.4, 8);
+    const rampMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.9 });
+    const skateRamp = new THREE.Mesh(rampGeom, rampMat);
+    skateRamp.rotation.x = 0.25;
+    skateRamp.position.set(-14, 1.0, -10);
+    skateRamp.receiveShadow = true;
+    scene.add(skateRamp);
+
+    // ZONE G: Robot Mech Mount (Correct Seat Alignment)
     const mechEntity = new THREE.Group();
     mechEntity.position.set(-45, 1.0, 40);
     scene.add(mechEntity);
     loadGLBNormalized('mech.glb', 6, (m) => {
       mechEntity.add(m);
-      registerMountable(mechEntity, 'mech', '🤖 PILOT MECH ROBOT', 4.8, 1.8, false);
+      registerMountable(mechEntity, 'mech', '🤖 PILOT MECH ROBOT', 2.8, 0.4, 1.8, false);
     });
 
-    // Dinosaurs & Elephant (All on Land)
+    // ZONE H: All Rideable Dinosaurs & Elephant
     const dinoData = [
-      { f: 'Trex.glb', pos: [-25, 1.0, 30], n: '🦕 RIDE T-REX', h: 3.5, s: 1.2 },
-      { f: 'Ankylosaurus.glb', pos: [-35, 1.0, 40], n: '🦕 RIDE ANKYLOSAURUS', h: 2.2, s: 0.9 },
-      { f: 'Stegosaurus.glb', pos: [-15, 1.0, 45], n: '🦕 RIDE STEGOSAURUS', h: 2.8, s: 1.0 },
-      { f: 'Triceratops.glb', pos: [-45, 1.0, 30], n: '🦕 RIDE TRICERATOPS', h: 2.5, s: 1.1 },
-      { f: 'Oviraptor.glb', pos: [-10, 1.0, 30], n: '🦕 RIDE OVIRAPTOR', h: 1.8, s: 1.4 },
-      { f: 'elephant.glb', pos: [-15, 1.0, -35], n: '🐘 RIDE ELEPHANT', h: 3.2, s: 1.0 }
+      { f: 'Trex.glb', pos: [-25, 1.0, 30], n: '🦕 RIDE T-REX', h: 1.8, fOff: 0.2, s: 1.2 },
+      { f: 'Ankylosaurus.glb', pos: [-35, 1.0, 40], n: '🦕 RIDE ANKYLOSAURUS', h: 1.2, fOff: 0, s: 0.9 },
+      { f: 'Stegosaurus.glb', pos: [-15, 1.0, 45], n: '🦕 RIDE STEGOSAURUS', h: 1.4, fOff: 0, s: 1.0 },
+      { f: 'Triceratops.glb', pos: [-45, 1.0, 30], n: '🦕 RIDE TRICERATOPS', h: 1.3, fOff: 0.1, s: 1.1 },
+      { f: 'Oviraptor.glb', pos: [-10, 1.0, 30], n: '🦕 RIDE OVIRAPTOR', h: 1.0, fOff: 0, s: 1.4 },
+      { f: 'elephant.glb', pos: [-15, 1.0, -35], n: '🐘 RIDE ELEPHANT', h: 2.2, fOff: 0.3, s: 1.0 }
     ];
 
     dinoData.forEach(d => {
@@ -683,11 +796,11 @@
       scene.add(dGrp);
       loadGLBNormalized(d.f, 4, (m) => {
         dGrp.add(m);
-        registerMountable(dGrp, 'dino', d.n, d.h, d.s, false);
+        registerMountable(dGrp, 'dino', d.n, d.h, d.fOff, d.s, false);
       });
     });
 
-    // Godzilla on Land with Atomic Flame
+    // Godzilla Arena (Proper Top Ride Anchor)
     let godzillaMesh = null;
     const godzillaGroup = new THREE.Group();
     godzillaGroup.position.set(-80, 1.0, 0);
@@ -695,34 +808,19 @@
     loadGLBNormalized('godzilla.glb', 12, (m) => {
       godzillaGroup.add(m);
       godzillaMesh = m;
-      registerMountable(godzillaGroup, 'godzilla', '💥 RIDE GODZILLA', 11.5, 1.4, false);
+      registerMountable(godzillaGroup, 'godzilla', '💥 RIDE GODZILLA', 8.5, 0.5, 1.4, false);
     });
 
-    const atomicFireMesh = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.2, 1.4, 14, 16),
-      new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0 })
-    );
-    atomicFireMesh.rotation.x = Math.PI / 2;
-    atomicFireMesh.position.set(0, 7, 6);
-    godzillaGroup.add(atomicFireMesh);
-
-    // Flying Dragon on Land Peak
+    // Flying Dragon Peak Mount
     const dragonEntity = new THREE.Group();
     dragonEntity.position.set(-75, 1.5, 60);
     scene.add(dragonEntity);
     loadGLBNormalized('dragon.glb', 6.5, (m) => {
       dragonEntity.add(m);
-      registerMountable(dragonEntity, 'dragon', '🐉 FLY DRAGON', 3.2, 2.5, true);
+      registerMountable(dragonEntity, 'dragon', '🐉 FLY DRAGON', 1.8, 0.4, 2.5, true);
     });
-    const dragonFireMesh = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.1, 1.2, 10, 16),
-      new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0 })
-    );
-    dragonFireMesh.rotation.x = Math.PI / 2;
-    dragonFireMesh.position.set(0, 2, 4);
-    dragonEntity.add(dragonFireMesh);
 
-    // Racing Track & Multiple Sports Cars on Land
+    // Racing Track & Sports Cars Fleet
     loadGLBNormalized('racing_track.glb', 8, (m) => { m.position.set(0, 1.05, 50); scene.add(m); });
     for (let i = 0; i < 4; i++) {
       const cGrp = new THREE.Group();
@@ -730,17 +828,17 @@
       scene.add(cGrp);
       loadGLBNormalized(i % 2 === 0 ? 'car.glb' : 'race.glb', 2.2, (m) => {
         cGrp.add(m);
-        registerMountable(cGrp, 'car', `🏎️ DRIVE SPORTS CAR #${i+1}`, 1.2, 2.2, false);
+        registerMountable(cGrp, 'car', `🏎️ DRIVE SPORTS CAR #${i+1}`, 0.6, -0.2, 2.2, false);
       });
     }
 
-    // Aircrafts on Land
+    // Aircrafts (Helicopter & Spaceship)
     const heliEntity = new THREE.Group();
     heliEntity.position.set(-35, 1.2, -15);
     scene.add(heliEntity);
     loadGLBNormalized('helicopter.glb', 4, (m) => {
       heliEntity.add(m);
-      registerMountable(heliEntity, 'heli', '🚁 FLY HELICOPTER', 2.0, 2.2, true);
+      registerMountable(heliEntity, 'heli', '🚁 FLY HELICOPTER', 1.2, 0.3, 2.2, true);
     });
 
     const spaceEntity = new THREE.Group();
@@ -748,16 +846,16 @@
     scene.add(spaceEntity);
     loadGLBNormalized('spaceship.glb', 5, (m) => {
       spaceEntity.add(m);
-      registerMountable(spaceEntity, 'space', '🚀 FLY SPACESHIP', 2.5, 3.5, true);
+      registerMountable(spaceEntity, 'space', '🚀 FLY SPACESHIP', 1.1, 0, 3.5, true);
     });
 
-    // Boats & Cargo Ships (In Water, y = -0.6)
+    // Boats & Cargo Ships (Deep in Water, Proper Deck Placement)
     const boatEntity = new THREE.Group();
     boatEntity.position.set(0, -0.6, 115);
     scene.add(boatEntity);
     loadGLBNormalized('low_poly_boat.glb', 3.5, (m) => {
       boatEntity.add(m);
-      registerMountable(boatEntity, 'boat', '🚤 STEER BOAT', 1.5, 1.4, false);
+      registerMountable(boatEntity, 'boat', '🚤 STEER BOAT', 0.8, -0.4, 1.4, false);
     });
 
     const shipEntity = new THREE.Group();
@@ -765,21 +863,35 @@
     scene.add(shipEntity);
     loadGLBNormalized('low_poly_cargo_ship.glb', 10, (m) => {
       shipEntity.add(m);
-      registerMountable(shipEntity, 'ship', '🚢 CAPTAIN SHIP', 4.0, 1.2, false);
+      registerMountable(shipEntity, 'ship', '🚢 CAPTAIN SHIP', 2.4, 0, 1.2, false);
     });
 
+    // Sea Marine Wildlife (Whale, Shark, Sea Monster)
     let whaleMesh = null, sharkMesh = null;
-    loadGLBNormalized('Whale.glb', 9, (m) => { m.position.set(-70, -1.2, 130); scene.add(m); whaleMesh = m; });
-    loadGLBNormalized('shark.glb', 4, (m) => { m.position.set(30, -1.2, 120); scene.add(m); sharkMesh = m; });
-    loadGLBNormalized('sea_monster.glb', 8, (m) => { m.position.set(-110, -1.2, 150); scene.add(m); });
+    loadGLBNormalized('Whale.glb', 9, (m) => {
+      m.position.set(-70, -1.2, 130);
+      scene.add(m);
+      whaleMesh = m;
+    });
+    loadGLBNormalized('shark.glb', 4, (m) => {
+      m.position.set(30, -1.2, 120);
+      scene.add(m);
+      sharkMesh = m;
+    });
+    loadGLBNormalized('sea_monster.glb', 8, (m) => {
+      m.position.set(-110, -1.2, 150);
+      scene.add(m);
+    });
 
     // Multi-Avatars
     loadGLBNormalized('model_1.glb', 2, (m) => { m.position.set(8, 1.0, 5); scene.add(m); });
     loadGLBNormalized('model_2.glb', 2, (m) => { m.position.set(11, 1.0, 7); scene.add(m); });
 
-    // Player Avatar (Spawned on Land, y = 1.0)
+    // ========================================================
+    // 7. PLAYER CHARACTER SETUP & SHADOW GROUNDING
+    // ========================================================
     let myPlayer = new THREE.Group();
-    myPlayer.position.set(0, 1.0, 0);
+    myPlayer.position.set(0, 1.0, 0); // Aligned on Land
     scene.add(myPlayer);
     let playerAvatar = new THREE.Group();
     myPlayer.add(playerAvatar);
@@ -863,6 +975,7 @@
       const p = myPlayer.position;
       const distFromIsland = Math.hypot(p.x, p.z);
 
+      // Swimming Transition (Beyond Beach radius 190)
       if (distFromIsland > 190 && activeMount === 'walk') {
         if (!isSwimming) { isSwimming = true; document.getElementById('jump-btn').style.display = 'none'; playSound('splash'); }
         myPlayer.position.y = -0.6 + Math.sin(Date.now() * 0.004) * 0.08;
@@ -876,6 +989,11 @@
         }
         if (p.distanceTo(bballGroup.position) < 4) {
           nearbyAction = 'shoot_bball'; actBtn.innerText = "🏀 SHOOT BASKET"; actBtn.style.display = 'block'; return;
+        }
+
+        // Concert Stage Sing / Mic Option
+        if (p.distanceTo(concertGroup.position) < 6) {
+          nearbyAction = 'sing_concert'; actBtn.innerText = "🎤 SING ON STAGE"; actBtn.style.display = 'block'; return;
         }
 
         for (let item of mountables) {
@@ -897,6 +1015,13 @@
     }
 
     window.executeContextAction = () => {
+      if (nearbyAction === 'sing_concert') {
+        window.toggleMic();
+        currentScore.stars += 20;
+        updateScores();
+        alert("🎵 You are live on stage! +20 STARS ⭐");
+        return;
+      }
       if (nearbyAction === 'fishing') {
         playSound('splash');
         actBtn.innerText = "⏳ WAITING BITE...";
@@ -914,7 +1039,7 @@
         bballGroup.position.y += 3.5;
         setTimeout(() => {
           playSound('swish');
-          bballGroup.position.set(-45, 1.0, -75);
+          bballGroup.position.set(-40, 1.0, -65);
           currentScore.baskets += 1;
           currentScore.stars += 5;
           updateScores();
@@ -960,13 +1085,14 @@
         skateEntity.position.y = 2.4;
         skateEntity.rotation.z += Math.PI * 2;
         myPlayer.position.y = 2.4;
-        setTimeout(() => { skateEntity.position.y = 1.1; myPlayer.position.y = 1.35; }, 300);
+        setTimeout(() => { skateEntity.position.y = 1.05; myPlayer.position.y = 1.2; }, 300);
       } else if (myPlayer.position.y <= 1.1 && !isSwimming) {
         myPlayer.position.y = 3.2;
         playSound('jump');
       }
     };
 
+    // Live Voice Mic
     let isMicOn = false;
     window.toggleMic = async () => {
       const btn = document.getElementById('mic-btn');
@@ -980,6 +1106,7 @@
       }
     };
 
+    // Live Chat Engine
     let chatTab = 'group';
     window.switchChat = (t) => {
       chatTab = t;
@@ -1012,7 +1139,6 @@
     }
 
     // Engine Render Loop
-    let flameTimer = 0;
     function animate() {
       requestAnimationFrame(animate);
       checkInteractions();
@@ -1021,7 +1147,7 @@
       const time = clock.getElapsedTime();
       mixers.forEach(mixer => mixer.update(delta));
 
-      // 1. Moving Ocean Waves Math
+      // Moving Ocean Waves (y = -1.2)
       const count = oceanPosAttr.count;
       for (let i = 0; i < count; i++) {
         const u = oceanPosAttr.getX(i);
@@ -1033,7 +1159,7 @@
       boatEntity.position.y = -0.6 + Math.sin(time * 2.0) * 0.15;
       boatEntity.rotation.z = Math.sin(time * 1.5) * 0.04;
 
-      // 2. Waterfall Particles
+      // Waterfall Particles
       const pArr = waterfallParticles.attributes.position.array;
       for (let i = 1; i < wfCount * 3; i += 3) {
         pArr[i] -= 0.6;
@@ -1041,7 +1167,7 @@
       }
       waterfallParticles.attributes.position.needsUpdate = true;
 
-      // 3. Rain Particles
+      // Rain Particles
       if (isRaining) {
         const rArr = rainParticles.attributes.position.array;
         for (let i = 1; i < rainCount * 3; i += 3) {
@@ -1051,19 +1177,14 @@
         rainParticles.attributes.position.needsUpdate = true;
       }
 
-      // 4. Atomic Breath & Dragon Roar
-      flameTimer += delta;
-      if (flameTimer > 8.0) {
-        atomicFireMesh.material.opacity = 0.9;
-        dragonFireMesh.material.opacity = 0.9;
-        playSound('roar');
-        setTimeout(() => {
-          atomicFireMesh.material.opacity = 0;
-          dragonFireMesh.material.opacity = 0;
-          flameTimer = 0;
-        }, 1500);
-      }
+      // Live LED Screen Hue Pulse & Stage Light Oscillation
+      ledScreenMat.color.setHSL((time * 0.1) % 1, 0.8, 0.5);
+      stageSpotlight.target.position.x = 30 + Math.sin(time * 1.5) * 4;
 
+      // Rotating Ferris Wheel
+      if (ferrisWheel) ferrisWheel.rotation.y += 0.005;
+
+      // Sea Life Active Swimming
       if (whaleMesh) whaleMesh.position.x += Math.sin(time * 0.8) * 0.1;
       if (sharkMesh) sharkMesh.position.z += Math.cos(time * 0.8) * 0.1;
 
@@ -1072,7 +1193,7 @@
         godzillaMesh.position.y = 1.0 + Math.sin(time * 2.0) * 0.08;
       }
 
-      // Gravity on Land
+      // Gravity on Land (Player grounded firmly at y = 1.0)
       if (myPlayer.position.y > 1.0 && !isSwimming && activeMount === 'walk') {
         myPlayer.position.y = Math.max(1.0, myPlayer.position.y - 0.09);
       }
@@ -1089,7 +1210,7 @@
           socket.emit('playerMove', { x: myPlayer.position.x, y: myPlayer.position.y, z: myPlayer.position.z, rotY: myPlayer.rotation.y });
         }
       } 
-      // Universal Vehicle / Mount Movement
+      // Universal Ride & Seating Alignment
       else if (activeVehicleData) {
         const ent = activeVehicleData.mesh;
         const maxSpd = activeVehicleData.speed;
@@ -1113,15 +1234,18 @@
         ent.position.x += Math.sin(ent.rotation.y) * vSpeed;
         ent.position.z += Math.cos(ent.rotation.y) * vSpeed;
 
+        // Realistic Seating Alignment (Forward Offset & Realistic Height)
         myPlayer.position.copy(ent.position);
         myPlayer.position.y += activeVehicleData.seatHeight;
+        myPlayer.position.x += Math.sin(ent.rotation.y) * activeVehicleData.forwardOffset;
+        myPlayer.position.z += Math.cos(ent.rotation.y) * activeVehicleData.forwardOffset;
         myPlayer.rotation.y = ent.rotation.y;
 
         const spdVal = Math.abs(Math.round(vSpeed * 50));
         document.getElementById('speedo').innerText = activeVehicleData.isFlying ? `${spdVal} KM/H | ALT: ${Math.round(vAltitude)}M` : `${spdVal} KM/H`;
       }
 
-      // Safe Camera Follow
+      // Safe Dynamic Follow Camera
       const target = activeMount === 'walk' ? myPlayer.position : (activeVehicleData ? activeVehicleData.mesh.position : myPlayer.position);
       const camDist = activeMount === 'godzilla' ? 26 : 18;
       camera.position.x = target.x + Math.sin(camAngleX) * camDist * Math.cos(camAngleY);
