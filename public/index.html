@@ -131,7 +131,7 @@
     <div class="score-row"><span id="lbl-stars">⭐ Stars:</span><span id="hud-stars" class="score-val">0</span></div>
     <div class="score-row"><span id="lbl-fish">🐟 Fish:</span><span id="hud-fish" class="score-val">0</span></div>
     <div class="score-row"><span id="lbl-baskets">🏀 Baskets:</span><span id="hud-baskets" class="score-val">0</span></div>
-    <div class="score-row"><span id="lbl-lap">🏎️ Best Lap:</span><span id="hud-lap" class="score-val">--</span></div>
+    <div class="score-row"><span id="lbl-lap">🏎 Best Lap:</span><span id="hud-lap" class="score-val">--</span></div>
   </div>
 
   <!-- 1. Language Modal (10 Languages) -->
@@ -237,19 +237,19 @@
 
   <!-- Fast Travel Drawer -->
   <div id="drawer-menu">
-    <button class="menu-item" onclick="teleportTo(0, 1.5, 0)">🏝 Island Central Plaza</button>
-    <button class="menu-item" onclick="teleportTo(0, 1.5, -20)">🏙 City Center</button>
-    <button class="menu-item" onclick="teleportTo(-12, 1.5, -5)">🛹 Skatepark Zone</button>
-    <button class="menu-item" onclick="teleportTo(25, 1.5, -20)">🎤 Live Concert Stage</button>
-    <button class="menu-item" onclick="teleportTo(-60, 1.5, -50)">⚽ Sports Stadium</button>
-    <button class="menu-item" onclick="teleportTo(-45, 1.5, -75)">🏀 Basketball Court</button>
-    <button class="menu-item" onclick="teleportTo(0, 0.5, 95)">🎣 Fishing Dock</button>
-    <button class="menu-item" onclick="teleportTo(0, 5, -280)">🌊 Waterfall Mist</button>
-    <button class="menu-item" onclick="teleportTo(-30, 1.5, 30)">🦖 Dino Safari</button>
-    <button class="menu-item" onclick="teleportTo(-45, 1.5, 40)">🤖 Robot Mech Base</button>
-    <button class="menu-item" onclick="teleportTo(-75, 1.5, 60)">🐉 Flying Dragon Peak</button>
-    <button class="menu-item" onclick="teleportTo(-80, 1.5, 0)">💥 Godzilla Arena</button>
-    <button class="menu-item" onclick="teleportTo(50, 1.5, 15)">🚀 Spaceship Port</button>
+    <button class="menu-item" onclick="teleportTo(0, 0, 0)">🏝 Island Central Plaza</button>
+    <button class="menu-item" onclick="teleportTo(0, 0, -40)">🏙 City Center</button>
+    <button class="menu-item" onclick="teleportTo(-10, 0, -5)">🛹 Skatepark Zone</button>
+    <button class="menu-item" onclick="teleportTo(25, 0, -20)">🎤 Live Concert Stage</button>
+    <button class="menu-item" onclick="teleportTo(-60, 0, -50)">⚽ Sports Stadium</button>
+    <button class="menu-item" onclick="teleportTo(-45, 0, -75)">🏀 Basketball Court</button>
+    <button class="menu-item" onclick="teleportTo(0, -0.6, 95)">🎣 Fishing Dock</button>
+    <button class="menu-item" onclick="teleportTo(0, 4, -280)">🌊 Waterfall Mist</button>
+    <button class="menu-item" onclick="teleportTo(-25, 0, 30)">🦖 Dino Safari</button>
+    <button class="menu-item" onclick="teleportTo(-45, 0, 40)">🤖 Robot Mech Base</button>
+    <button class="menu-item" onclick="teleportTo(-75, 0.5, 60)">🐉 Flying Dragon Peak</button>
+    <button class="menu-item" onclick="teleportTo(-80, 0, 0)">💥 Godzilla Arena</button>
+    <button class="menu-item" onclick="teleportTo(50, 0, 15)">🚀 Spaceship Port</button>
   </div>
 
   <div id="chat-container">
@@ -393,7 +393,7 @@
     const i18n = {
       en: { owner: "👑 OWNER", stars: "⭐ 100 STARS", online: "Online", lang: "🌐 10 Lang", server: "⚡ Server", weather: "🌤 Weather", profile: "👤 Profile", jump: "JUMP", starsLbl: "⭐ Stars:", fishLbl: "🐟 Fish:", bballLbl: "🏀 Baskets:", lapLbl: "🏎️ Best Lap:" },
       ml: { owner: "👑 ഉടമസ്ഥൻ", stars: "⭐ 100 സ്റ്റാർസ്", online: "ഓൺലൈൻ", lang: "🌐 ഭാഷ", server: "⚡ സെർവർ", weather: "🌤 കാലാവസ്ഥ", profile: "👤 പ്രൊഫൈൽ", jump: "ചാടുക", starsLbl: "⭐ നക്ഷത്രങ്ങൾ:", fishLbl: "🐟 മീൻ:", bballLbl: "🏀 ബാസ്കറ്റ്:", lapLbl: "🏎️ റെക്കോർഡ്:" },
-      hi: { owner: "👑 मालिक", stars: "⭐ 100 सितारे", online: "ऑनलाइन", lang: "🌐 भाषा", server: "⚡ सर्वर", weather: "🌤 मौसम", profile: "👤 प्रोफ़ाइल", jump: "कूदें", starsLbl: "⭐ सितारे:", fishLbl: "🐟 मछली:", bballLbl: "🏀 बास्केट:", lapLbl: "🏎️️ रिकॉर्ड:" },
+      hi: { owner: "👑 मालिक", stars: "⭐ 100 सितारे", online: "ऑनलाइन", lang: "🌐 भाषा", server: "⚡ सर्वर", weather: "🌤 मौसम", profile: "👤 प्रोफ़ाइल", jump: "कूदें", starsLbl: "⭐ सितारे:", fishLbl: "🐟 मछली:", bballLbl: "🏀 बास्केट:", lapLbl: "🏎️ रिकॉर्ड:" },
       fa: { owner: "👑 مالک", stars: "⭐ ۱۰۰ ستاره", online: "آنلاین", lang: "🌐 زبان", server: "⚡ سرور", weather: "🌤 آب و هوا", profile: "👤 پروفایل", jump: "پرش", starsLbl: "⭐ ستاره:", fishLbl: "🐟 ماهی:", bballLbl: "🏀 بسکتبال:", lapLbl: "🏎️ رکورد:" },
       ru: { owner: "👑 ВЛАДЕЛЕЦ", stars: "⭐ 100 ЗВЁЗД", online: "Онлайн", lang: "🌐 Язык", server: "⚡ Сервер", weather: "🌤 Погода", profile: "👤 Профиль", jump: "ПРЫЖОК", starsLbl: "⭐ Звёзды:", fishLbl: "🐟 Рыба:", bballLbl: "🏀 Корзины:", lapLbl: "🏎️ Время:" },
       it: { owner: "👑 PROPRIETARIO", stars: "⭐ 100 STELLE", online: "Online", lang: "🌐 Lingua", server: "⚡ Server", weather: "🌤 Meteo", profile: "👤 Profilo", jump: "SALTO", starsLbl: "⭐ Stelle:", fishLbl: "🐟 Pesce:", bballLbl: "🏀 Canestri:", lapLbl: "🏎️ Miglior giro:" },
@@ -464,34 +464,33 @@
     scene.add(sun);
 
     // ==========================================
-    // 1. കടൽ (OCEAN) - താഴത്തെ ലെവലിൽ (y = -1.0)
+    // 1. കടൽ (OCEAN) - താഴത്തെ ലെവലിൽ (y = -1.2)
     // ==========================================
     const oceanGeom = new THREE.PlaneGeometry(6000, 6000, 64, 64);
     oceanGeom.rotateX(-Math.PI / 2);
     const oceanMat = new THREE.MeshStandardMaterial({ color: 0x0077be, roughness: 0.15, metalness: 0.85 });
     const ocean = new THREE.Mesh(oceanGeom, oceanMat);
-    ocean.position.y = -1.0; // കടൽ തറയ്ക്ക് താഴെയായി കിടക്കുന്നു
+    ocean.position.y = -1.2;
     scene.add(ocean);
     const oceanPosAttr = oceanGeom.attributes.position;
 
     // ==========================================
     // 2. കര (MAIN ISLAND LAND) - കടലിന് മുകളിൽ (y = 0.0)
     // ==========================================
-    // പ്രധാന പച്ചപ്പുല്ല് കര (High-Contrast Green Grass Surface)
     const island = new THREE.Mesh(
       new THREE.CylinderGeometry(200, 215, 2.0, 64),
       new THREE.MeshStandardMaterial({ color: 0x2e8b57, roughness: 0.8, metalness: 0.1 })
     );
-    island.position.y = 0.0; // കര കടലിന് മുകളിലേക്ക് പൊങ്ങിനിൽക്കുന്നു
+    island.position.y = 0.0;
     scene.add(island);
 
-    // സിറ്റി പ്ലാസ ടാർ റോഡ് (City Asphalt Ground)
+    // സിറ്റി പ്ലാസ ടാർ റോഡ്
     const plazaRoad = new THREE.Mesh(
       new THREE.PlaneGeometry(80, 160),
       new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 })
     );
     plazaRoad.rotateX(-Math.PI / 2);
-    plazaRoad.position.set(0, 1.02, -15); // കരയുടെ മുകളിൽ കൃത്യമായി ഉറപ്പിച്ചു
+    plazaRoad.position.set(0, 1.02, -15);
     scene.add(plazaRoad);
 
     // Waterfall Cascade Particles
@@ -625,7 +624,7 @@
     // City Buildings, Park & Harbor Dock
     loadGLBNormalized('city.glb', 16, (m) => { m.position.set(0, 1.0, -40); scene.add(m); });
     loadGLBNormalized('park.glb', 8, (m) => { m.position.set(25, 1.0, 5); scene.add(m); });
-    loadGLBNormalized('dock.glb', 5, (m) => { m.position.set(0, 0.0, 95); scene.add(m); });
+    loadGLBNormalized('dock.glb', 5, (m) => { m.position.set(0, -0.2, 95); scene.add(m); });
 
     // Live Concert Stage & Fireworks (Right Side of Plaza)
     loadGLBNormalized('concert_stage.glb', 10, (m) => { m.position.set(25, 1.0, -20); scene.add(m); });
@@ -752,7 +751,7 @@
       registerMountable(spaceEntity, 'space', '🚀 FLY SPACESHIP', 2.5, 3.5, true);
     });
 
-    // Boats & Cargo Ships (In Water, y = -0.5)
+    // Boats & Cargo Ships (In Water, y = -0.6)
     const boatEntity = new THREE.Group();
     boatEntity.position.set(0, -0.6, 115);
     scene.add(boatEntity);
@@ -780,7 +779,7 @@
 
     // Player Avatar (Spawned on Land, y = 1.0)
     let myPlayer = new THREE.Group();
-    myPlayer.position.set(0, 1.0, 0); // കൃത്യമായി കരയുടെ മുകളിൽ സ്പോൺ ചെയ്യുന്നു
+    myPlayer.position.set(0, 1.0, 0);
     scene.add(myPlayer);
     let playerAvatar = new THREE.Group();
     myPlayer.add(playerAvatar);
@@ -864,7 +863,6 @@
       const p = myPlayer.position;
       const distFromIsland = Math.hypot(p.x, p.z);
 
-      // Swimming Transition (Outside island radius 190)
       if (distFromIsland > 190 && activeMount === 'walk') {
         if (!isSwimming) { isSwimming = true; document.getElementById('jump-btn').style.display = 'none'; playSound('splash'); }
         myPlayer.position.y = -0.6 + Math.sin(Date.now() * 0.004) * 0.08;
@@ -873,16 +871,13 @@
       }
 
       if (activeMount === 'walk') {
-        // Fishing Dock Trigger
-        if (p.distanceTo(new THREE.Vector3(0, 0, 95)) < 8) {
+        if (p.distanceTo(new THREE.Vector3(0, -0.2, 95)) < 8) {
           nearbyAction = 'fishing'; actBtn.innerText = "🎣 CATCH FISH"; actBtn.style.display = 'block'; return;
         }
-        // Basketball Court Trigger
         if (p.distanceTo(bballGroup.position) < 4) {
           nearbyAction = 'shoot_bball'; actBtn.innerText = "🏀 SHOOT BASKET"; actBtn.style.display = 'block'; return;
         }
 
-        // UNIVERSAL MOUNT CHECK (Robot, Dinosaurs, Cars, Skateboard, Dragon)
         for (let item of mountables) {
           const dist = p.distanceTo(item.mesh.position);
           const maxCheck = item.type === 'godzilla' ? 14 : (item.type === 'ship' ? 12 : 7);
@@ -955,7 +950,7 @@
 
     window.teleportTo = (x, y, z) => {
       if (activeMount !== 'walk') window.dismountAll();
-      myPlayer.position.set(x, y + 1.0, z); // ഉറപ്പായും കരനിരപ്പിന് മുകളിൽ സ്പോൺ ചെയ്യുന്നു
+      myPlayer.position.set(x, y + 1.0, z);
       document.getElementById('drawer-menu').style.display = 'none';
     };
 
@@ -972,7 +967,6 @@
       }
     };
 
-    // Live Voice Mic
     let isMicOn = false;
     window.toggleMic = async () => {
       const btn = document.getElementById('mic-btn');
@@ -986,7 +980,6 @@
       }
     };
 
-    // Live Chat Engine
     let chatTab = 'group';
     window.switchChat = (t) => {
       chatTab = t;
@@ -1028,7 +1021,7 @@
       const time = clock.getElapsedTime();
       mixers.forEach(mixer => mixer.update(delta));
 
-      // 1. Moving Ocean Waves Math (y = -1.0 ലെവലിൽ തരംഗങ്ങൾ)
+      // 1. Moving Ocean Waves Math
       const count = oceanPosAttr.count;
       for (let i = 0; i < count; i++) {
         const u = oceanPosAttr.getX(i);
@@ -1079,7 +1072,7 @@
         godzillaMesh.position.y = 1.0 + Math.sin(time * 2.0) * 0.08;
       }
 
-      // Gravity on Land (Player lands safely at y = 1.0)
+      // Gravity on Land
       if (myPlayer.position.y > 1.0 && !isSwimming && activeMount === 'walk') {
         myPlayer.position.y = Math.max(1.0, myPlayer.position.y - 0.09);
       }
