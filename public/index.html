@@ -3,58 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GlobeVibe GTA Ultra</title>
+  <title>GlobeVibe Metaverse GTA</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-    body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: system-ui, sans-serif; }
+    body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     #canvas-container { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 
-    /* Top Bar HUD */
-    .top-bar { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; flex-direction: column; gap: 5px; z-index: 40; }
-    .top-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-    .badges { display: flex; gap: 5px; }
-    .badge { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(8px); color: #fff; padding: 5px 10px; border-radius: 16px; font-size: 11px; font-weight: 800; border: 1px solid rgba(255,255,255,0.2); }
+    /* Top HUD Elements */
+    .top-bar { position: absolute; top: 8px; left: 8px; right: 8px; display: flex; flex-direction: column; gap: 6px; z-index: 40; pointer-events: none; }
+    .top-bar * { pointer-events: auto; }
+    .hud-row { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+    .badges-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .badge { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); color: #fff; padding: 5px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; border: 1px solid rgba(255,255,255,0.18); display: flex; align-items: center; gap: 5px; }
     .badge.stars { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; }
-    .badge.room { background: #0284c7; cursor: pointer; }
+    .badge.btn-interactive { cursor: pointer; transition: 0.2s; }
+    .badge.btn-interactive:active { transform: scale(0.95); }
 
-    .comm-btns { display: flex; gap: 5px; }
-    .btn-circle { width: 36px; height: 36px; border-radius: 50%; background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(255,255,255,0.2); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .btn-circle.active { background: #22c55e; box-shadow: 0 0 10px #22c55e; }
+    .comm-btns { display: flex; gap: 6px; }
+    .btn-circle { width: 38px; height: 38px; border-radius: 50%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 1.5px solid rgba(255,255,255,0.2); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; }
+    .btn-circle.active { background: #22c55e; border-color: #4ade80; box-shadow: 0 0 12px #22c55e; }
 
     /* Scoreboard */
-    #score-hud { position: absolute; top: 80px; left: 8px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 1px solid #38bdf8; border-radius: 12px; padding: 8px 12px; color: #fff; font-size: 11px; font-weight: 700; z-index: 30; }
-    .row { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 2px; }
-    .val { color: #38bdf8; font-family: monospace; }
+    #score-hud { position: absolute; top: 85px; left: 8px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border: 1px solid #38bdf8; border-radius: 12px; padding: 8px 12px; color: #fff; font-size: 11px; font-weight: 700; z-index: 30; }
+    .score-line { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 2px; }
+    .score-val { color: #38bdf8; font-family: monospace; font-size: 12px; }
 
-    /* Chat */
-    #chat-box { position: absolute; bottom: 20px; left: 110px; width: 180px; background: rgba(15, 23, 42, 0.9); border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); padding: 6px; z-index: 30; }
-    #chat-msgs { height: 45px; overflow-y: auto; font-size: 10px; color: #fff; margin-bottom: 4px; }
-    .msg { background: rgba(255,255,255,0.08); padding: 2px 4px; border-radius: 4px; margin-bottom: 2px; }
-    .chat-in { display: flex; gap: 4px; }
-    #chat-input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: #fff; font-size: 10px; padding: 2px 4px; }
-    #chat-btn { background: #0284c7; color: #fff; border: none; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+    /* Floating Interaction Buttons */
+    #action-btn { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: #0284c7; color: #fff; border: 2px solid #fff; padding: 12px 26px; border-radius: 30px; font-size: 13px; font-weight: 900; display: none; z-index: 35; box-shadow: 0 4px 15px rgba(2,132,199,0.6); }
+    #dismount-btn { position: absolute; top: 85px; left: 50%; transform: translateX(-50%); background: #ef4444; color: #fff; border: 1.5px solid #fff; padding: 6px 18px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; z-index: 40; }
+    #speedo { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); color: #38bdf8; border: 1px solid #38bdf8; padding: 5px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; z-index: 35; }
 
-    /* Controls */
-    #speedo { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); color: #38bdf8; border: 1px solid #38bdf8; padding: 4px 14px; border-radius: 16px; font-size: 12px; font-weight: bold; display: none; z-index: 35; }
-    #action-btn { position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); background: #0284c7; color: #fff; border: 2px solid #fff; padding: 10px 22px; border-radius: 25px; font-size: 12px; font-weight: 900; display: none; z-index: 35; }
-    #dismount-btn { position: absolute; top: 80px; left: 50%; transform: translateX(-50%); background: #ef4444; color: #fff; border: 1px solid #fff; padding: 6px 16px; border-radius: 16px; font-size: 11px; font-weight: bold; display: none; z-index: 40; }
-    #jump-btn { position: absolute; bottom: 40px; right: 20px; width: 62px; height: 62px; border-radius: 50%; background: rgba(15, 23, 42, 0.9); border: 2px solid #38bdf8; color: #fff; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 35; }
-    
-    .car-pedals { position: absolute; bottom: 30px; right: 18px; display: none; flex-direction: column; gap: 6px; z-index: 35; }
-    .pedal { width: 65px; height: 42px; border-radius: 10px; border: 1.5px solid #fff; color: #fff; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
+    /* Mobile Controls */
+    #joy-base { position: absolute; left: 16px; bottom: 25px; width: 95px; height: 95px; background: rgba(15, 23, 42, 0.6); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); z-index: 30; }
+    #joy-stick { position: absolute; left: 30px; top: 30px; width: 35px; height: 35px; background: #38bdf8; border-radius: 50%; pointer-events: none; }
+    #jump-btn { position: absolute; bottom: 40px; right: 20px; width: 64px; height: 64px; border-radius: 50%; background: rgba(15, 23, 42, 0.85); border: 2px solid #38bdf8; color: #fff; font-size: 12px; font-weight: 900; display: flex; align-items: center; justify-content: center; z-index: 35; }
+
+    .vehicle-pedals { position: absolute; bottom: 30px; right: 20px; display: none; flex-direction: column; gap: 8px; z-index: 35; }
+    .pedal { width: 68px; height: 44px; border-radius: 12px; border: 1.5px solid #fff; color: #fff; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; }
     #pedal-gas { background: #22c55e; }
     #pedal-brake { background: #ef4444; }
+    #pedal-fly { background: #8b5cf6; display: none; }
 
-    #joy-base { position: absolute; left: 14px; bottom: 25px; width: 90px; height: 90px; background: rgba(15, 23, 42, 0.6); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); z-index: 30; }
-    #joy-stick { position: absolute; left: 27px; top: 27px; width: 36px; height: 36px; background: #38bdf8; border-radius: 50%; pointer-events: none; }
+    /* Live Chat */
+    #chat-box { position: absolute; bottom: 20px; left: 120px; width: 190px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); padding: 6px; z-index: 30; }
+    #chat-msgs { height: 48px; overflow-y: auto; font-size: 10px; color: #fff; margin-bottom: 4px; display: flex; flex-direction: column; gap: 2px; }
+    .chat-bubble { background: rgba(255,255,255,0.08); padding: 2px 5px; border-radius: 4px; word-break: break-all; }
+    .chat-controls { display: flex; gap: 4px; }
+    #chat-in { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: #fff; font-size: 10px; padding: 2px 4px; }
+    #chat-send { background: #0284c7; color: #fff; border: none; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
 
     /* Modals */
-    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; }
-    .modal-content { background: #0f172a; border: 1.5px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 16px; width: 300px; color: #fff; display: flex; flex-direction: column; gap: 10px; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+    .modal-card { background: #0f172a; border: 1.5px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 18px; width: 310px; color: #fff; display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow-y: auto; }
+    .modal-card h3 { font-size: 16px; color: #38bdf8; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
+    .grid-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn-action { background: #1e293b; border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 8px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; text-align: center; }
+    .btn-action.primary { background: #0284c7; border-color: #38bdf8; }
   </style>
 </head>
 <body>
@@ -62,487 +70,935 @@
 
   <!-- Top Bar -->
   <div class="top-bar">
-    <div class="top-row">
-      <div class="badges">
+    <div class="hud-row">
+      <div class="badges-group">
         <div class="badge stars">⭐ <span id="hud-stars">0</span> STARS</div>
-        <div class="badge room" onclick="openRoomModal()">🚪 <span id="room-label">Public Room</span></div>
-        <div class="badge">🟢 <span id="online-count">1</span> Online</div>
+        <div class="badge btn-interactive" onclick="openModal('room-modal')">🚪 <span id="hud-room">Global</span></div>
+        <div class="badge">🟢 <span id="hud-online">1</span> Online</div>
       </div>
       <div class="comm-btns">
-        <button id="mic-btn" class="btn-circle" onclick="toggleMic()">🎙</button>
+        <button id="btn-prox-mic" class="btn-circle" onclick="toggleProximityMic()" title="Proximity Mic">🎙</button>
+        <button id="btn-glob-mic" class="btn-circle" onclick="toggleGlobalMic()" title="Global Mic">📢</button>
+        <button class="btn-circle" onclick="openModal('menu-modal')">☰</button>
+      </div>
+    </div>
+    <div class="hud-row">
+      <div class="badges-group">
+        <div class="badge btn-interactive" onclick="openModal('lang-modal')">🌐 <span id="hud-lang">English</span></div>
+        <div class="badge btn-interactive" onclick="openModal('weather-modal')">⛅ <span id="hud-weather">Sunny</span></div>
+        <div class="badge btn-interactive" onclick="openModal('profile-modal')">👤 <span id="hud-player">Player</span></div>
       </div>
     </div>
   </div>
 
-  <!-- Score HUD -->
+  <!-- Scoreboard -->
   <div id="score-hud">
-    <div class="row"><span>⚽ Penalty Goals:</span><span id="hud-goals" class="val">0</span></div>
-    <div class="row"><span>🏀 Baskets:</span><span id="hud-baskets" class="val">0</span></div>
-    <div class="row"><span>🏎️ Track Lap:</span><span id="hud-lap" class="val">1/3</span></div>
+    <div class="score-line"><span>⚽ Penalty Goals:</span><span id="score-goals" class="score-val">0</span></div>
+    <div class="score-line"><span>🏀 Baskets:</span><span id="score-baskets" class="score-val">0</span></div>
+    <div class="score-line"><span>🏎️ Track Lap:</span><span id="score-lap" class="score-val">1/3</span></div>
   </div>
 
-  <!-- Controls -->
+  <!-- Controls & Interactions -->
   <div id="speedo">0 KM/H</div>
-  <button id="action-btn" onclick="triggerAction()">ACTION</button>
-  <button id="dismount-btn" onclick="exitVehicle()">🚪 Exit Car</button>
-  <button id="jump-btn" onclick="doJump()">JUMP</button>
+  <button id="action-btn" onclick="executeInteraction()">ACTION</button>
+  <button id="dismount-btn" onclick="exitSeatOrVehicle()">🚪 EXIT</button>
+  <button id="jump-btn" onclick="triggerJump()">JUMP</button>
 
-  <div class="car-pedals" id="car-pedals">
-    <button id="pedal-gas" class="pedal">GAS 🏎️️</button>
+  <div class="vehicle-pedals" id="vehicle-pedals">
+    <button id="pedal-fly" class="pedal">FLY ⬆</button>
+    <button id="pedal-gas" class="pedal">GAS 🏎</button>
     <button id="pedal-brake" class="pedal">BRAKE 🛑</button>
   </div>
 
   <div id="joy-base"><div id="joy-stick"></div></div>
 
-  <!-- Chat -->
+  <!-- Live Chat -->
   <div id="chat-box">
-    <div id="chat-msgs"><div class="msg"><b>System:</b> Connected to Server!</div></div>
-    <div class="chat-in">
-      <input type="text" id="chat-input" placeholder="Chat..." maxlength="40">
-      <button id="chat-btn" onclick="sendChat()">Send</button>
+    <div id="chat-msgs"><div class="chat-bubble"><b>System:</b> Connected to Global Island!</div></div>
+    <div class="chat-controls">
+      <input type="text" id="chat-in" placeholder="Chat..." maxlength="45">
+      <button id="chat-send" onclick="sendChatMessage()">Send</button>
     </div>
   </div>
 
-  <!-- Room Modal -->
-  <div id="room-modal" class="modal">
-    <div class="modal-content">
-      <h3>🎮 GTA Room / Server</h3>
-      <input type="text" id="room-input" style="padding:8px; border-radius:6px; background:#1e293b; color:#fff; border:1px solid #38bdf8;" placeholder="Enter Room Name">
-      <div style="display:flex; gap:6px;">
-        <button onclick="joinCustomRoom()" style="flex:1; padding:8px; background:#0284c7; color:#fff; border:none; border-radius:6px; font-weight:bold;">Join Room</button>
-        <button onclick="closeModal('room-modal')" style="flex:1; padding:8px; background:#64748b; color:#fff; border:none; border-radius:6px; font-weight:bold;">Cancel</button>
+  <!-- 1. Room Modal -->
+  <div id="room-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3>🚪 Room Management</h3>
+      <input type="text" id="room-input" class="btn-action" style="text-align:left; background:#000;" placeholder="Enter Custom Room Name">
+      <div class="grid-btns">
+        <button class="btn-action primary" onclick="joinRoomFromInput()">Join / Create</button>
+        <button class="btn-action" onclick="resetToGlobal()">Global Server</button>
       </div>
+      <button class="btn-action" onclick="closeModal('room-modal')">Close</button>
+    </div>
+  </div>
+
+  <!-- 2. Language Modal (11 Languages) -->
+  <div id="lang-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3>🌐 Select Language</h3>
+      <div class="grid-btns">
+        <button class="btn-action" onclick="setLanguage('en')">English</button>
+        <button class="btn-action" onclick="setLanguage('ml')">മലയാളം</button>
+        <button class="btn-action" onclick="setLanguage('hi')">हिन्दी</button>
+        <button class="btn-action" onclick="setLanguage('fa')">فارسی</button>
+        <button class="btn-action" onclick="setLanguage('id')">Indonesian</button>
+        <button class="btn-action" onclick="setLanguage('ru')">Русский</button>
+        <button class="btn-action" onclick="setLanguage('it')">Italiano</button>
+        <button class="btn-action" onclick="setLanguage('uz')">O'zbek</button>
+        <button class="btn-action" onclick="setLanguage('tg')">Тоҷикӣ</button>
+        <button class="btn-action" onclick="setLanguage('my')">မြန်မာ</button>
+        <button class="btn-action" onclick="setLanguage('zh')">中文</button>
+      </div>
+      <button class="btn-action" onclick="closeModal('lang-modal')">Close</button>
+    </div>
+  </div>
+
+  <!-- 3. Profile & Share Modal -->
+  <div id="profile-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3>👤 Profile & Avatar</h3>
+      <input type="text" id="player-name-in" class="btn-action" style="text-align:left; background:#000;" placeholder="Your Name">
+      <button class="btn-action primary" onclick="updatePlayerName()">Save Name</button>
+      <div class="grid-btns">
+        <button class="btn-action" onclick="selectGender('man')">Boy (Man)</button>
+        <button class="btn-action" onclick="selectGender('girl')">Girl</button>
+      </div>
+      <h3 style="margin-top:5px;">🔗 Share Game Link</h3>
+      <div class="grid-btns">
+        <button class="btn-action" onclick="shareSocial('wa')">WhatsApp</button>
+        <button class="btn-action" onclick="shareSocial('tg')">Telegram</button>
+        <button class="btn-action" onclick="shareSocial('ig')">Instagram</button>
+        <button class="btn-action" onclick="shareSocial('copy')">Copy Link</button>
+      </div>
+      <button class="btn-action" onclick="closeModal('profile-modal')">Close</button>
+    </div>
+  </div>
+
+  <!-- 4. Weather Modal -->
+  <div id="weather-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3>⛅ Environmental Weather</h3>
+      <div class="grid-btns">
+        <button class="btn-action" onclick="applyWeather('sunny')">☀️ Sunny</button>
+        <button class="btn-action" onclick="applyWeather('sunset')">🌅 Sunset</button>
+        <button class="btn-action" onclick="applyWeather('storm')">⛈️ Storm</button>
+        <button class="btn-action" onclick="applyWeather('night')">🌙 Night</button>
+      </div>
+      <button class="btn-action" onclick="closeModal('weather-modal')">Close</button>
+    </div>
+  </div>
+
+  <!-- 5. Navigation Menu Modal -->
+  <div id="menu-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3>📍 Island Teleport Locations</h3>
+      <div class="grid-btns">
+        <button class="btn-action" onclick="teleportPlayer(0, 1.2, 0)">City Center</button>
+        <button class="btn-action" onclick="teleportPlayer(45, 1.2, 0)">Race Circuit</button>
+        <button class="btn-action" onclick="teleportPlayer(-40, 1.2, -30)">Football Stadium</button>
+        <button class="btn-action" onclick="teleportPlayer(30, 1.2, -25)">Concert Stage</button>
+        <button class="btn-action" onclick="teleportPlayer(0, 1.2, 60)">Harbor Dock</button>
+        <button class="btn-action" onclick="teleportPlayer(-35, 1.2, 25)">Dino Safari</button>
+      </div>
+      <button class="btn-action" onclick="closeModal('menu-modal')">Close</button>
     </div>
   </div>
 
   <script>
+    // =========================================================================
+    // SECTION 1: GLOBAL STATE, AUDIO & LOCALIZATION
+    // =========================================================================
     const socket = io();
     let currentRoom = "Global";
+    let myPlayerId = null;
+    let playerName = "Player_" + Math.floor(Math.random() * 899 + 100);
+    let selectedGender = "man";
+    let starsCount = 100;
+    let penaltyGoals = 0, basketsCount = 0, currentLap = 1;
 
-    function openRoomModal() { document.getElementById('room-modal').style.display = 'flex'; }
+    function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function joinCustomRoom() {
-      const r = document.getElementById('room-input').value.trim();
-      if (r) {
-        currentRoom = r;
-        document.getElementById('room-label').innerText = "Room: " + r;
-        socket.emit('joinRoom', { room: r, player: playerName });
-      }
-      closeModal('room-modal');
-    }
 
-    // Audio SFX
+    const translations = {
+      en: { room: "Room", online: "Online", goals: "Penalty Goals", baskets: "Baskets", lap: "Track Lap", jump: "JUMP", drive: "DRIVE CAR", kick: "PENALTY KICK", basket: "SHOOT BASKET", sit: "SIT DOWN", exit: "EXIT", skate: "SKATEBOARD", ride: "RIDE" },
+      ml: { room: "റൂം", online: "ഓൺലൈൻ", goals: "പെനാൽറ്റി ഗോൾ", baskets: "ബാസ്‌ക്കറ്റ്", lap: "ട്രാക്ക് ലാപ്", jump: "ചാടുക", drive: "കാർ ഓടിക്കുക", kick: "പെനാൽറ്റി കിക്ക്", basket: "ബാസ്കറ്റ് എറിയുക", sit: "ഇരിക്കുക", exit: "ഇറങ്ങുക", skate: "സ്കേറ്റ്ബോർഡ്", ride: "കയറുക" },
+      hi: { room: "कमरा", online: "ऑनलाइन", goals: "पेनाल्टी गोल", baskets: "बास्केट", lap: "ट्रैक लैप", jump: "कूदें", drive: "कार चलाएं", kick: "पेनाल्टी किक", basket: "बास्केट मारें", sit: "बैठें", exit: "उतरें", skate: "स्केटबोर्ड", ride: "सवारी करें" },
+      fa: { room: "اتاق", online: "آنلاین", goals: "گل پنالتی", baskets: "سبدها", lap: "دور پیست", jump: "پرش", drive: "رانندگی", kick: "ضربه پنالتی", basket: "پرتاب توپ", sit: "نشستن", exit: "خروج", skate: "اسکیت", ride: "سوار شدن" },
+      id: { room: "Ruang", online: "Online", goals: "Gol Penalti", baskets: "Keranjang", lap: "Putaran", jump: "LOMPAT", drive: "SETIR MOBIL", kick: "TENDANGAN", basket: "LEMPAR BOLA", sit: "DUDUK", exit: "KELUAR", skate: "SKATEBOARD", ride: "NAIK" },
+      ru: { room: "Комната", online: "Онлайн", goals: "Пенальти", baskets: "Корзины", lap: "Круг", jump: "ПРЫЖОК", drive: "ВЕСТИ МАШИНУ", kick: "УДАР", basket: "БРОСОК", sit: "СЕСТЬ", exit: "ВЫЙТИ", skate: "СКЕЙТ", ride: "ЕХАТЬ" },
+      it: { room: "Stanza", online: "Online", goals: "Rigori", baskets: "Canestri", lap: "Giro", jump: "SALTO", drive: "GUIDA", kick: "RIGORE", basket: "CANESTRO", sit: "SIEDITI", exit: "ESCI", skate: "SKATE", ride: "SALI" },
+      uz: { room: "Xona", online: "Onlayn", goals: "Penalti Gollar", baskets: "Savatlar", lap: "Aylanish", jump: "SAKRASH", drive: "HAYDASH", kick: "TEPISH", basket: "TO'P OTISH", sit: "O'TIRISH", exit: "CHIQISH", skate: "SKEYT", ride: "MINISH" },
+      tg: { room: "Ҳуҷра", online: "Онлайн", goals: "Голҳои пеналтӣ", baskets: "Сабадҳо", lap: "Давра", jump: "ҶАҲИДАН", drive: "РОНДАН", kick: "ЗАРБА", basket: "АНДОХТАН", sit: "НИШАСТАН", exit: "БАРОМАДАН", skate: "СКЕЙТ", ride: "САВОР ШУДАН" },
+      my: { room: "အခန်း", online: "လိုင်းပေါ်", goals: "ပင်နယ်တီဂိုး", baskets: "ဘတ်စကက်", lap: "ပတ်လမ်း", jump: "ခုန်ပါ", drive: "ကားမောင်း", kick: "ကန်သွင်း", basket: "ပစ်သွင်း", sit: "ထိုင်ပါ", exit: "ထွက်ပါ", skate: "စကိတ်", ride: "စီးပါ" },
+      zh: { room: "房间", online: "在线", goals: "点球进球", baskets: "投篮", lap: "圈数", jump: "跳跃", drive: "驾驶赛车", kick: "点球射门", basket: "投篮得分", sit: "坐下", exit: "离开", skate: "滑板", ride: "骑乘" }
+    };
+    let currentLang = 'en';
+
+    window.setLanguage = (lang) => {
+      currentLang = lang;
+      const t = translations[lang] || translations.en;
+      document.getElementById('hud-lang').innerText = lang.toUpperCase();
+      document.getElementById('jump-btn').innerText = t.jump;
+      closeModal('lang-modal');
+    };
+
+    // Live Web Audio Synthesizer (No external asset dependency)
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const actx = new AudioContext();
+
     function playSfx(type) {
       if (actx.state === 'suspended') actx.resume();
       const osc = actx.createOscillator();
       const gain = actx.createGain();
-      osc.connect(gain); gain.connect(actx.destination);
+      osc.connect(gain);
+      gain.connect(actx.destination);
       const now = actx.currentTime;
 
       if (type === 'kick') {
         osc.frequency.setValueAtTime(140, now);
         osc.frequency.exponentialRampToValueAtTime(30, now + 0.12);
-        gain.gain.setValueAtTime(0.5, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+        gain.gain.setValueAtTime(0.6, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
         osc.start(now); osc.stop(now + 0.12);
       } else if (type === 'goal') {
+        osc.type = 'triangle';
         osc.frequency.setValueAtTime(523.25, now);
         osc.frequency.setValueAtTime(659.25, now + 0.15);
-        gain.gain.setValueAtTime(0.4, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
-        osc.start(now); osc.stop(now + 0.35);
+        osc.frequency.setValueAtTime(783.99, now + 0.3);
+        gain.gain.setValueAtTime(0.5, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+        osc.start(now); osc.stop(now + 0.5);
+      } else if (type === 'swish') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(80, now + 0.2);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+        osc.start(now); osc.stop(now + 0.2);
       } else if (type === 'engine') {
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(70, now);
-        osc.frequency.linearRampToValueAtTime(130, now + 0.2);
-        gain.gain.setValueAtTime(0.12, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+        osc.frequency.setValueAtTime(65, now);
+        osc.frequency.linearRampToValueAtTime(120, now + 0.2);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
         osc.start(now); osc.stop(now + 0.2);
       } else if (type === 'roar') {
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(100, now);
-        osc.frequency.exponentialRampToValueAtTime(35, now + 0.7);
-        gain.gain.setValueAtTime(0.5, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.7);
-        osc.start(now); osc.stop(now + 0.7);
+        osc.frequency.setValueAtTime(90, now);
+        osc.frequency.exponentialRampToValueAtTime(30, now + 0.8);
+        gain.gain.setValueAtTime(0.6, now);
+        gain.gain.linearRampToValueAtTime(0.01, now + 0.8);
+        osc.start(now); osc.stop(now + 0.8);
       }
     }
 
-    let isMicOn = false;
-    window.toggleMic = async () => {
-      const btn = document.getElementById('mic-btn');
-      if (!isMicOn) {
+    // Voice Networking (Proximity vs Global)
+    let isProxMic = false, isGlobMic = false;
+    let localStream = null;
+
+    async function getMicStream() {
+      if (!localStream) {
+        localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
+      return localStream;
+    }
+
+    window.toggleProximityMic = async () => {
+      const btn = document.getElementById('btn-prox-mic');
+      if (!isProxMic) {
         try {
-          const s = await navigator.mediaDevices.getUserMedia({ audio: true });
-          isMicOn = true; btn.classList.add('active');
-          const src = actx.createMediaStreamSource(s);
-          src.connect(actx.destination);
-        } catch(e) { alert("Mic Permission Denied!"); }
+          await getMicStream();
+          isProxMic = true;
+          btn.classList.add('active');
+          if (isGlobMic) window.toggleGlobalMic();
+        } catch(e) { alert("Microphone access denied!"); }
       } else {
-        isMicOn = false; btn.classList.remove('active');
+        isProxMic = false;
+        btn.classList.remove('active');
       }
     };
 
-    // =========================================================
-    // THREE.JS SCENE SETUP (COMPACT GTA WORLD)
-    // =========================================================
+    window.toggleGlobalMic = async () => {
+      const btn = document.getElementById('btn-glob-mic');
+      if (!isGlobMic) {
+        try {
+          await getMicStream();
+          isGlobMic = true;
+          btn.classList.add('active');
+          if (isProxMic) window.toggleProximityMic();
+        } catch(e) { alert("Microphone access denied!"); }
+      } else {
+        isGlobMic = false;
+        btn.classList.remove('active');
+      }
+    };
+
+    // Social Sharing
+    window.shareSocial = (platform) => {
+      const url = window.location.href;
+      const msg = encodeURIComponent("Join me in GlobeVibe GTA Island Metaverse!");
+      if (platform === 'wa') window.open(`https://api.whatsapp.com/send?text=${msg}%20${url}`);
+      else if (platform === 'tg') window.open(`https://t.me/share/url?url=${url}&text=${msg}`);
+      else if (platform === 'ig') { navigator.clipboard.writeText(url); alert("Link copied for Instagram Bio/Story!"); }
+      else if (platform === 'copy') { navigator.clipboard.writeText(url); alert("Game link copied to clipboard!"); }
+      closeModal('profile-modal');
+    };
+
+    window.updatePlayerName = () => {
+      const v = document.getElementById('player-name-in').value.trim();
+      if (v) {
+        playerName = v;
+        document.getElementById('hud-player').innerText = v;
+        socket.emit('updateName', { room: currentRoom, name: v });
+      }
+      closeModal('profile-modal');
+    };
+
+    window.joinRoomFromInput = () => {
+      const r = document.getElementById('room-input').value.trim();
+      if (r) {
+        currentRoom = r;
+        document.getElementById('hud-room').innerText = r;
+        socket.emit('joinRoom', { room: r, name: playerName });
+      }
+      closeModal('room-modal');
+    };
+
+    window.resetToGlobal = () => {
+      currentRoom = "Global";
+      document.getElementById('hud-room').innerText = "Global";
+      socket.emit('joinRoom', { room: "Global", name: playerName });
+      closeModal('room-modal');
+    };
+
+    // Multi-Passenger Rigging System (2 to 4 Players)
+    const passengerRegistry = {};
+    function registerMultiSeat(vehicleGroup, type, maxSeats, seatOffsets) {
+      passengerRegistry[type] = {
+        group: vehicleGroup,
+        type: type,
+        maxSeats: maxSeats,
+        offsets: seatOffsets,
+        passengers: [] // [socketId, ...]
+      };
+    }
+    // =========================================================================
+    // SECTION 2: THREE.JS ENGINE SETUP & LIGHTING
+    // =========================================================================
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
-    scene.fog = new THREE.FogExp2(0x87ceeb, 0.005);
+    scene.fog = new THREE.FogExp2(0x87ceeb, 0.006);
 
-    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 1000);
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 1200);
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x445566, 1.2);
-    scene.add(hemi);
-    const sun = new THREE.DirectionalLight(0xfffaed, 1.8);
-    sun.position.set(60, 100, 50);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x445566, 1.2);
+    scene.add(hemiLight);
+
+    const sun = new THREE.DirectionalLight(0xfffaed, 2.0);
+    sun.position.set(70, 150, 60);
     sun.castShadow = true;
+    sun.shadow.mapSize.width = 2048;
+    sun.shadow.mapSize.height = 2048;
     scene.add(sun);
 
-    // 1. Compact Island (ചെറിയ ദ്വീപ് - Radius: 90m)
-    const island = new THREE.Mesh(
-      new THREE.CylinderGeometry(85, 95, 2, 48),
-      new THREE.MeshStandardMaterial({ color: 0x4ade80, roughness: 0.9 })
-    );
-    island.position.y = 0;
-    island.receiveShadow = true;
-    scene.add(island);
+    window.applyWeather = (mode) => {
+      const wLabel = document.getElementById('hud-weather');
+      if (mode === 'sunny') { scene.background.setHex(0x87ceeb); sun.intensity = 2.0; wLabel.innerText = "Sunny"; }
+      else if (mode === 'sunset') { scene.background.setHex(0xf97316); sun.intensity = 1.1; wLabel.innerText = "Sunset"; }
+      else if (mode === 'storm') { scene.background.setHex(0x334155); sun.intensity = 0.4; wLabel.innerText = "Storm"; }
+      else if (mode === 'night') { scene.background.setHex(0x020617); sun.intensity = 0.2; wLabel.innerText = "Night"; }
+      closeModal('weather-modal');
+    };
 
-    // 2. Surrounding Ocean (കടൽ)
-    const ocean = new THREE.Mesh(
-      new THREE.PlaneGeometry(1200, 1200),
-      new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.2, metalness: 0.6 })
-    );
-    ocean.rotation.x = -Math.PI / 2;
-    ocean.position.y = -0.6;
-    scene.add(ocean);
-
-    // 3. GTA Asphalt Road & Racing Circuit (കാർ പുറത്ത് പോകാതിരിക്കാൻ ബാരിയർ സഹിതം)
-    const roadRing = new THREE.Mesh(
-      new THREE.RingGeometry(55, 68, 48),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.85 })
-    );
-    roadRing.rotation.x = -Math.PI / 2;
-    roadRing.position.y = 1.02;
-    scene.add(roadRing);
-
-    // Road Outer Guardrail (Barrier)
-    const guardRail = new THREE.Mesh(
-      new THREE.CylinderGeometry(68.5, 68.5, 1.2, 48, 1, true),
-      new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.6 })
-    );
-    guardRail.position.y = 1.6;
-    scene.add(guardRail);
-
-    // 4. Loader for GLB
-    const loader = new THREE.GLTFLoader();
-    function loadGLB(file, size, cb) {
-      const run = (gltf) => {
+    // =========================================================================
+    // SECTION 3: COMPACT ENVIRONMENT & STRICT GLB RESOURCE LOADER
+    // =========================================================================
+    const gltfLoader = new THREE.GLTFLoader();
+    function loadGLBModel(file, targetSize, onLoad) {
+      const process = (gltf) => {
         const root = gltf.scene;
-        const b = new THREE.Box3().setFromObject(root);
-        const s = new THREE.Vector3(); b.getSize(s);
-        const m = Math.max(s.x, s.y, s.z);
-        if (m > 0 && size) root.scale.setScalar(size / m);
-        cb(root);
+        root.traverse(c => {
+          if (c.isMesh) {
+            c.castShadow = true;
+            c.receiveShadow = true;
+          }
+        });
+        const bbox = new THREE.Box3().setFromObject(root);
+        const size = new THREE.Vector3();
+        bbox.getSize(size);
+        const maxDim = Math.max(size.x, size.y, size.z);
+        if (maxDim > 0 && targetSize) {
+          const factor = targetSize / maxDim;
+          root.scale.setScalar(factor);
+        }
+        onLoad(root);
       };
-      loader.load(file, run, undefined, () => loader.load('/' + file, run));
+      gltfLoader.load(file, process, undefined, () => {
+        gltfLoader.load('/' + file, process, undefined, () => console.warn("Asset Missing: " + file));
+      });
     }
 
-    // GTA City Buildings (Walkable Town Center)
-    for (let i = 0; i < 8; i++) {
-      const h = 8 + Math.random() * 12;
-      const bldg = new THREE.Mesh(
-        new THREE.BoxGeometry(10, h, 10),
-        new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.4 })
-      );
-      const ang = (i / 8) * Math.PI * 2;
-      bldg.position.set(Math.cos(ang) * 25, h / 2 + 1, Math.sin(ang) * 25);
-      bldg.castShadow = true;
-      scene.add(bldg);
+    // 1. Natural Compact Island Surface & Ocean Decor
+    loadGLBModel('water-island.glb', 160, m => { m.position.set(0, 0, 0); scene.add(m); });
+    loadGLBModel('water.glb', 200, m => { m.position.set(0, -0.2, 0); scene.add(m); });
+    loadGLBModel('water-rocks.glb', 12, m => { m.position.set(70, 0, 50); scene.add(m); });
+    loadGLBModel('water_poly_1.glb', 14, m => { m.position.set(-80, 0, 60); scene.add(m); });
+    loadGLBModel('water_poly_2.glb', 14, m => { m.position.set(80, 0, -60); scene.add(m); });
+
+    // 2. City Layout (Walkable GTA Hub)
+    loadGLBModel('city.glb', 35, m => { m.position.set(0, 1.0, 0); scene.add(m); });
+    loadGLBModel('city_tower.glb', 24, m => { m.position.set(-18, 1.0, -12); scene.add(m); });
+    loadGLBModel('city_shop.glb', 8, m => { m.position.set(16, 1.0, -10); scene.add(m); });
+    loadGLBModel('city_house.glb', 9, m => { m.position.set(-15, 1.0, 15); scene.add(m); });
+    loadGLBModel('street_light.glb', 4.5, m => {
+      m.position.set(10, 1.0, 10); scene.add(m);
+      const m2 = m.clone(); m2.position.set(-10, 1.0, -10); scene.add(m2);
+    });
+
+    // 3. Nature, Trees & Rocks
+    loadGLBModel('nature_pack.glb', 6, m => { m.position.set(25, 1.0, -20); scene.add(m); });
+    loadGLBModel('boulder.glb', 4, m => { m.position.set(40, 1.0, 20); scene.add(m); });
+    loadGLBModel('small_rock.glb', 2, m => { m.position.set(-30, 1.0, 30); scene.add(m); });
+    loadGLBModel('tree_large.glb', 9, m => { m.position.set(-35, 1.0, -25); scene.add(m); });
+    loadGLBModel('tree.glb', 5, m => {
+      for (let i = 0; i < 16; i++) {
+        const c = m.clone();
+        const ang = (i / 16) * Math.PI * 2;
+        c.position.set(Math.cos(ang) * 45, 1.0, Math.sin(ang) * 45);
+        scene.add(c);
+      }
+    });
+
+    // 4. Ground Clamped Attractions (No sinking below floor)
+    let ferrisWheel = null;
+    loadGLBModel('ferris_wheel.glb', 16, m => { m.position.set(38, 1.0, 32); scene.add(m); ferrisWheel = m; });
+
+    const elephantEntity = new THREE.Group(); elephantEntity.position.set(-25, 1.0, -25); scene.add(elephantEntity);
+    loadGLBModel('elephant.glb', 4.5, m => elephantEntity.add(m));
+
+    // Godzilla (Coastal Animation NPC - NOT Rideable)
+    let godzillaMesh = null;
+    loadGLBModel('godzilla.glb', 15, m => { m.position.set(-65, 1.0, 0); scene.add(m); godzillaMesh = m; });
+
+    // 5. Sports Arenas: Football Penalty & Basketball Court
+    loadGLBModel('football_stadium.glb', 30, m => { m.position.set(-45, 1.0, -40); scene.add(m); });
+    loadGLBModel('goalpost.glb', 4.5, m => { m.position.set(-45, 1.0, -52); scene.add(m); });
+    const fBall = new THREE.Group(); fBall.position.set(-45, 1.2, -43); scene.add(fBall);
+    loadGLBModel('football.glb', 0.7, m => fBall.add(m));
+
+    loadGLBModel('ballpark.glb', 18, m => { m.position.set(40, 1.0, -40); scene.add(m); });
+    const bBall = new THREE.Group(); bBall.position.set(40, 1.2, -38); scene.add(bBall);
+    loadGLBModel('basketball.glb', 0.65, m => bBall.add(m));
+
+    // 6. Concert Stage & Live Mic Arena
+    const stageGroup = new THREE.Group(); stageGroup.position.set(0, 1.0, -35); scene.add(stageGroup);
+    loadGLBModel('concert_stage.glb', 14, m => stageGroup.add(m));
+    loadGLBModel('concert_pack.glb', 6, m => { m.position.set(0, 0, -2); stageGroup.add(m); });
+
+    const audienceBenches = [];
+    loadGLBModel('park_bench.glb', 2.5, m => {
+      for (let r = 0; r < 3; r++) {
+        for (let c = -1; c <= 1; c++) {
+          const bench = m.clone();
+          bench.position.set(c * 6, 1.0, -22 + (r * 3.5));
+          scene.add(bench);
+          audienceBenches.push(bench.position.clone());
+        }
+      }
+    });
+
+    // 7. Mountain Climbing Arena
+    const mountainPos = new THREE.Vector3(0, 1.0, 65);
+    const mountainPeak = new THREE.Vector3(0, 28, 65);
+    loadGLBModel('mountain_single.glb', 35, m => { m.position.copy(mountainPos); scene.add(m); });
+    let isClimbing = false;
+
+    // 8. Harbor, Boats & Deep Sea Marine Fauna
+    loadGLBModel('dock.glb', 8, m => { m.position.set(0, 0.4, 75); scene.add(m); });
+    let whaleMesh = null, sharkMesh = null;
+    loadGLBModel('Whale.glb', 12, m => { m.position.set(-110, -1.0, 100); scene.add(m); whaleMesh = m; });
+    loadGLBModel('shark.glb', 5, m => { m.position.set(100, -0.8, 90); scene.add(m); sharkMesh = m; });
+    loadGLBModel('sea_monster.glb', 10, m => { m.position.set(0, -1.0, 140); scene.add(m); });
+
+    // =========================================================================
+    // SECTION 4: VEHICLE & PASSENGER RIGGING (2 - 4 SEATERS & RACING)
+    // =========================================================================
+    loadGLBModel('racing_track.glb', 110, m => { m.position.set(0, 1.01, 0); scene.add(m); });
+
+    // Car (4 Seater GTA Car)
+    const carEntity = new THREE.Group(); carEntity.position.set(52, 1.1, 0); scene.add(carEntity);
+    loadGLBModel('car.glb', 3.0, m => carEntity.add(m));
+    registerMultiSeat(carEntity, 'car', 4, [
+      new THREE.Vector3(-0.4, 0.4, 0.2), // Driver Seat
+      new THREE.Vector3(0.4, 0.4, 0.2),  // Passenger Front
+      new THREE.Vector3(-0.4, 0.4, -0.5),// Back Left
+      new THREE.Vector3(0.4, 0.4, -0.5)  // Back Right
+    ]);
+
+    // Skateboard
+    const skateEntity = new THREE.Group(); skateEntity.position.set(22, 1.05, 5); scene.add(skateEntity);
+    loadGLBModel('low_poly_skateboard.glb', 1.0, m => skateEntity.add(m));
+    registerMultiSeat(skateEntity, 'skate', 1, [new THREE.Vector3(0, 0.2, 0)]);
+
+    // Space Jet (4 Seater Cockpit)
+    const spaceJet = new THREE.Group(); spaceJet.position.set(-30, 1.1, 15); scene.add(spaceJet);
+    loadGLBModel('spaceship.glb', 6.5, m => spaceJet.add(m));
+    registerMultiSeat(spaceJet, 'space', 4, [
+      new THREE.Vector3(0, 0.6, 0.8),
+      new THREE.Vector3(0, 0.6, 0.0),
+      new THREE.Vector3(-0.5, 0.6, -0.8),
+      new THREE.Vector3(0.5, 0.6, -0.8)
+    ]);
+
+    // Flying Dragon (3 Seater Saddle)
+    const dragonEntity = new THREE.Group(); dragonEntity.position.set(-50, 1.2, 25); scene.add(dragonEntity);
+    loadGLBModel('dragon.glb', 7.5, m => dragonEntity.add(m));
+    registerMultiSeat(dragonEntity, 'dragon', 3, [
+      new THREE.Vector3(0, 1.8, 0.6),
+      new THREE.Vector3(0, 1.7, 0.0),
+      new THREE.Vector3(0, 1.6, -0.6)
+    ]);
+
+    // Dinosaurs: T-Rex (2 Seater) & Herbivores (Clamped to ground)
+    const trexEntity = new THREE.Group(); trexEntity.position.set(-35, 1.1, 40); scene.add(trexEntity);
+    loadGLBModel('Trex.glb', 5.5, m => trexEntity.add(m));
+    registerMultiSeat(trexEntity, 'dino', 2, [new THREE.Vector3(0, 2.2, 0.4), new THREE.Vector3(0, 2.0, -0.4)]);
+
+    loadGLBModel('Triceratops.glb', 4.5, m => { m.position.set(-45, 1.1, 45); scene.add(m); });
+    loadGLBModel('Stegosaurus.glb', 4.5, m => { m.position.set(-25, 1.1, 50); scene.add(m); });
+    loadGLBModel('Ankylosaurus.glb', 4.0, m => { m.position.set(-50, 1.1, 35); scene.add(m); });
+
+    // Sea Vessels (4 Seater Boat & 8 Seater Ship)
+    const seaBoat = new THREE.Group(); seaBoat.position.set(0, -0.3, 90); scene.add(seaBoat);
+    loadGLBModel('low_poly_boat.glb', 4.5, m => seaBoat.add(m));
+    registerMultiSeat(seaBoat, 'boat', 4, [
+      new THREE.Vector3(0, 0.5, 0.4),
+      new THREE.Vector3(-0.4, 0.5, -0.3),
+      new THREE.Vector3(0.4, 0.5, -0.3),
+      new THREE.Vector3(0, 0.5, -0.8)
+    ]);
+
+    const cargoShip = new THREE.Group(); cargoShip.position.set(45, -0.7, 120); scene.add(cargoShip);
+    loadGLBModel('low_poly_cargo_ship.glb', 16, m => cargoShip.add(m));
+    registerMultiSeat(cargoShip, 'ship', 8, [
+      new THREE.Vector3(0, 2.5, 3.0),
+      new THREE.Vector3(1.2, 1.8, 0.0),
+      new THREE.Vector3(-1.2, 1.8, 0.0),
+      new THREE.Vector3(0.0, 1.8, -2.0)
+    ]);
+
+    // =========================================================
+    // SECTION 5: AVATAR, MULTIPLAYER SYNC & REVIEWS
+    // =========================================================
+    const localPlayer = new THREE.Group(); localPlayer.position.set(0, 1.0, 0); scene.add(localPlayer);
+    const localAvatar = new THREE.Group(); localPlayer.add(localAvatar);
+
+    function setLocalAvatarModel(gender) {
+      while (localAvatar.children.length > 0) localAvatar.remove(localAvatar.children[0]);
+      const file = gender === 'girl' ? 'girl.glb' : 'man.glb';
+      loadGLBModel(file, 2.0, m => localAvatar.add(m));
+    }
+    setLocalAvatarModel('man');
+
+    window.selectGender = (g) => {
+      selectedGender = g;
+      setLocalAvatarModel(g);
+      socket.emit('updateGender', { room: currentRoom, gender: g });
+      closeModal('profile-modal');
+    };
+
+    // Remote Players Visual Representation
+    const networkPlayers = {};
+    function createPlayerTag(name) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256; canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
+      ctx.fillRect(0, 0, 256, 64);
+      ctx.font = 'bold 28px sans-serif';
+      ctx.fillStyle = '#38bdf8';
+      ctx.textAlign = 'center';
+      ctx.fillText(name, 128, 44);
+      const tex = new THREE.CanvasTexture(canvas);
+      const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex }));
+      sprite.position.y = 2.4;
+      sprite.scale.set(2.5, 0.65, 1);
+      return sprite;
     }
 
-    // Ferris Wheel (Strictly on Ground)
-    loadGLB('ferris_wheel.glb', 12, m => {
-      m.position.set(38, 1.0, 38);
-      scene.add(m);
-    });
-
-    // Elephant (Strictly Fixed to Ground - No sinking)
-    loadGLB('elephant.glb', 4, m => {
-      m.position.set(-20, 1.0, -20);
-      scene.add(m);
-    });
-
-    // Godzilla (NPC Animation Only - NOT Rideable)
-    let godzilla = null;
-    loadGLB('godzilla.glb', 10, m => {
-      m.position.set(-45, 1.0, 0);
-      scene.add(m);
-      godzilla = m;
-    });
-
-    // Shark & Whale (Strictly in Sea - Radius > 95m)
-    let shark = null, whale = null;
-    loadGLB('shark.glb', 4, m => { m.position.set(110, -0.6, 20); scene.add(m); shark = m; });
-    loadGLB('Whale.glb', 8, m => { m.position.set(-115, -0.6, -40); scene.add(m); whale = m; });
-
-    // Penalty Football Field (Interactive Shoot)
-    const goalPost = new THREE.Mesh(
-      new THREE.BoxGeometry(6, 3, 1),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, wireframe: true })
-    );
-    goalPost.position.set(0, 2.5, -45);
-    scene.add(goalPost);
-
-    const fBall = new THREE.Mesh(
-      new THREE.SphereGeometry(0.4, 16, 16),
-      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 })
-    );
-    fBall.position.set(0, 1.4, -38);
-    scene.add(fBall);
-
-    // Basketball Hoop & Court
-    const hoop = new THREE.Mesh(
-      new THREE.TorusGeometry(0.5, 0.08, 8, 16),
-      new THREE.MeshStandardMaterial({ color: 0xea580c })
-    );
-    hoop.rotation.x = Math.PI / 2;
-    hoop.position.set(35, 3.5, -15);
-    scene.add(hoop);
-
-    // Driveable GTA Car on Track
-    const carGroup = new THREE.Group();
-    carGroup.position.set(62, 1.2, 0);
-    scene.add(carGroup);
-    loadGLB('car.glb', 2.4, m => carGroup.add(m));
-
-    // Player
-    const player = new THREE.Group();
-    player.position.set(0, 1.0, 0);
-    scene.add(player);
-    const avatar = new THREE.Group();
-    player.add(avatar);
-    loadGLB('man.glb', 2.0, m => avatar.add(m));
-
-    // Multiplayer Players Sync Map
-    const otherPlayers = {};
-    socket.on('playerJoined', (data) => {
-      document.getElementById('online-count').innerText = data.count;
-      if (data.id !== socket.id && !otherPlayers[data.id]) {
-        const op = new THREE.Group();
-        loadGLB('man.glb', 2.0, m => op.add(m));
-        scene.add(op);
-        otherPlayers[data.id] = op;
+    socket.on('initWorld', data => {
+      myPlayerId = socket.id;
+      document.getElementById('hud-online').innerText = data.count;
+      for (let id in data.players) {
+        if (id !== myPlayerId) spawnRemotePlayer(id, data.players[id]);
       }
     });
 
-    socket.on('playerMoved', (data) => {
-      if (otherPlayers[data.id]) {
-        otherPlayers[data.id].position.set(data.x, data.y, data.z);
-        otherPlayers[data.id].rotation.y = data.rotY;
+    socket.on('playerJoined', data => {
+      document.getElementById('hud-online').innerText = data.count;
+      if (data.id !== myPlayerId && !networkPlayers[data.id]) {
+        spawnRemotePlayer(data.id, data);
       }
     });
 
-    socket.on('playerLeft', (data) => {
-      document.getElementById('online-count').innerText = data.count;
-      if (otherPlayers[data.id]) {
-        scene.remove(otherPlayers[data.id]);
-        delete otherPlayers[data.id];
+    socket.on('playerMoved', data => {
+      const p = networkPlayers[data.id];
+      if (p) {
+        p.position.set(data.x, data.y, data.z);
+        p.rotation.y = data.rotY;
       }
     });
 
-    // Controls Logic
-    let inCar = false;
-    let carSpeed = 0;
-    let isGas = false, isBrake = false;
+    socket.on('playerLeft', data => {
+      document.getElementById('hud-online').innerText = data.count;
+      if (networkPlayers[data.id]) {
+        scene.remove(networkPlayers[data.id]);
+        delete networkPlayers[data.id];
+      }
+    });
+
+    function spawnRemotePlayer(id, pData) {
+      const group = new THREE.Group();
+      group.position.set(pData.x || 0, pData.y || 1.0, pData.z || 0);
+      const mFile = pData.gender === 'girl' ? 'girl.glb' : 'man.glb';
+      loadGLBModel(mFile, 2.0, m => group.add(m));
+      group.add(createPlayerTag(pData.name || "Player"));
+      scene.add(group);
+      networkPlayers[id] = group;
+    }
+
+    // Chat Protocol
+    function sendChatMessage() {
+      const inEl = document.getElementById('chat-in');
+      const val = inEl.value.trim();
+      if (!val) return;
+      socket.emit('chatMessage', { room: currentRoom, sender: playerName, text: val });
+      inEl.value = '';
+    }
+    socket.on('chatMessage', d => {
+      const box = document.getElementById('chat-msgs');
+      const m = document.createElement('div');
+      m.className = 'chat-bubble';
+      m.innerHTML = `<b>${d.sender}:</b> ${d.text}`;
+      box.appendChild(m);
+      box.scrollTop = box.scrollHeight;
+    });
+
+    // =========================================================
+    // SECTION 6: TOUCH CONTROLS & MASTER VEHICLE INTERACTION
+    // =========================================================
+    let currentSeatState = null; // { type, isDriver, seatIndex }
+    let vSpeed = 0, vAlt = 0;
+    let isGas = false, isBrake = false, isFly = false;
     let joyX = 0, joyZ = 0;
     let camRotX = 0;
-    let goals = 0, baskets = 0;
 
     document.getElementById('pedal-gas').addEventListener('touchstart', e => { e.preventDefault(); isGas = true; });
     document.getElementById('pedal-gas').addEventListener('touchend', () => isGas = false);
     document.getElementById('pedal-brake').addEventListener('touchstart', e => { e.preventDefault(); isBrake = true; });
     document.getElementById('pedal-brake').addEventListener('touchend', () => isBrake = false);
+    document.getElementById('pedal-fly').addEventListener('touchstart', e => { e.preventDefault(); isFly = true; });
+    document.getElementById('pedal-fly').addEventListener('touchend', () => isFly = false);
 
-    const joyBase = document.getElementById('joy-base');
-    const joyStick = document.getElementById('joy-stick');
-    joyBase.addEventListener('touchmove', e => {
+    const jBase = document.getElementById('joy-base');
+    const jStick = document.getElementById('joy-stick');
+    jBase.addEventListener('touchmove', e => {
       e.preventDefault();
-      const b = joyBase.getBoundingClientRect();
-      let dx = e.touches[0].clientX - b.left - 45;
-      let dy = e.touches[0].clientY - b.top - 45;
+      const b = jBase.getBoundingClientRect();
+      let dx = e.touches[0].clientX - b.left - 47;
+      let dy = e.touches[0].clientY - b.top - 47;
       const d = Math.hypot(dx, dy);
-      if (d > 28) { dx = (dx / d) * 28; dy = (dy / d) * 28; }
-      joyStick.style.left = `${45 + dx - 18}px`;
-      joyStick.style.top = `${45 + dy - 18}px`;
-      joyX = dx / 28; joyZ = dy / 28;
+      if (d > 30) { dx = (dx / d) * 30; dy = (dy / d) * 30; }
+      jStick.style.left = `${47 + dx - 17}px`;
+      jStick.style.top = `${47 + dy - 17}px`;
+      joyX = dx / 30; joyZ = dy / 30;
     }, { passive: false });
-    joyBase.addEventListener('touchend', () => { joyStick.style.left = '27px'; joyStick.style.top = '27px'; joyX = 0; joyZ = 0; });
+    jBase.addEventListener('touchend', () => { jStick.style.left = '30px'; jStick.style.top = '30px'; joyX = 0; joyZ = 0; });
 
-    let isDrag = false, px = 0;
+    let isDrag = false, touchX = 0;
     window.addEventListener('touchstart', e => {
-      if (e.target.closest('#joy-base') || e.target.closest('button')) return;
-      isDrag = true; px = e.touches[0].clientX;
+      if (e.target.closest('#joy-base') || e.target.closest('button') || e.target.closest('#chat-box')) return;
+      isDrag = true; touchX = e.touches[0].clientX;
     });
     window.addEventListener('touchmove', e => {
       if (!isDrag) return;
-      camRotX -= (e.touches[0].clientX - px) * 0.005;
-      px = e.touches[0].clientX;
+      camRotX -= (e.touches[0].clientX - touchX) * 0.005;
+      touchX = e.touches[0].clientX;
     });
     window.addEventListener('touchend', () => isDrag = false);
 
-    function doJump() {
-      if (player.position.y <= 1.2 && !inCar) player.position.y = 2.8;
-    }
-
-    // Trigger Interaction (Enter Car / Kick Penalty / Shoot Hoop)
-    const actBtn = document.getElementById('action-btn');
-    let actType = null;
-    function checkInteractions() {
-      if (inCar) { actBtn.style.display = 'none'; return; }
-      const p = player.position;
-
-      // 1. Enter Car
-      if (p.distanceTo(carGroup.position) < 4) {
-        actType = 'car'; actBtn.innerText = "🏎️ DRIVE GTA CAR"; actBtn.style.display = 'block'; return;
-      }
-      // 2. Penalty Kick
-      if (p.distanceTo(fBall.position) < 2.5) {
-        actType = 'kick'; actBtn.innerText = "⚽ PENALTY KICK"; actBtn.style.display = 'block'; return;
-      }
-      // 3. Shoot Basket
-      if (p.distanceTo(new THREE.Vector3(35, 1, -15)) < 3.5) {
-        actType = 'basket'; actBtn.innerText = "🏀 SHOOT BASKET"; actBtn.style.display = 'block'; return;
-      }
-
-      actBtn.style.display = 'none';
-      actType = null;
-    }
-
-    window.triggerAction = () => {
-      if (actType === 'car') {
-        inCar = true;
-        carGroup.add(avatar);
-        avatar.position.set(0, 0.4, 0); // Driver Seat
-        document.getElementById('car-pedals').style.display = 'flex';
-        document.getElementById('speedo').style.display = 'block';
-        document.getElementById('dismount-btn').style.display = 'block';
-        document.getElementById('jump-btn').style.display = 'none';
-      } else if (actType === 'kick') {
+    window.triggerJump = () => {
+      if (currentSeatState && currentSeatState.type === 'skate') {
         playSfx('kick');
-        fBall.position.set(0, 2.2, -45); // Into goal
-        setTimeout(() => {
-          playSfx('goal');
-          goals++;
-          document.getElementById('hud-goals').innerText = goals;
-          fBall.position.set(0, 1.4, -38);
-        }, 500);
-      } else if (actType === 'basket') {
-        baskets += 2;
-        document.getElementById('hud-baskets').innerText = baskets;
-        playSfx('goal');
+        skateEntity.position.y = 2.2;
+        setTimeout(() => skateEntity.position.y = 1.05, 250);
+      } else if (!currentSeatState && localPlayer.position.y <= 1.1) {
+        localPlayer.position.y = 2.8;
       }
     };
 
-    window.exitVehicle = () => {
-      if (!inCar) return;
-      inCar = false;
-      player.add(avatar);
-      avatar.position.set(0, 0, 0);
-      player.position.set(carGroup.position.x + 3, 1.0, carGroup.position.z);
-      document.getElementById('car-pedals').style.display = 'none';
+    window.teleportPlayer = (x, y, z) => {
+      if (currentSeatState) window.exitSeatOrVehicle();
+      localPlayer.position.set(x, y, z);
+      closeModal('menu-modal');
+    };
+
+    // Detection of Interactivity Zones
+    const actBtn = document.getElementById('action-btn');
+    let targetedAction = null;
+
+    function evaluateInteractions() {
+      if (currentSeatState) { actBtn.style.display = 'none'; return; }
+      const p = localPlayer.position;
+      const t = translations[currentLang] || translations.en;
+
+      // 1. Penalty Football Kick
+      if (p.distanceTo(fBall.position) < 2.5) {
+        targetedAction = { type: 'kick_penalty' };
+        actBtn.innerText = t.kick; actBtn.style.display = 'block'; return;
+      }
+
+      // 2. Shoot Basketball
+      if (p.distanceTo(bBall.position) < 3.0) {
+        targetedAction = { type: 'shoot_basket' };
+        actBtn.innerText = t.basket; actBtn.style.display = 'block'; return;
+      }
+
+      // 3. Mountain Climbing
+      if (p.distanceTo(mountainPos) < 8.0) {
+        targetedAction = { type: 'climb' };
+        actBtn.innerText = "🧗 CLIMB PEAK"; actBtn.style.display = 'block'; return;
+      }
+
+      // 4. Multi-Passenger Vehicles
+      for (let type in passengerRegistry) {
+        const v = passengerRegistry[type];
+        if (p.distanceTo(v.group.position) < (type === 'ship' ? 12 : 5.5)) {
+          const isDriver = v.passengers.length === 0;
+          targetedAction = { type: 'board_vehicle', vType: type, isDriver };
+          actBtn.innerText = isDriver ? `${t.drive || 'DRIVE'} (${type.toUpperCase()})` : `RIDE AS PASSENGER (${v.passengers.length}/${v.maxSeats})`;
+          actBtn.style.display = 'block'; return;
+        }
+      }
+
+      // 5. Concert Benches
+      for (let benchPos of audienceBenches) {
+        if (p.distanceTo(benchPos) < 2.2) {
+          targetedAction = { type: 'sit_concert', pos: benchPos };
+          actBtn.innerText = t.sit; actBtn.style.display = 'block'; return;
+        }
+      }
+
+      actBtn.style.display = 'none'; targetedAction = null;
+    }
+
+    window.executeInteraction = () => {
+      if (!targetedAction) return;
+
+      if (targetedAction.type === 'kick_penalty') {
+        playSfx('kick');
+        fBall.position.set(-45, 2.5, -52); // Ball into goal net
+        setTimeout(() => {
+          playSfx('goal');
+          penaltyGoals++;
+          starsCount += 10;
+          document.getElementById('score-goals').innerText = penaltyGoals;
+          document.getElementById('hud-stars').innerText = starsCount;
+          fBall.position.set(-45, 1.2, -43);
+        }, 500);
+        return;
+      }
+
+      if (targetedAction.type === 'shoot_basket') {
+        playSfx('swish');
+        bBall.position.set(40, 4.0, -48);
+        setTimeout(() => {
+          playSfx('goal');
+          basketsCount++;
+          starsCount += 5;
+          document.getElementById('score-baskets').innerText = basketsCount;
+          document.getElementById('hud-stars').innerText = starsCount;
+          bBall.position.set(40, 1.2, -38);
+        }, 600);
+        return;
+      }
+
+      if (targetedAction.type === 'climb') {
+        isClimbing = true;
+        document.getElementById('dismount-btn').style.display = 'block';
+        return;
+      }
+
+      if (targetedAction.type === 'sit_concert') {
+        currentSeatState = { type: 'bench' };
+        localPlayer.position.copy(targetedAction.pos);
+        localPlayer.position.y = 1.1;
+        document.getElementById('dismount-btn').style.display = 'block';
+        return;
+      }
+
+      if (targetedAction.type === 'board_vehicle') {
+        const v = passengerRegistry[targetedAction.vType];
+        const sIndex = v.passengers.length;
+        if (sIndex >= v.maxSeats) { alert("Vehicle is Full!"); return; }
+
+        v.passengers.push(myPlayerId);
+        currentSeatState = { type: targetedAction.vType, isDriver: targetedAction.isDriver, seatIndex: sIndex };
+
+        v.group.add(localAvatar);
+        localAvatar.position.copy(v.offsets[sIndex] || new THREE.Vector3(0, 0.4, 0));
+
+        if (targetedAction.isDriver) {
+          document.getElementById('vehicle-pedals').style.display = 'flex';
+          document.getElementById('pedal-fly').style.display = (targetedAction.vType === 'space' || targetedAction.vType === 'dragon') ? 'flex' : 'none';
+          document.getElementById('speedo').style.display = 'block';
+        }
+        document.getElementById('dismount-btn').style.display = 'block';
+        document.getElementById('jump-btn').style.display = targetedAction.vType === 'skate' ? 'flex' : 'none';
+      }
+    };
+
+    window.exitSeatOrVehicle = () => {
+      if (isClimbing) { isClimbing = false; localPlayer.position.copy(mountainPos); document.getElementById('dismount-btn').style.display = 'none'; return; }
+      if (!currentSeatState) return;
+
+      if (currentSeatState.type === 'bench') {
+        currentSeatState = null;
+        localPlayer.position.z += 1.5;
+        document.getElementById('dismount-btn').style.display = 'none';
+        return;
+      }
+
+      const v = passengerRegistry[currentSeatState.type];
+      if (v) {
+        v.passengers = v.passengers.filter(id => id !== myPlayerId);
+        localPlayer.add(localAvatar);
+        localAvatar.position.set(0, 0, 0);
+        localPlayer.position.set(v.group.position.x + 2.5, 1.0, v.group.position.z);
+      }
+
+      currentSeatState = null;
+      vSpeed = 0; vAlt = 0;
+      document.getElementById('vehicle-pedals').style.display = 'none';
       document.getElementById('speedo').style.display = 'none';
       document.getElementById('dismount-btn').style.display = 'none';
       document.getElementById('jump-btn').style.display = 'flex';
-      carSpeed = 0;
     };
 
-    // Chat
-    function sendChat() {
-      const inp = document.getElementById('chat-input');
-      const txt = inp.value.trim();
-      if (!txt) return;
-      socket.emit('chatMessage', { room: currentRoom, sender: playerName, text: txt });
-      inp.value = '';
-    }
-    socket.on('chatMessage', d => {
-      const b = document.getElementById('chat-msgs');
-      const m = document.createElement('div');
-      m.className = 'msg'; m.innerHTML = `<b>${d.sender}:</b> ${d.text}`;
-      b.appendChild(m); b.scrollTop = b.scrollHeight;
-    });
+    // =========================================================
+    // SECTION 7: RENDER LOOP, DYNAMICS & CAMERA CONTROLS
+    // =========================================================
+    const clock = new THREE.Clock();
 
-    // Render Loop
-    let clock = new THREE.Clock();
     function animate() {
       requestAnimationFrame(animate);
-      checkInteractions();
-      const delta = clock.getDelta();
+      evaluateInteractions();
+
       const time = clock.getElapsedTime();
 
-      // Godzilla Breathing & Growl
-      if (godzilla) {
-        godzilla.position.y = 1.0 + Math.sin(time * 2) * 0.1;
-        godzilla.rotation.y = Math.sin(time * 0.5) * 0.2;
+      // Ferris Wheel & Deep Sea Animals
+      if (ferrisWheel) ferrisWheel.rotation.x += 0.004;
+      if (whaleMesh) whaleMesh.position.x = -110 + Math.sin(time * 0.7) * 15;
+      if (sharkMesh) sharkMesh.position.z = 90 + Math.cos(time * 0.8) * 12;
+
+      // Godzilla Breathing Roar Animation (Stationary coastal guardian)
+      if (godzillaMesh) {
+        godzillaMesh.position.y = 1.0 + Math.sin(time * 2.0) * 0.08;
+        godzillaMesh.rotation.y = Math.sin(time * 0.4) * 0.15;
       }
 
-      // Sea Animals restricted to Ocean
-      if (shark) shark.position.x = 110 + Math.sin(time * 0.8) * 15;
-      if (whale) whale.position.z = -115 + Math.cos(time * 0.6) * 15;
+      // Mountain Climbing Interpolation
+      if (isClimbing) {
+        localPlayer.position.lerp(mountainPeak, 0.005);
+        if (localPlayer.position.distanceTo(mountainPeak) < 2.0) {
+          alert("🚩 Peak Conquered! +50 Stars");
+          starsCount += 50; document.getElementById('hud-stars').innerText = starsCount;
+          window.exitSeatOrVehicle();
+        }
+      }
 
-      // On-Foot Walking (GTA Style)
-      if (!inCar) {
+      // On-Foot Movement (GTA Island Clamped)
+      if (!currentSeatState && !isClimbing) {
         if (joyX !== 0 || joyZ !== 0) {
           const fx = joyX * Math.cos(camRotX) + joyZ * Math.sin(camRotX);
           const fz = -joyX * Math.sin(camRotX) + joyZ * Math.cos(camRotX);
-          player.position.x += fx * 0.45;
-          player.position.z += fz * 0.45;
-          player.rotation.y = Math.atan2(fx, fz);
+          localPlayer.position.x += fx * 0.42;
+          localPlayer.position.z += fz * 0.42;
+          localPlayer.rotation.y = Math.atan2(fx, fz);
 
-          // Boundary: Keep on Island
-          const dist = Math.hypot(player.position.x, player.position.z);
-          if (dist > 82) {
-            player.position.x = (player.position.x / dist) * 82;
-            player.position.z = (player.position.z / dist) * 82;
+          // Prevent walking into deep sea (Radius: 78m)
+          const dist = Math.hypot(localPlayer.position.x, localPlayer.position.z);
+          if (dist > 78) {
+            localPlayer.position.x = (localPlayer.position.x / dist) * 78;
+            localPlayer.position.z = (localPlayer.position.z / dist) * 78;
           }
 
-          socket.emit('playerMove', { room: currentRoom, x: player.position.x, y: player.position.y, z: player.position.z, rotY: player.rotation.y });
+          socket.emit('playerMove', {
+            room: currentRoom,
+            x: localPlayer.position.x,
+            y: localPlayer.position.y,
+            z: localPlayer.position.z,
+            rotY: localPlayer.rotation.y
+          });
         }
-        if (player.position.y > 1.0) player.position.y = Math.max(1.0, player.position.y - 0.1);
-      } 
-      // Car Driving Physics (Circuit Restricted)
-      else {
-        if (isGas) { carSpeed = Math.min(carSpeed + 0.05, 1.8); playSfx('engine'); }
-        else if (isBrake) { carSpeed = Math.max(carSpeed - 0.06, -0.4); }
-        else { carSpeed *= 0.96; }
-
-        carGroup.rotation.y -= joyX * 0.04;
-        const nx = carGroup.position.x + Math.sin(carGroup.rotation.y) * carSpeed;
-        const nz = carGroup.position.z + Math.cos(carGroup.rotation.y) * carSpeed;
-
-        // Keep car strictly inside track (Radius between 54m and 67m)
-        const cDist = Math.hypot(nx, nz);
-        if (cDist >= 54 && cDist <= 67) {
-          carGroup.position.x = nx;
-          carGroup.position.z = nz;
-        } else {
-          carSpeed = 0; // Collide with barrier
-        }
-
-        player.position.copy(carGroup.position);
-        document.getElementById('speedo').innerText = `${Math.abs(Math.round(carSpeed * 65))} KM/H`;
+        if (localPlayer.position.y > 1.0) localPlayer.position.y = Math.max(1.0, localPlayer.position.y - 0.1);
       }
 
-      // Camera Follow
-      const target = inCar ? carGroup.position : player.position;
-      camera.position.x = target.x + Math.sin(camRotX) * 14;
-      camera.position.y = target.y + 5;
-      camera.position.z = target.z + Math.cos(camRotX) * 14;
-      camera.lookAt(target.x, target.y + 1.2, target.z);
+      // Multi-Seat Vehicle Driver Physics
+      if (currentSeatState && currentSeatState.isDriver) {
+        const v = passengerRegistry[currentSeatState.type];
+        const ent = v.group;
+
+        if (isGas) { vSpeed = Math.min(vSpeed + 0.04, 1.8); playSfx('engine'); }
+        else if (isBrake) { vSpeed = Math.max(vSpeed - 0.05, -0.4); }
+        else { vSpeed *= 0.95; }
+
+        if (isFly) { vAlt = Math.min(vAlt + 0.2, 50); ent.position.y = 1.1 + vAlt; }
+        else if (vAlt > 0) { vAlt = Math.max(0, vAlt - 0.1); ent.position.y = 1.1 + vAlt; }
+
+        ent.rotation.y -= joyX * 0.035;
+        const nx = ent.position.x + Math.sin(ent.rotation.y) * vSpeed;
+        const nz = ent.position.z + Math.cos(ent.rotation.y) * vSpeed;
+
+        // Asphalt Track Restriction for Cars
+        if (currentSeatState.type === 'car') {
+          const cDist = Math.hypot(nx, nz);
+          if (cDist >= 44 && cDist <= 62) {
+            ent.position.x = nx; ent.position.z = nz;
+          } else { vSpeed = 0; } // Hits boundary
+        } else {
+          ent.position.x = nx; ent.position.z = nz;
+        }
+
+        localPlayer.position.copy(ent.position);
+        document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 60))} KM/H`;
+
+        socket.emit('playerMove', {
+          room: currentRoom,
+          x: ent.position.x,
+          y: ent.position.y,
+          z: ent.position.z,
+          rotY: ent.rotation.y
+        });
+      }
+
+      // Camera Follow Target
+      const activeObj = currentSeatState ? passengerRegistry[currentSeatState.type].group : localPlayer;
+      const camDist = 14;
+      camera.position.x = activeObj.position.x + Math.sin(camRotX) * camDist;
+      camera.position.y = activeObj.position.y + 4.5;
+      camera.position.z = activeObj.position.z + Math.cos(camRotX) * camDist;
+      camera.lookAt(activeObj.position.x, activeObj.position.y + 1.2, activeObj.position.z);
 
       renderer.render(scene, camera);
     }
