@@ -1,34 +1,62 @@
 const express = require('express');
 const http = require('http');
 const path = require('path');
+const https = require('https');
 const { Server } = require('socket.io');
-const { Telegraf, Markup } = require('telegraf');
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
-// Telegram Bot Integration
-const BOT_TOKEN = process.env.BOT_TOKEN || "YOUR_BOT_TOKEN_HERE";
+// Environment Configuration
+const PORT = process.env.PORT || 3000;
+const BOT_TOKEN = process.env.BOT_TOKEN || "";
 const GAME_URL = process.env.RENDER_EXTERNAL_URL || "https://vibe-metaverse.onrender.com";
 
-if (BOT_TOKEN && BOT_TOKEN !== "YOUR_BOT_TOKEN_HERE") {
-  const bot = new Telegraf(BOT_TOKEN);
-  bot.start((ctx) => {
-    ctx.reply(
-      `👋 ഹലോ ${ctx.from.first_name}!\n\n🌍 GlobeVibe 3D Metaverse-ലേക്ക് സ്വാഗതം!\nലൈവ് കൺസേർട്ട്, കാർ റേസിംഗ്, ദിനോസറുകൾ, വോയ്‌‌സ് ടോക്ക് എന്നിവ ആസ്വദിക്കാൻ താഴെയുള്ള ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക:`,
-      Markup.inlineKeyboard([
-        [Markup.button.webApp("🚀 Enter Metaverse", GAME_URL)],
-        [Markup.button.url("📢 Open in Browser", GAME_URL)]
-      ])
-    );
-  });
-  bot.launch().then(() => console.log("Telegram Bot Live & Running!"));
-}
+// Telegram Native Webhook Handler (No 'telegraf' dependency required)
+app.post('/api/telegram', (req, res) => {
+  const update = req.body;
+  if (update && update.message && update.message.text) {
+    const chatId = update.message.chat.id;
+    const text = update.message.text.trim();
+    const firstName = update.message.from.first_name || "Player";
 
+    if (text.startsWith('/start') && BOT_TOKEN) {
+      const payload = JSON.stringify({
+        chat_id: chatId,
+        text: `👋 ഹലോ ${firstName}!\n\n🌍 GlobeVibe 3D Metaverse-ലേക്ക് സ്വാഗതം! താഴെയുള്ള ബട്ടൺ വഴി ഗെയിമിൽ പ്രവേശിക്കുക:`,
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "🚀 Enter Metaverse", web_app: { url: GAME_URL } }],
+            [{ text: "🌐 Open in Browser", url: GAME_URL }]
+          ]
+        }
+      });
+
+      const options = {
+        hostname: 'api.telegram.org',
+        path: `/bot${BOT_TOKEN}/sendMessage`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(payload)
+        }
+      };
+
+      const tgReq = https.request(options);
+      tgReq.on('error', (e) => console.error("Telegram API Error:", e.message));
+      tgReq.write(payload);
+      tgReq.end();
+    }
+  }
+  res.sendStatus(200);
+});
+
+// Multiplayer State
 let players = {};
 
 io.on('connection', (socket) => {
@@ -56,12 +84,10 @@ io.on('connection', (socket) => {
     }
   });
 
-  // കൺസേർട്ട് & ഗ്ലോബൽ വോയ്‌സ് ഓഡിയോ സ്ട്രീമിംഗ്
   socket.on('voiceStream', (audioChunk) => {
     socket.broadcast.emit('incomingVoice', { id: socket.id, audio: audioChunk });
   });
 
-  // ചാറ്റ് ഹാൻഡ്‌ലർ
   socket.on('chatMessage', (data) => {
     if (data.isPrivate) {
       io.emit('privateMessage', { sender: data.sender, text: data.text });
@@ -77,7 +103,6 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`GlobeVibe Metaverse live on port ${PORT}`);
 });
