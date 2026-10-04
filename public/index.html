@@ -174,7 +174,7 @@
     </div>
   </div>
 
-  <!-- 3. Weather Modal (With Audio & Storm Particles) -->
+  <!-- 3. Weather Modal (Live Status & Climate Audio) -->
   <div id="weather-modal" class="modal-overlay">
     <div class="modal-box">
       <h3>🌤 Climate & Atmosphere</h3>
@@ -237,16 +237,19 @@
 
   <!-- Fast Travel Drawer -->
   <div id="drawer-menu">
-    <button class="menu-item" onclick="teleportTo(0, 1.5, 0)">🏝 Island Spawn</button>
-    <button class="menu-item" onclick="teleportTo(50, 1.5, 0)">🏙 City Center</button>
+    <button class="menu-item" onclick="teleportTo(0, 1.5, 0)">🏝 Island Central Plaza</button>
+    <button class="menu-item" onclick="teleportTo(0, 1.5, -20)">🏙 City Center</button>
+    <button class="menu-item" onclick="teleportTo(-12, 1.5, -5)">🛹 Skatepark Zone</button>
+    <button class="menu-item" onclick="teleportTo(25, 1.5, -20)">🎤 Live Concert Stage</button>
     <button class="menu-item" onclick="teleportTo(-60, 1.5, -50)">⚽ Sports Stadium</button>
     <button class="menu-item" onclick="teleportTo(-45, 1.5, -75)">🏀 Basketball Court</button>
     <button class="menu-item" onclick="teleportTo(0, 0.5, 95)">🎣 Fishing Dock</button>
     <button class="menu-item" onclick="teleportTo(0, 5, -280)">🌊 Waterfall Mist</button>
-    <button class="menu-item" onclick="teleportTo(-30, 1.5, 30)">🦖 Dino Jungle</button>
+    <button class="menu-item" onclick="teleportTo(-30, 1.5, 30)">🦖 Dino Safari</button>
+    <button class="menu-item" onclick="teleportTo(-45, 1.5, 40)">🤖 Robot Mech Base</button>
     <button class="menu-item" onclick="teleportTo(-75, 1.5, 60)">🐉 Flying Dragon Peak</button>
     <button class="menu-item" onclick="teleportTo(-80, 1.5, 0)">💥 Godzilla Arena</button>
-    <button class="menu-item" onclick="teleportTo(70, 1.5, 20)">🚀 Spaceship Port</button>
+    <button class="menu-item" onclick="teleportTo(50, 1.5, 15)">🚀 Spaceship Port</button>
   </div>
 
   <div id="chat-container">
@@ -282,7 +285,7 @@
     let playerName = tg?.initDataUnsafe?.user?.first_name || "GOKUL";
     document.getElementById('username-input').value = playerName;
 
-    // --- Web Audio FX Engine with Climate Soundscapes ---
+    // --- Web Audio Synthesizer (Complete Soundscapes) ---
     const AudioContext = window.AudioContext || window.webkitAudioContext;
     const actx = new AudioContext();
 
@@ -386,11 +389,11 @@
       }
     }
 
-    // --- 10 Language Translation Dictionary ---
+    // --- 10 Language Translation System ---
     const i18n = {
       en: { owner: "👑 OWNER", stars: "⭐ 100 STARS", online: "Online", lang: "🌐 10 Lang", server: "⚡ Server", weather: "🌤 Weather", profile: "👤 Profile", jump: "JUMP", starsLbl: "⭐ Stars:", fishLbl: "🐟 Fish:", bballLbl: "🏀 Baskets:", lapLbl: "🏎️ Best Lap:" },
       ml: { owner: "👑 ഉടമസ്ഥൻ", stars: "⭐ 100 സ്റ്റാർസ്", online: "ഓൺലൈൻ", lang: "🌐 ഭാഷ", server: "⚡ സെർവർ", weather: "🌤 കാലാവസ്ഥ", profile: "👤 പ്രൊഫൈൽ", jump: "ചാടുക", starsLbl: "⭐ നക്ഷത്രങ്ങൾ:", fishLbl: "🐟 മീൻ:", bballLbl: "🏀 ബാസ്കറ്റ്:", lapLbl: "🏎️ റെക്കോർഡ്:" },
-      hi: { owner: "👑 मालिक", stars: "⭐ 100 सितारे", online: "ऑनलाइन", lang: "🌐 भाषा", server: "⚡ सर्वर", weather: "🌤 मौसम", profile: "👤 प्रोफ़ाइल", jump: "कूदें", starsLbl: "⭐ सितारे:", fishLbl: "🐟 मछली:", bballLbl: "🏀 बास्केट:", lapLbl: "🏎️ रिकॉर्ड:" },
+      hi: { owner: "👑 मालिक", stars: "⭐ 100 सितारे", online: "ऑनलाइन", lang: "🌐 भाषा", server: "⚡ सर्वर", weather: "🌤 मौसम", profile: "👤 प्रोफ़ाइल", jump: "कूदें", starsLbl: "⭐ सितारे:", fishLbl: "🐟 मछली:", bballLbl: "🏀 बास्केट:", lapLbl: "🏎️️ रिकॉर्ड:" },
       fa: { owner: "👑 مالک", stars: "⭐ ۱۰۰ ستاره", online: "آنلاین", lang: "🌐 زبان", server: "⚡ سرور", weather: "🌤 آب و هوا", profile: "👤 پروفایل", jump: "پرش", starsLbl: "⭐ ستاره:", fishLbl: "🐟 ماهی:", bballLbl: "🏀 بسکتبال:", lapLbl: "🏎️ رکورد:" },
       ru: { owner: "👑 ВЛАДЕЛЕЦ", stars: "⭐ 100 ЗВЁЗД", online: "Онлайн", lang: "🌐 Язык", server: "⚡ Сервер", weather: "🌤 Погода", profile: "👤 Профиль", jump: "ПРЫЖОК", starsLbl: "⭐ Звёзды:", fishLbl: "🐟 Рыба:", bballLbl: "🏀 Корзины:", lapLbl: "🏎️ Время:" },
       it: { owner: "👑 PROPRIETARIO", stars: "⭐ 100 STELLE", online: "Online", lang: "🌐 Lingua", server: "⚡ Server", weather: "🌤 Meteo", profile: "👤 Profilo", jump: "SALTO", starsLbl: "⭐ Stelle:", fishLbl: "🐟 Pesce:", bballLbl: "🏀 Canestri:", lapLbl: "🏎️ Miglior giro:" },
@@ -400,9 +403,7 @@
       id: { owner: "👑 PEMILIK", stars: "⭐ 100 BINTANG", online: "Online", lang: "🌐 Bahasa", server: "⚡ Server", weather: "🌤 Cuaca", profile: "👤 Profil", jump: "LOMPAT", starsLbl: "⭐ Bintang:", fishLbl: "🐟 Ikan:", bballLbl: "🏀 Keranjang:", lapLbl: "🏎️ Lap Terbaik:" }
     };
 
-    let curLang = 'en';
     window.applyLanguage = (code) => {
-      curLang = code;
       const dict = i18n[code] || i18n['en'];
       document.getElementById('badge-owner').innerText = dict.owner;
       document.getElementById('badge-stars').innerText = dict.stars;
@@ -462,22 +463,36 @@
     sun.position.set(100, 200, 100);
     scene.add(sun);
 
-    // Ocean Waves Geometry & Shader Math
+    // ==========================================
+    // 1. കടൽ (OCEAN) - താഴത്തെ ലെവലിൽ (y = -1.0)
+    // ==========================================
     const oceanGeom = new THREE.PlaneGeometry(6000, 6000, 64, 64);
     oceanGeom.rotateX(-Math.PI / 2);
     const oceanMat = new THREE.MeshStandardMaterial({ color: 0x0077be, roughness: 0.15, metalness: 0.85 });
     const ocean = new THREE.Mesh(oceanGeom, oceanMat);
-    ocean.position.y = -0.5;
+    ocean.position.y = -1.0; // കടൽ തറയ്ക്ക് താഴെയായി കിടക്കുന്നു
     scene.add(ocean);
     const oceanPosAttr = oceanGeom.attributes.position;
 
-    // Island Flat Ground
+    // ==========================================
+    // 2. കര (MAIN ISLAND LAND) - കടലിന് മുകളിൽ (y = 0.0)
+    // ==========================================
+    // പ്രധാന പച്ചപ്പുല്ല് കര (High-Contrast Green Grass Surface)
     const island = new THREE.Mesh(
-      new THREE.CylinderGeometry(200, 210, 2, 48),
-      new THREE.MeshStandardMaterial({ color: 0x2d6a4f, roughness: 0.85 })
+      new THREE.CylinderGeometry(200, 215, 2.0, 64),
+      new THREE.MeshStandardMaterial({ color: 0x2e8b57, roughness: 0.8, metalness: 0.1 })
     );
-    island.position.y = -0.1;
+    island.position.y = 0.0; // കര കടലിന് മുകളിലേക്ക് പൊങ്ങിനിൽക്കുന്നു
     scene.add(island);
+
+    // സിറ്റി പ്ലാസ ടാർ റോഡ് (City Asphalt Ground)
+    const plazaRoad = new THREE.Mesh(
+      new THREE.PlaneGeometry(80, 160),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 })
+    );
+    plazaRoad.rotateX(-Math.PI / 2);
+    plazaRoad.position.set(0, 1.02, -15); // കരയുടെ മുകളിൽ കൃത്യമായി ഉറപ്പിച്ചു
+    scene.add(plazaRoad);
 
     // Waterfall Cascade Particles
     const waterfallParticles = new THREE.BufferGeometry();
@@ -493,7 +508,7 @@
     const waterfall = new THREE.Points(waterfallParticles, wfMat);
     scene.add(waterfall);
 
-    // Dynamic Rain & Storm Mesh Particles
+    // Rain & Storm Particles
     const rainParticles = new THREE.BufferGeometry();
     const rainCount = 1200;
     const rainPositions = new Float32Array(rainCount * 3);
@@ -509,14 +524,14 @@
 
     // City Neon Street Lights
     const cityLights = [];
-    [[40, 4, -10], [60, 4, -10], [40, 4, 10], [60, 4, 10]].forEach(p => {
-      const pl = new THREE.PointLight(0x38bdf8, 0, 25);
+    [[15, 5, -15], [-15, 5, -15], [15, 5, 10], [-15, 5, 10]].forEach(p => {
+      const pl = new THREE.PointLight(0x38bdf8, 0, 30);
       pl.position.set(p[0], p[1], p[2]);
       scene.add(pl);
       cityLights.push(pl);
     });
 
-    // --- Weather / Climate System with SFX ---
+    // Weather / Climate Switcher with Sound Effects
     let isRaining = false;
     window.applyClimate = (mode) => {
       const wBtn = document.getElementById('btn-weather-top');
@@ -559,7 +574,7 @@
     const mixers = [];
     const clock = new THREE.Clock();
 
-    // Normalized Loader (BBox Scaled - Zero Overhead Clipping)
+    // Normalized Loader (BBox Scaled - Prevents Giant Artifacts)
     const gltfLoader = new THREE.GLTFLoader();
     function loadGLBNormalized(file, targetHeight, onLoad) {
       const run = (gltf) => {
@@ -585,67 +600,104 @@
     }
 
     // ==========================================
-    // ALL 40+ GLB MODELS LOADED & CALIBRATED
+    // ALL MODELS EXACTLY PLACED ON LAND (y >= 1.0)
     // ==========================================
-    loadGLBNormalized('water-island.glb', 20, (m) => { m.position.set(0, -0.4, 0); scene.add(m); });
-    loadGLBNormalized('water.glb', 12, (m) => { m.position.set(0, -0.2, 0); scene.add(m); });
+
+    // Natural Environment & Scattered Trees
+    loadGLBNormalized('water-island.glb', 20, (m) => { m.position.set(0, 0.6, 0); scene.add(m); });
+    loadGLBNormalized('water.glb', 12, (m) => { m.position.set(0, 0.8, 0); scene.add(m); });
     loadGLBNormalized('water-rocks.glb', 4, (m) => { m.position.set(80, 0, 70); scene.add(m); });
-    loadGLBNormalized('water_poly_1.glb', 6, (m) => { m.position.set(100, -0.3, 100); scene.add(m); });
-    loadGLBNormalized('water_poly_2.glb', 6, (m) => { m.position.set(-100, -0.3, 100); scene.add(m); });
 
     loadGLBNormalized('grass.glb', 0.8, (m) => {
-      for (let i = 0; i < 60; i++) {
+      for (let i = 0; i < 50; i++) {
         const c = m.clone();
-        c.position.set((Math.random() - 0.5) * 170, 0, (Math.random() - 0.5) * 170);
+        c.position.set((Math.random() - 0.5) * 170, 1.0, (Math.random() - 0.5) * 170);
         scene.add(c);
       }
     });
 
-    loadGLBNormalized('tree.glb', 5, (m) => { m.position.set(15, 0, -20); scene.add(m); });
-    loadGLBNormalized('tree_large.glb', 7, (m) => { m.position.set(-25, 0, -15); scene.add(m); });
-    loadGLBNormalized('plant.glb', 1.5, (m) => { m.position.set(10, 0, -10); scene.add(m); });
-    loadGLBNormalized('nature_pack.glb', 4, (m) => { m.position.set(-30, 0, -35); scene.add(m); });
-    loadGLBNormalized('boulder.glb', 3, (m) => { m.position.set(40, 0, -30); scene.add(m); });
-    loadGLBNormalized('small_rock.glb', 1.5, (m) => { m.position.set(35, 0, -25); scene.add(m); });
-    loadGLBNormalized('mountains.glb', 40, (m) => { m.position.set(0, 0, -320); scene.add(m); });
-    loadGLBNormalized('mountain_single.glb', 30, (m) => { m.position.set(-240, 0, -150); scene.add(m); });
+    loadGLBNormalized('tree.glb', 5, (m) => { m.position.set(20, 1.0, 15); scene.add(m); });
+    loadGLBNormalized('tree_large.glb', 7, (m) => { m.position.set(-20, 1.0, 15); scene.add(m); });
+    loadGLBNormalized('nature_pack.glb', 4, (m) => { m.position.set(-30, 1.0, -35); scene.add(m); });
+    loadGLBNormalized('mountains.glb', 40, (m) => { m.position.set(0, 0.0, -320); scene.add(m); });
+    loadGLBNormalized('mountain_single.glb', 30, (m) => { m.position.set(-240, 0.0, -150); scene.add(m); });
 
-    // City & Park
-    loadGLBNormalized('city.glb', 15, (m) => { m.position.set(50, 0, 0); scene.add(m); });
-    loadGLBNormalized('park.glb', 8, (m) => { m.position.set(30, 0, 20); scene.add(m); });
-    loadGLBNormalized('dock.glb', 5, (m) => { m.position.set(0, 0, 95); scene.add(m); });
-    let ferrisWheel = null;
-    loadGLBNormalized('ferris_wheel.glb', 12, (m) => { m.position.set(45, 0, 50); scene.add(m); ferrisWheel = m; });
-    loadGLBNormalized('firework_model.glb', 6, (m) => { m.position.set(45, 15, -45); scene.add(m); });
+    // City Buildings, Park & Harbor Dock
+    loadGLBNormalized('city.glb', 16, (m) => { m.position.set(0, 1.0, -40); scene.add(m); });
+    loadGLBNormalized('park.glb', 8, (m) => { m.position.set(25, 1.0, 5); scene.add(m); });
+    loadGLBNormalized('dock.glb', 5, (m) => { m.position.set(0, 0.0, 95); scene.add(m); });
+
+    // Live Concert Stage & Fireworks (Right Side of Plaza)
+    loadGLBNormalized('concert_stage.glb', 10, (m) => { m.position.set(25, 1.0, -20); scene.add(m); });
+    loadGLBNormalized('concert_pack.glb', 5, (m) => { m.position.set(22, 1.0, -25); scene.add(m); });
+    loadGLBNormalized('firework_model.glb', 6, (m) => { m.position.set(25, 15, -20); scene.add(m); });
 
     // Sports Arenas & Interactive Basketball
-    loadGLBNormalized('football_stadium.glb', 18, (m) => { m.position.set(-60, 0, -50); scene.add(m); });
-    loadGLBNormalized('football.glb', 0.6, (m) => { m.position.set(-60, 0.3, -50); scene.add(m); });
-    loadGLBNormalized('ballpark.glb', 15, (m) => { m.position.set(-75, 0, -75); scene.add(m); });
-    loadGLBNormalized('concert_stage.glb', 10, (m) => { m.position.set(45, 0, -50); scene.add(m); });
-    loadGLBNormalized('concert_pack.glb', 5, (m) => { m.position.set(40, 0, -60); scene.add(m); });
+    loadGLBNormalized('football_stadium.glb', 18, (m) => { m.position.set(-60, 1.0, -50); scene.add(m); });
+    loadGLBNormalized('football.glb', 0.6, (m) => { m.position.set(-60, 1.3, -50); scene.add(m); });
+    loadGLBNormalized('ballpark.glb', 15, (m) => { m.position.set(-75, 1.0, -75); scene.add(m); });
 
     const bballGroup = new THREE.Group();
-    bballGroup.position.set(-45, 0, -75);
+    bballGroup.position.set(-45, 1.0, -75);
     scene.add(bballGroup);
     loadGLBNormalized('basketball.glb', 0.65, (m) => bballGroup.add(m));
 
-    // Dinosaurs & Godzilla
-    const trexEntity = new THREE.Group(); trexEntity.position.set(-30, 0, 30); scene.add(trexEntity);
-    loadGLBNormalized('Trex.glb', 4.5, (m) => trexEntity.add(m));
-    loadGLBNormalized('Ankylosaurus.glb', 3.5, (m) => { m.position.set(-40, 0, 45); scene.add(m); });
-    loadGLBNormalized('Stegosaurus.glb', 4, (m) => { m.position.set(-20, 0, 50); scene.add(m); });
-    loadGLBNormalized('Triceratops.glb', 3.8, (m) => { m.position.set(-50, 0, 35); scene.add(m); });
-    loadGLBNormalized('Oviraptor.glb', 2.5, (m) => { m.position.set(-15, 0, 35); scene.add(m); });
-    loadGLBNormalized('oviraptor_2.glb', 2.5, (m) => { m.position.set(-10, 0, 40); scene.add(m); });
-    loadGLBNormalized('pachycephalosaurus.glb', 2.8, (m) => { m.position.set(-35, 0, 20); scene.add(m); });
-    loadGLBNormalized('Pterodactylus.glb', 3, (m) => { m.position.set(-30, 12, 30); scene.add(m); });
+    // ==========================================
+    // UNIVERSAL MOUNTABLE REGISTRY (ON LAND)
+    // ==========================================
+    const mountables = [];
+    function registerMountable(mesh, type, name, seatHeight, speed, isFlying) {
+      mountables.push({ mesh, type, name, seatHeight, speed, isFlying });
+    }
 
+    // Skateboard (On Land Plaza Left Side)
+    const skateEntity = new THREE.Group();
+    skateEntity.position.set(-10, 1.1, -5);
+    scene.add(skateEntity);
+    loadGLBNormalized('low_poly_skateboard.glb', 0.8, (m) => {
+      skateEntity.add(m);
+      registerMountable(skateEntity, 'skate', '🛹 RIDE SKATEBOARD', 0.25, 1.6, false);
+    });
+
+    // Robot Mech (On Land)
+    const mechEntity = new THREE.Group();
+    mechEntity.position.set(-45, 1.0, 40);
+    scene.add(mechEntity);
+    loadGLBNormalized('mech.glb', 6, (m) => {
+      mechEntity.add(m);
+      registerMountable(mechEntity, 'mech', '🤖 PILOT MECH ROBOT', 4.8, 1.8, false);
+    });
+
+    // Dinosaurs & Elephant (All on Land)
+    const dinoData = [
+      { f: 'Trex.glb', pos: [-25, 1.0, 30], n: '🦕 RIDE T-REX', h: 3.5, s: 1.2 },
+      { f: 'Ankylosaurus.glb', pos: [-35, 1.0, 40], n: '🦕 RIDE ANKYLOSAURUS', h: 2.2, s: 0.9 },
+      { f: 'Stegosaurus.glb', pos: [-15, 1.0, 45], n: '🦕 RIDE STEGOSAURUS', h: 2.8, s: 1.0 },
+      { f: 'Triceratops.glb', pos: [-45, 1.0, 30], n: '🦕 RIDE TRICERATOPS', h: 2.5, s: 1.1 },
+      { f: 'Oviraptor.glb', pos: [-10, 1.0, 30], n: '🦕 RIDE OVIRAPTOR', h: 1.8, s: 1.4 },
+      { f: 'elephant.glb', pos: [-15, 1.0, -35], n: '🐘 RIDE ELEPHANT', h: 3.2, s: 1.0 }
+    ];
+
+    dinoData.forEach(d => {
+      const dGrp = new THREE.Group();
+      dGrp.position.set(d.pos[0], d.pos[1], d.pos[2]);
+      scene.add(dGrp);
+      loadGLBNormalized(d.f, 4, (m) => {
+        dGrp.add(m);
+        registerMountable(dGrp, 'dino', d.n, d.h, d.s, false);
+      });
+    });
+
+    // Godzilla on Land with Atomic Flame
     let godzillaMesh = null;
     const godzillaGroup = new THREE.Group();
-    godzillaGroup.position.set(-80, 0, 0);
+    godzillaGroup.position.set(-80, 1.0, 0);
     scene.add(godzillaGroup);
-    loadGLBNormalized('godzilla.glb', 12, (m) => { godzillaGroup.add(m); godzillaMesh = m; });
+    loadGLBNormalized('godzilla.glb', 12, (m) => {
+      godzillaGroup.add(m);
+      godzillaMesh = m;
+      registerMountable(godzillaGroup, 'godzilla', '💥 RIDE GODZILLA', 11.5, 1.4, false);
+    });
 
     const atomicFireMesh = new THREE.Mesh(
       new THREE.CylinderGeometry(0.2, 1.4, 14, 16),
@@ -655,12 +707,14 @@
     atomicFireMesh.position.set(0, 7, 6);
     godzillaGroup.add(atomicFireMesh);
 
-    loadGLBNormalized('mech.glb', 6, (m) => { m.position.set(-60, 0, 70); scene.add(m); });
-    loadGLBNormalized('elephant.glb', 4, (m) => { m.position.set(-15, 0, -35); scene.add(m); });
-
-    // Dragon Mount with Flame Breath
-    const dragonEntity = new THREE.Group(); dragonEntity.position.set(-75, 0.5, 60); scene.add(dragonEntity);
-    loadGLBNormalized('dragon.glb', 6.5, (m) => dragonEntity.add(m));
+    // Flying Dragon on Land Peak
+    const dragonEntity = new THREE.Group();
+    dragonEntity.position.set(-75, 1.5, 60);
+    scene.add(dragonEntity);
+    loadGLBNormalized('dragon.glb', 6.5, (m) => {
+      dragonEntity.add(m);
+      registerMountable(dragonEntity, 'dragon', '🐉 FLY DRAGON', 3.2, 2.5, true);
+    });
     const dragonFireMesh = new THREE.Mesh(
       new THREE.CylinderGeometry(0.1, 1.2, 10, 16),
       new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0 })
@@ -669,59 +723,75 @@
     dragonFireMesh.position.set(0, 2, 4);
     dragonEntity.add(dragonFireMesh);
 
-    // Vehicles & Racing Track
-    loadGLBNormalized('racing_track.glb', 8, (m) => { m.position.set(0, 0.05, 50); scene.add(m); });
-    const carEntity = new THREE.Group(); carEntity.position.set(10, 0.2, 20); scene.add(carEntity);
-    loadGLBNormalized('car.glb', 2.2, (m) => carEntity.add(m));
-    loadGLBNormalized('khronos-toycar.glb', 1.2, (m) => { m.position.set(18, 0.2, 22); scene.add(m); });
-    loadGLBNormalized('race.glb', 2.2, (m) => { m.position.set(10, 0.2, 30); scene.add(m); });
+    // Racing Track & Multiple Sports Cars on Land
+    loadGLBNormalized('racing_track.glb', 8, (m) => { m.position.set(0, 1.05, 50); scene.add(m); });
+    for (let i = 0; i < 4; i++) {
+      const cGrp = new THREE.Group();
+      cGrp.position.set(5 + (i * 6), 1.2, -8);
+      scene.add(cGrp);
+      loadGLBNormalized(i % 2 === 0 ? 'car.glb' : 'race.glb', 2.2, (m) => {
+        cGrp.add(m);
+        registerMountable(cGrp, 'car', `🏎️ DRIVE SPORTS CAR #${i+1}`, 1.2, 2.2, false);
+      });
+    }
 
-    // Traffic Car
-    const trafficCar = new THREE.Group();
-    trafficCar.position.set(45, 0.2, -30);
-    scene.add(trafficCar);
-    loadGLBNormalized('race.glb', 2.0, (m) => trafficCar.add(m));
+    // Aircrafts on Land
+    const heliEntity = new THREE.Group();
+    heliEntity.position.set(-35, 1.2, -15);
+    scene.add(heliEntity);
+    loadGLBNormalized('helicopter.glb', 4, (m) => {
+      heliEntity.add(m);
+      registerMountable(heliEntity, 'heli', '🚁 FLY HELICOPTER', 2.0, 2.2, true);
+    });
 
-    // Calibrated Skateboard
-    const skateEntity = new THREE.Group(); skateEntity.position.set(-8, 0.1, 12); scene.add(skateEntity);
-    loadGLBNormalized('low_poly_skateboard.glb', 0.35, (m) => skateEntity.add(m));
+    const spaceEntity = new THREE.Group();
+    spaceEntity.position.set(50, 1.2, 15);
+    scene.add(spaceEntity);
+    loadGLBNormalized('spaceship.glb', 5, (m) => {
+      spaceEntity.add(m);
+      registerMountable(spaceEntity, 'space', '🚀 FLY SPACESHIP', 2.5, 3.5, true);
+    });
 
-    // Aircrafts (Heli & Spaceship)
-    const heliEntity = new THREE.Group(); heliEntity.position.set(-45, 0.2, -15); scene.add(heliEntity);
-    loadGLBNormalized('helicopter.glb', 4, (m) => heliEntity.add(m));
+    // Boats & Cargo Ships (In Water, y = -0.5)
+    const boatEntity = new THREE.Group();
+    boatEntity.position.set(0, -0.6, 115);
+    scene.add(boatEntity);
+    loadGLBNormalized('low_poly_boat.glb', 3.5, (m) => {
+      boatEntity.add(m);
+      registerMountable(boatEntity, 'boat', '🚤 STEER BOAT', 1.5, 1.4, false);
+    });
 
-    const spaceEntity = new THREE.Group(); spaceEntity.position.set(70, 0.2, 20); scene.add(spaceEntity);
-    loadGLBNormalized('spaceship.glb', 5, (m) => spaceEntity.add(m));
-
-    // Boats & Ships
-    const boatEntity = new THREE.Group(); boatEntity.position.set(0, -0.4, 115); scene.add(boatEntity);
-    loadGLBNormalized('low_poly_boat.glb', 3.5, (m) => boatEntity.add(m));
-    loadGLBNormalized('low_poly_fishing_boat.glb', 4, (m) => { m.position.set(25, -0.4, 125); scene.add(m); });
-
-    const shipEntity = new THREE.Group(); shipEntity.position.set(55, -0.8, 150); scene.add(shipEntity);
-    loadGLBNormalized('low_poly_cargo_ship.glb', 10, (m) => shipEntity.add(m));
+    const shipEntity = new THREE.Group();
+    shipEntity.position.set(55, -0.9, 150);
+    scene.add(shipEntity);
+    loadGLBNormalized('low_poly_cargo_ship.glb', 10, (m) => {
+      shipEntity.add(m);
+      registerMountable(shipEntity, 'ship', '🚢 CAPTAIN SHIP', 4.0, 1.2, false);
+    });
 
     let whaleMesh = null, sharkMesh = null;
-    loadGLBNormalized('Whale.glb', 9, (m) => { m.position.set(-70, -1, 130); scene.add(m); whaleMesh = m; });
-    loadGLBNormalized('shark.glb', 4, (m) => { m.position.set(30, -1, 120); scene.add(m); sharkMesh = m; });
-    loadGLBNormalized('sea_monster.glb', 8, (m) => { m.position.set(-110, -1, 150); scene.add(m); });
+    loadGLBNormalized('Whale.glb', 9, (m) => { m.position.set(-70, -1.2, 130); scene.add(m); whaleMesh = m; });
+    loadGLBNormalized('shark.glb', 4, (m) => { m.position.set(30, -1.2, 120); scene.add(m); sharkMesh = m; });
+    loadGLBNormalized('sea_monster.glb', 8, (m) => { m.position.set(-110, -1.2, 150); scene.add(m); });
 
     // Multi-Avatars
-    loadGLBNormalized('model_1.glb', 2, (m) => { m.position.set(12, 0, 5); scene.add(m); });
-    loadGLBNormalized('model_2.glb', 2, (m) => { m.position.set(14, 0, 7); scene.add(m); });
-    loadGLBNormalized('model_3.glb', 2, (m) => { m.position.set(16, 0, 5); scene.add(m); });
-    loadGLBNormalized('model_4.glb', 2, (m) => { m.position.set(18, 0, 7); scene.add(m); });
+    loadGLBNormalized('model_1.glb', 2, (m) => { m.position.set(8, 1.0, 5); scene.add(m); });
+    loadGLBNormalized('model_2.glb', 2, (m) => { m.position.set(11, 1.0, 7); scene.add(m); });
 
-    // 7. Player Character Setup with Guaranteed Cache-Busted Gender Switching
-    let myPlayer = new THREE.Group(); myPlayer.position.set(0, 0, 0); scene.add(myPlayer);
-    let playerAvatar = new THREE.Group(); myPlayer.add(playerAvatar);
+    // Player Avatar (Spawned on Land, y = 1.0)
+    let myPlayer = new THREE.Group();
+    myPlayer.position.set(0, 1.0, 0); // കൃത്യമായി കരയുടെ മുകളിൽ സ്പോൺ ചെയ്യുന്നു
+    scene.add(myPlayer);
+    let playerAvatar = new THREE.Group();
+    myPlayer.add(playerAvatar);
 
     function loadChar(fileName) {
       while (playerAvatar.children.length > 0) playerAvatar.remove(playerAvatar.children[0]);
       loadGLBNormalized(fileName, 2.0, (m) => {
         playerAvatar.add(m);
         loadGLBNormalized('Goblin_L_Slate_Sword.glb', 0.8, (sw) => {
-          sw.position.set(0.35, 0.8, 0.2); playerAvatar.add(sw);
+          sw.position.set(0.35, 0.8, 0.2);
+          playerAvatar.add(sw);
         });
       });
     }
@@ -730,7 +800,6 @@
     window.selectGender = (g) => {
       const boyBtn = document.getElementById('gender-boy');
       const girlBtn = document.getElementById('gender-girl');
-
       if (g === 'girl') {
         girlBtn.style.background = '#ec4899';
         boyBtn.style.background = 'rgba(255,255,255,0.1)';
@@ -743,8 +812,9 @@
       closeModal('profile-modal');
     };
 
-    // Realistic Controls & Flight Mechanics
-    let activeMount = 'walk', vSpeed = 0, vAltitude = 0, isSwimming = false;
+    // Controls & Mount Logic
+    let activeMount = 'walk', activeVehicleData = null;
+    let vSpeed = 0, vAltitude = 0, isSwimming = false;
     let isGasPressed = false, isBrakePressed = false, isAscendPressed = false;
     let moveX = 0, moveZ = 0;
     let camAngleX = 0, camAngleY = 0.25;
@@ -788,37 +858,47 @@
     window.addEventListener('touchend', () => isDrag = false);
 
     const actBtn = document.getElementById('action-btn');
-    let nearbyAction = null;
+    let nearbyAction = null, currentTargetMount = null;
 
     function checkInteractions() {
       const p = myPlayer.position;
       const distFromIsland = Math.hypot(p.x, p.z);
 
-      if (distFromIsland > 180 && activeMount === 'walk') {
+      // Swimming Transition (Outside island radius 190)
+      if (distFromIsland > 190 && activeMount === 'walk') {
         if (!isSwimming) { isSwimming = true; document.getElementById('jump-btn').style.display = 'none'; playSound('splash'); }
-        myPlayer.position.y = -0.4 + Math.sin(Date.now() * 0.004) * 0.08;
-      } else if (distFromIsland <= 180 && isSwimming) {
-        isSwimming = false; myPlayer.position.y = 0; document.getElementById('jump-btn').style.display = 'flex';
+        myPlayer.position.y = -0.6 + Math.sin(Date.now() * 0.004) * 0.08;
+      } else if (distFromIsland <= 190 && isSwimming) {
+        isSwimming = false; myPlayer.position.y = 1.0; document.getElementById('jump-btn').style.display = 'flex';
       }
 
       if (activeMount === 'walk') {
+        // Fishing Dock Trigger
         if (p.distanceTo(new THREE.Vector3(0, 0, 95)) < 8) {
           nearbyAction = 'fishing'; actBtn.innerText = "🎣 CATCH FISH"; actBtn.style.display = 'block'; return;
         }
+        // Basketball Court Trigger
         if (p.distanceTo(bballGroup.position) < 4) {
           nearbyAction = 'shoot_bball'; actBtn.innerText = "🏀 SHOOT BASKET"; actBtn.style.display = 'block'; return;
         }
 
-        if (p.distanceTo(dragonEntity.position) < 8) { nearbyAction = 'mount_dragon'; actBtn.innerText = "🐉 FLY DRAGON"; actBtn.style.display = 'block'; return; }
-        if (p.distanceTo(heliEntity.position) < 7) { nearbyAction = 'mount_heli'; actBtn.innerText = "🚁 FLY HELICOPTER"; actBtn.style.display = 'block'; return; }
-        if (p.distanceTo(spaceEntity.position) < 8) { nearbyAction = 'mount_space'; actBtn.innerText = "🚀 LAUNCH SPACESHIP"; actBtn.style.display = 'block'; return; }
-        if (p.distanceTo(carEntity.position) < 6) { nearbyAction = 'mount_car'; actBtn.innerText = "🏎 DRIVE CAR"; actBtn.style.display = 'block'; return; }
-        if (p.distanceTo(boatEntity.position) < 6) { nearbyAction = 'mount_boat'; actBtn.innerText = "🚤 STEER BOAT"; actBtn.style.display = 'block'; return; }
-        if (p.distanceTo(shipEntity.position) < 14) { nearbyAction = 'mount_ship'; actBtn.innerText = "🚢 CAPTAIN SHIP"; actBtn.style.display = 'block'; return; }
-        if (p.distanceTo(trexEntity.position) < 8) { nearbyAction = 'mount_dino'; actBtn.innerText = "🦕 RIDE T-REX"; actBtn.style.display = 'block'; return; }
-        if (p.distanceTo(skateEntity.position) < 4) { nearbyAction = 'mount_skate'; actBtn.innerText = "🛹 RIDE SKATEBOARD"; actBtn.style.display = 'block'; return; }
+        // UNIVERSAL MOUNT CHECK (Robot, Dinosaurs, Cars, Skateboard, Dragon)
+        for (let item of mountables) {
+          const dist = p.distanceTo(item.mesh.position);
+          const maxCheck = item.type === 'godzilla' ? 14 : (item.type === 'ship' ? 12 : 7);
+          if (dist < maxCheck) {
+            nearbyAction = 'mount_entity';
+            currentTargetMount = item;
+            actBtn.innerText = item.name;
+            actBtn.style.display = 'block';
+            return;
+          }
+        }
       }
-      nearbyAction = null; actBtn.style.display = 'none';
+
+      nearbyAction = null;
+      currentTargetMount = null;
+      actBtn.style.display = 'none';
     }
 
     window.executeContextAction = () => {
@@ -839,7 +919,7 @@
         bballGroup.position.y += 3.5;
         setTimeout(() => {
           playSound('swish');
-          bballGroup.position.set(-45, 0, -75);
+          bballGroup.position.set(-45, 1.0, -75);
           currentScore.baskets += 1;
           currentScore.stars += 5;
           updateScores();
@@ -847,27 +927,26 @@
         return;
       }
 
-      if (nearbyAction === 'mount_dragon') { activeMount = 'dragon'; flyUpBtn.style.display = 'flex'; }
-      if (nearbyAction === 'mount_heli') { activeMount = 'heli'; flyUpBtn.style.display = 'flex'; }
-      if (nearbyAction === 'mount_space') { activeMount = 'space'; flyUpBtn.style.display = 'flex'; }
-      if (nearbyAction === 'mount_car') activeMount = 'car';
-      if (nearbyAction === 'mount_boat') activeMount = 'boat';
-      if (nearbyAction === 'mount_ship') activeMount = 'ship';
-      if (nearbyAction === 'mount_dino') activeMount = 'dino';
-      if (nearbyAction === 'mount_skate') activeMount = 'skate';
-
-      document.getElementById('vehicle-pedals').style.display = 'flex';
-      document.getElementById('dismount-btn').style.display = 'block';
-      document.getElementById('speedo').style.display = 'block';
-      document.getElementById('jump-btn').style.display = (activeMount === 'skate') ? 'flex' : 'none';
+      if (nearbyAction === 'mount_entity' && currentTargetMount) {
+        activeMount = currentTargetMount.type;
+        activeVehicleData = currentTargetMount;
+        flyUpBtn.style.display = currentTargetMount.isFlying ? 'flex' : 'none';
+        document.getElementById('vehicle-pedals').style.display = 'flex';
+        document.getElementById('dismount-btn').style.display = 'block';
+        document.getElementById('speedo').style.display = 'block';
+        document.getElementById('jump-btn').style.display = (activeMount === 'skate') ? 'flex' : 'none';
+      }
     };
 
     window.dismountAll = () => {
       flyUpBtn.style.display = 'none';
-      if (activeMount === 'dragon') myPlayer.position.set(dragonEntity.position.x + 4, 0, dragonEntity.position.z);
-      if (activeMount === 'heli') myPlayer.position.set(heliEntity.position.x + 3, 0, heliEntity.position.z);
-      if (activeMount === 'space') myPlayer.position.set(spaceEntity.position.x + 3, 0, spaceEntity.position.z);
-      activeMount = 'walk'; vSpeed = 0; vAltitude = 0;
+      if (activeVehicleData) {
+        myPlayer.position.set(activeVehicleData.mesh.position.x + 3, 1.0, activeVehicleData.mesh.position.z);
+      }
+      activeMount = 'walk';
+      activeVehicleData = null;
+      vSpeed = 0;
+      vAltitude = 0;
       document.getElementById('vehicle-pedals').style.display = 'none';
       document.getElementById('dismount-btn').style.display = 'none';
       document.getElementById('speedo').style.display = 'none';
@@ -876,23 +955,24 @@
 
     window.teleportTo = (x, y, z) => {
       if (activeMount !== 'walk') window.dismountAll();
-      myPlayer.position.set(x, y, z);
+      myPlayer.position.set(x, y + 1.0, z); // ഉറപ്പായും കരനിരപ്പിന് മുകളിൽ സ്പോൺ ചെയ്യുന്നു
       document.getElementById('drawer-menu').style.display = 'none';
     };
 
     window.playerJump = () => {
       if (activeMount === 'skate') {
         playSound('jump');
-        skateEntity.position.y = 1.6;
+        skateEntity.position.y = 2.4;
         skateEntity.rotation.z += Math.PI * 2;
-        myPlayer.position.y = 1.6;
-        setTimeout(() => { skateEntity.position.y = 0.1; myPlayer.position.y = 0.2; }, 300);
-      } else if (myPlayer.position.y <= 0.1 && !isSwimming) {
-        myPlayer.position.y = 2.2;
+        myPlayer.position.y = 2.4;
+        setTimeout(() => { skateEntity.position.y = 1.1; myPlayer.position.y = 1.35; }, 300);
+      } else if (myPlayer.position.y <= 1.1 && !isSwimming) {
+        myPlayer.position.y = 3.2;
         playSound('jump');
       }
     };
 
+    // Live Voice Mic
     let isMicOn = false;
     window.toggleMic = async () => {
       const btn = document.getElementById('mic-btn');
@@ -902,10 +982,11 @@
           isMicOn = true; btn.classList.add('active'); btn.innerText = "🎤 ON";
         } catch(e) { alert("Mic Permission Denied!"); }
       } else {
-        isMicOn = false; btn.classList.remove('active'); btn.innerText = "🎙";
+        isMicOn = false; btn.classList.remove('active'); btn.innerText = "🎙️";
       }
     };
 
+    // Live Chat Engine
     let chatTab = 'group';
     window.switchChat = (t) => {
       chatTab = t;
@@ -947,16 +1028,16 @@
       const time = clock.getElapsedTime();
       mixers.forEach(mixer => mixer.update(delta));
 
-      // 1. Moving Ocean Waves Math
+      // 1. Moving Ocean Waves Math (y = -1.0 ലെവലിൽ തരംഗങ്ങൾ)
       const count = oceanPosAttr.count;
       for (let i = 0; i < count; i++) {
         const u = oceanPosAttr.getX(i);
         const v = oceanPosAttr.getZ(i);
-        const zDisplacement = Math.sin(u * 0.05 + time * 1.5) * Math.cos(v * 0.05 + time * 1.5) * 0.4;
+        const zDisplacement = Math.sin(u * 0.05 + time * 1.5) * Math.cos(v * 0.05 + time * 1.5) * 0.3;
         oceanPosAttr.setY(i, zDisplacement);
       }
       oceanPosAttr.needsUpdate = true;
-      boatEntity.position.y = -0.4 + Math.sin(time * 2.0) * 0.15;
+      boatEntity.position.y = -0.6 + Math.sin(time * 2.0) * 0.15;
       boatEntity.rotation.z = Math.sin(time * 1.5) * 0.04;
 
       // 2. Waterfall Particles
@@ -967,7 +1048,7 @@
       }
       waterfallParticles.attributes.position.needsUpdate = true;
 
-      // 3. Rain Particles Downpour (When Storm Active)
+      // 3. Rain Particles
       if (isRaining) {
         const rArr = rainParticles.attributes.position.array;
         for (let i = 1; i < rainCount * 3; i += 3) {
@@ -977,11 +1058,7 @@
         rainParticles.attributes.position.needsUpdate = true;
       }
 
-      // 4. Autonomous City Car
-      trafficCar.position.z += 0.15;
-      if (trafficCar.position.z > 30) trafficCar.position.z = -30;
-
-      // 5. Atomic Breath & Dragon Roar
+      // 4. Atomic Breath & Dragon Roar
       flameTimer += delta;
       if (flameTimer > 8.0) {
         atomicFireMesh.material.opacity = 0.9;
@@ -994,19 +1071,20 @@
         }, 1500);
       }
 
-      if (ferrisWheel) ferrisWheel.rotation.y += 0.005;
       if (whaleMesh) whaleMesh.position.x += Math.sin(time * 0.8) * 0.1;
       if (sharkMesh) sharkMesh.position.z += Math.cos(time * 0.8) * 0.1;
 
-      if (godzillaMesh) {
+      if (godzillaMesh && activeMount !== 'godzilla') {
         godzillaMesh.rotation.y = Math.sin(time * 0.8) * 0.25;
-        godzillaMesh.position.y = Math.sin(time * 2.0) * 0.08;
+        godzillaMesh.position.y = 1.0 + Math.sin(time * 2.0) * 0.08;
       }
 
-      if (myPlayer.position.y > 0 && !isSwimming && activeMount === 'walk') {
-        myPlayer.position.y = Math.max(0, myPlayer.position.y - 0.09);
+      // Gravity on Land (Player lands safely at y = 1.0)
+      if (myPlayer.position.y > 1.0 && !isSwimming && activeMount === 'walk') {
+        myPlayer.position.y = Math.max(1.0, myPlayer.position.y - 0.09);
       }
 
+      // Walking Movement on Land
       if (activeMount === 'walk') {
         const spd = isSwimming ? 0.22 : 0.45;
         if (moveX !== 0 || moveZ !== 0) {
@@ -1017,73 +1095,42 @@
           myPlayer.rotation.y = Math.atan2(fx, fz);
           socket.emit('playerMove', { x: myPlayer.position.x, y: myPlayer.position.y, z: myPlayer.position.z, rotY: myPlayer.rotation.y });
         }
-      } else if (activeMount === 'dragon' || activeMount === 'heli' || activeMount === 'space') {
-        const ent = activeMount === 'dragon' ? dragonEntity : (activeMount === 'heli' ? heliEntity : spaceEntity);
-        if (isGasPressed) { vSpeed = Math.min(vSpeed + 0.06, activeMount === 'space' ? 3.5 : 2.4); playSound('engine'); }
-        else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.06, -0.6);
-        else vSpeed *= 0.96;
+      } 
+      // Universal Vehicle / Mount Movement
+      else if (activeVehicleData) {
+        const ent = activeVehicleData.mesh;
+        const maxSpd = activeVehicleData.speed;
 
-        // Uncapped Sky Flight (Over Godzilla's Head)
-        if (isAscendPressed) vAltitude = Math.min(vAltitude + 0.35, 180);
-        else vAltitude = Math.max(vAltitude - 0.06, 0);
+        if (isGasPressed) { 
+          vSpeed = Math.min(vSpeed + 0.06, maxSpd); 
+          if (!activeVehicleData.isFlying && activeMount !== 'skate') playSound('engine'); 
+        } else if (isBrakePressed) { 
+          vSpeed = Math.max(vSpeed - 0.06, -0.6); 
+        } else { 
+          vSpeed *= 0.95; 
+        }
+
+        if (activeVehicleData.isFlying) {
+          if (isAscendPressed) vAltitude = Math.min(vAltitude + 0.35, 180);
+          else vAltitude = Math.max(vAltitude - 0.06, 0);
+          ent.position.y = 1.2 + vAltitude;
+        }
 
         ent.rotation.y -= moveX * 0.04;
         ent.position.x += Math.sin(ent.rotation.y) * vSpeed;
         ent.position.z += Math.cos(ent.rotation.y) * vSpeed;
-        ent.position.y = 0.5 + vAltitude;
 
         myPlayer.position.copy(ent.position);
-        if (activeMount === 'dragon') myPlayer.position.y += 2.2;
-        document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 85))} KM/H | ALT: ${Math.round(vAltitude)}M`;
-      } else if (activeMount === 'car') {
-        if (isGasPressed) { vSpeed = Math.min(vSpeed + 0.05, 2.2); playSound('engine'); }
-        else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.05, -0.6);
-        else vSpeed *= 0.95;
+        myPlayer.position.y += activeVehicleData.seatHeight;
+        myPlayer.rotation.y = ent.rotation.y;
 
-        carEntity.rotation.y -= moveX * 0.04;
-        carEntity.position.x += Math.sin(carEntity.rotation.y) * vSpeed;
-        carEntity.position.z += Math.cos(carEntity.rotation.y) * vSpeed;
-        myPlayer.position.copy(carEntity.position);
-        document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 65))} KM/H`;
-      } else if (activeMount === 'boat' || activeMount === 'ship') {
-        const ent = activeMount === 'boat' ? boatEntity : shipEntity;
-        if (isGasPressed) { vSpeed = Math.min(vSpeed + 0.03, 1.2); playSound('splash'); }
-        else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.04, -0.4);
-        else vSpeed *= 0.94;
-
-        ent.rotation.y -= moveX * 0.03;
-        ent.position.x += Math.sin(ent.rotation.y) * vSpeed;
-        ent.position.z += Math.cos(ent.rotation.y) * vSpeed;
-        myPlayer.position.copy(ent.position);
-        myPlayer.position.y = activeMount === 'boat' ? 0.2 : 3.0;
-        document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 40))} KNOTS`;
-      } else if (activeMount === 'dino') {
-        if (isGasPressed) vSpeed = Math.min(vSpeed + 0.03, 1.0);
-        else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.03, -0.3);
-        else vSpeed *= 0.92;
-
-        trexEntity.rotation.y -= moveX * 0.03;
-        trexEntity.position.x += Math.sin(trexEntity.rotation.y) * vSpeed;
-        trexEntity.position.z += Math.cos(trexEntity.rotation.y) * vSpeed;
-        myPlayer.position.copy(trexEntity.position);
-        myPlayer.position.y = 3.2;
-        document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 35))} KM/H`;
-      } else if (activeMount === 'skate') {
-        if (isGasPressed) vSpeed = Math.min(vSpeed + 0.04, 1.4);
-        else if (isBrakePressed) vSpeed = Math.max(vSpeed - 0.05, -0.4);
-        else vSpeed *= 0.95;
-
-        skateEntity.rotation.y -= moveX * 0.05;
-        skateEntity.position.x += Math.sin(skateEntity.rotation.y) * vSpeed;
-        skateEntity.position.z += Math.cos(skateEntity.rotation.y) * vSpeed;
-        myPlayer.position.copy(skateEntity.position);
-        myPlayer.position.y = 0.2;
-        document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 45))} KM/H`;
+        const spdVal = Math.abs(Math.round(vSpeed * 50));
+        document.getElementById('speedo').innerText = activeVehicleData.isFlying ? `${spdVal} KM/H | ALT: ${Math.round(vAltitude)}M` : `${spdVal} KM/H`;
       }
 
-      // Safe Distance Camera View
-      const target = activeMount === 'walk' ? myPlayer.position : (activeMount === 'dragon' ? dragonEntity.position : (activeMount === 'heli' ? heliEntity.position : (activeMount === 'space' ? spaceEntity.position : (activeMount === 'car' ? carEntity.position : trexEntity.position))));
-      const camDist = 18;
+      // Safe Camera Follow
+      const target = activeMount === 'walk' ? myPlayer.position : (activeVehicleData ? activeVehicleData.mesh.position : myPlayer.position);
+      const camDist = activeMount === 'godzilla' ? 26 : 18;
       camera.position.x = target.x + Math.sin(camAngleX) * camDist * Math.cos(camAngleY);
       camera.position.y = target.y + 6 + Math.sin(camAngleY) * camDist;
       camera.position.z = target.z + Math.cos(camAngleX) * camDist * Math.cos(camAngleY);
