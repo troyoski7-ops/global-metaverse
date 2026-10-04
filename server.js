@@ -16,10 +16,10 @@ const PORT = process.env.PORT || 3000;
 const BOT_TOKEN = "8592382374:AAGP1RJLcWgIhHU0cTk5fZZqqqwsPOLuEug";
 const GAME_URL = process.env.RENDER_EXTERNAL_URL || "https://vibe-metaverse.onrender.com";
 
-// Flush Old Stuck Telegram Webhook & Start Clean Polling
+// Flush Old Telegram Webhook & Start English Long-Polling
 function initTelegramBot() {
   https.get(`https://api.telegram.org/bot${BOT_TOKEN}/deleteWebhook?drop_pending_updates=true`, () => {
-    console.log("[Telegram] Webhook cleared. Pure English daemon running...");
+    console.log("[Telegram] Webhook flushed. Pure English daemon running...");
     pollTelegramUpdates();
   }).on('error', (err) => {
     console.error("[Telegram Init Error]", err.message);
@@ -50,11 +50,10 @@ function pollTelegramUpdates() {
   }).on('error', () => setTimeout(pollTelegramUpdates, 3000));
 }
 
-// 100% Clean English Bot Response
 function sendEnglishWelcome(chatId, userName) {
   const payload = JSON.stringify({
     chat_id: chatId,
-    text: `🌟 Welcome to GlobeVibe Ultra 3D Metaverse, ${userName}!\n\nStep onto the island, pilot giant mechs, ride dinosaurs, drift sports cars, and hang out with friends in real-time.\n\nTap below to enter:`,
+    text: `🌟 Welcome to GlobeVibe Ultra 3D Metaverse, ${userName}!\n\nStep onto the central island, pilot giant mechs, ride dinosaurs, drift sports cars, and hang out with friends in real-time.\n\nTap below to launch:`,
     reply_markup: {
       inline_keyboard: [
         [{ text: "🚀 Enter Metaverse", web_app: { url: GAME_URL } }],
