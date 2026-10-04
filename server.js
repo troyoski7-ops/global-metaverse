@@ -13,16 +13,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
 const PORT = process.env.PORT || 3000;
-// നിങ്ങളുടെ നൽകിയ Bot Token ചേർത്തത്:
-const BOT_TOKEN = process.env.BOT_TOKEN || "8592382374:AAGB2NTv2bU1-99i95d5_sd_rkcM_QbfVc4";
+// നിങ്ങളുടെ പുതിയ Bot Token:
+const BOT_TOKEN = "8592382374:AAGP1RJLcWgIhHU0cTk5fZZqqqwsPOLuEug";
 const GAME_URL = process.env.RENDER_EXTERNAL_URL || "https://vibe-metaverse.onrender.com";
 
-// Direct Long-Polling Engine for Telegram (ഏതൊരു സെർവറിലും 100% വർക്കാകും)
-let offset = 0;
-function pollTelegram() {
-  if (!BOT_TOKEN) return;
+// 1. പഴയ Stuck Webhooks & Channel Prompts പൂർണ്ണമായി ഡിലീറ്റ് ചെയ്യുന്നു
+function clearAndStart() {
+  https.get(`https://api.telegram.org/bot${BOT_TOKEN}/deleteWebhook?drop_pending_updates=true`, (res) => {
+    console.log("Old telegram hooks cleared! Engine running fresh.");
+    runPolling();
+  }).on('error', () => runPolling());
+}
 
-  const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${offset}&timeout=20`;
+// 2. Direct Polling (വേറെ ഒരു ചാനൽ മെസ്സേജും വരില്ല, വെറും ഗെയിം ബട്ടൺ മാത്രം വരും)
+let offset = 0;
+function runPolling() {
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${offset}&timeout=15`;
   https.get(url, (res) => {
     let raw = '';
     res.on('data', chunk => raw += chunk);
@@ -33,22 +39,20 @@ function pollTelegram() {
           data.result.forEach(u => {
             offset = u.update_id + 1;
             if (u.message && u.message.text && u.message.text.startsWith('/start')) {
-              sendStartButton(u.message.chat.id, u.message.from.first_name || "Player");
+              sendGameInvite(u.message.chat.id, u.message.from.first_name || "Player");
             }
           });
         }
-      } catch (err) {}
-      setTimeout(pollTelegram, 1000);
+      } catch (e) {}
+      setTimeout(runPolling, 1000);
     });
-  }).on('error', () => {
-    setTimeout(pollTelegram, 3000);
-  });
+  }).on('error', () => setTimeout(runPolling, 3000));
 }
 
-function sendStartButton(chatId, name) {
+function sendGameInvite(chatId, name) {
   const payload = JSON.stringify({
     chat_id: chatId,
-    text: `👋 ഹലോ ${name}!\n\n🌍 GlobeVibe Ultra 3D Metaverse-ലേക്ക് സ്വാഗതം!\n\n🐉 ഡ്രാഗൺ പറത്താനും, കാർ ഓടിക്കാനും, ഫുട്ബോൾ സ്റ്റേഡിയം സന്ദർശിക്കാനും താഴെയുള്ള ബട്ടൺ ക്ലിക്ക് ചെയ്യുക:`,
+    text: `👋 ഹലോ ${name}!\n\n🌍 GlobeVibe Ultra 3D Metaverse-ലേക്ക് സ്വാഗതം!\n\n🐉 ഡ്രാഗൺ പറത്താനും, കാറുകൾ ഓടിക്കാനും, ശബ്ദത്തോടുകൂടിയ 3D ലോകത്ത് കളിക്കാനും താഴെ ക്ലിക്ക് ചെയ്യുക:`,
     reply_markup: {
       inline_keyboard: [
         [{ text: "🚀 Enter Metaverse", web_app: { url: GAME_URL } }],
@@ -73,9 +77,9 @@ function sendStartButton(chatId, name) {
   req.end();
 }
 
-pollTelegram();
+clearAndStart();
 
-// Multiplayer Realtime Sockets
+// Realtime Multiplayer Sockets
 let players = {};
 io.on('connection', (socket) => {
   socket.on('joinGame', (data) => {
