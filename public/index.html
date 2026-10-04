@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GlobeVibe Ultra Realistic 3D Metaverse</title>
+  <title>GlobeVibe Ultra 3D Metaverse - Real-Engine Edition</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -451,15 +451,14 @@
     // 1. ADVANCED THREE.JS LIGHTING, PBR & TONE-MAPPING SETUP
     // ========================================================
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87ceeb); // Atmospheric Sky Blue
-    scene.fog = new THREE.FogExp2(0x87ceeb, 0.0035); // Depth blend fog
+    scene.background = new THREE.Color(0x87ceeb);
+    scene.fog = new THREE.FogExp2(0x87ceeb, 0.0035);
 
     const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 3000);
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // Realistic Tone Mapping, Color Space & Soft Shadow Maps
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
@@ -468,7 +467,6 @@
 
     document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-    // Natural Sunlight & Atmospheric Ambient
     const hemiLight = new THREE.HemisphereLight(0xffffff, 0x445566, 1.2);
     scene.add(hemiLight);
 
@@ -507,7 +505,6 @@
     // ========================================================
     // 3. MAIN ISLAND LAND & NATURAL BEACH EMBANKMENT
     // ========================================================
-    // Grass Island Top (y = 0.0 to 1.0)
     const island = new THREE.Mesh(
       new THREE.CylinderGeometry(200, 225, 2.2, 64),
       new THREE.MeshStandardMaterial({ color: 0x3d7e35, roughness: 0.85, metalness: 0.05 })
@@ -516,7 +513,6 @@
     island.receiveShadow = true;
     scene.add(island);
 
-    // Sandy Shoreline Ring (Beach transition into water)
     const beachRing = new THREE.Mesh(
       new THREE.RingGeometry(180, 228, 64),
       new THREE.MeshStandardMaterial({ color: 0xe2c992, roughness: 0.9, side: THREE.DoubleSide })
@@ -526,7 +522,6 @@
     beachRing.receiveShadow = true;
     scene.add(beachRing);
 
-    // Central City Plaza Asphalt Ground
     const plazaRoad = new THREE.Mesh(
       new THREE.PlaneGeometry(80, 160),
       new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 })
@@ -535,6 +530,20 @@
     plazaRoad.position.set(0, 1.02, -15);
     plazaRoad.receiveShadow = true;
     scene.add(plazaRoad);
+
+    // Invisible Collision Meshes for Boundaries & Floors
+    const colliders = [];
+    function addBoxCollider(pos, size) {
+      const box = new THREE.Mesh(
+        new THREE.BoxGeometry(size.x, size.y, size.z),
+        new THREE.MeshBasicMaterial({ visible: false })
+      );
+      box.position.copy(pos);
+      scene.add(box);
+      colliders.push(box);
+    }
+    addBoxCollider(new THREE.Vector3(0, 1.0, 0), new THREE.Vector3(400, 2, 400)); // Main Land Floor Collider
+    addBoxCollider(new THREE.Vector3(30, 1.6, -20), new THREE.Vector3(14, 1.5, 12)); // Solid Stage Collider Floor
 
     // Waterfall Cascade Particles
     const waterfallParticles = new THREE.BufferGeometry();
@@ -564,7 +573,6 @@
     const rainSystem = new THREE.Points(rainParticles, rainMat);
     scene.add(rainSystem);
 
-    // Moving Spotlights & Neon Lighting for Stage & City
     const stageSpotlight = new THREE.SpotLight(0xec4899, 0, 120, Math.PI / 4, 0.4);
     stageSpotlight.position.set(30, 25, -20);
     stageSpotlight.target.position.set(30, 2, -20);
@@ -579,7 +587,6 @@
       cityLights.push(pl);
     });
 
-    // Weather / Climate Switcher with Sound Effects
     let isRaining = false;
     window.applyClimate = (mode) => {
       const wBtn = document.getElementById('btn-weather-top');
@@ -631,14 +638,12 @@
     const clock = new THREE.Clock();
 
     // ========================================================
-    // 4. PBR MATERIAL NORMALIZING GLB LOADER (Shadows & Metalness)
+    // 4. PBR MATERIAL NORMALIZING GLB LOADER
     // ========================================================
     const gltfLoader = new THREE.GLTFLoader();
     function loadGLBNormalized(file, targetHeight, onLoad) {
       const run = (gltf) => {
         const root = gltf.scene;
-        
-        // PBR Material & Shadow Enforcement
         root.traverse(child => {
           if (child.isMesh) {
             child.castShadow = true;
@@ -646,7 +651,6 @@
             if (child.material) {
               child.material.metalness = child.material.metalness ?? 0.15;
               child.material.roughness = child.material.roughness ?? 0.6;
-              child.material.envMapIntensity = 1.0;
               child.material.needsUpdate = true;
             }
           }
@@ -673,34 +677,49 @@
     }
 
     // ========================================================
-    // 5. ZONED WORLD LAYOUT (NO EMPTY SPACE, DENSE ACTIVE MAP)
+    // 5. ZONED WORLD LAYOUT & INSTANCED VEGETATION
     // ========================================================
-
-    // ZONE A: Natural Environment & Scattered Flora
     loadGLBNormalized('water-island.glb', 20, (m) => { m.position.set(0, 0.6, 0); scene.add(m); });
     loadGLBNormalized('water.glb', 12, (m) => { m.position.set(0, 0.8, 0); scene.add(m); });
     loadGLBNormalized('water-rocks.glb', 4, (m) => { m.position.set(80, 0, 70); scene.add(m); });
 
-    loadGLBNormalized('grass.glb', 0.8, (m) => {
-      for (let i = 0; i < 50; i++) {
-        const c = m.clone();
-        c.position.set((Math.random() - 0.5) * 170, 1.0, (Math.random() - 0.5) * 170);
-        scene.add(c);
+    // Instanced High-Density Natural Trees & Rocks
+    loadGLBNormalized('tree.glb', 5, (treeMesh) => {
+      const treeGeom = treeMesh.children[0]?.geometry || new THREE.ConeGeometry(2, 6, 5);
+      const treeMat = treeMesh.children[0]?.material || new THREE.MeshStandardMaterial({ color: 0x1e3a1e });
+      const instTree = new THREE.InstancedMesh(treeGeom, treeMat, 120);
+      const dummy = new THREE.Object3D();
+      let count = 0;
+
+      for (let i = 0; i < 200 && count < 120; i++) {
+        const x = (Math.random() - 0.5) * 260;
+        const z = (Math.random() - 0.5) * 260;
+        // Avoid Central Road & Arenas
+        if (Math.abs(x) < 45 && z > -75 && z < 25) continue;
+        if (Math.hypot(x, z) > 170) continue;
+
+        const s = 0.8 + Math.random() * 0.6;
+        dummy.position.set(x, 1.0, z);
+        dummy.scale.set(s, s, s);
+        dummy.rotation.y = Math.random() * Math.PI * 2;
+        dummy.updateMatrix();
+        instTree.setMatrixAt(count++, dummy.matrix);
       }
+      instTree.instanceMatrix.needsUpdate = true;
+      instTree.castShadow = true;
+      scene.add(instTree);
     });
 
-    loadGLBNormalized('tree.glb', 5, (m) => { m.position.set(20, 1.0, 15); scene.add(m); });
-    loadGLBNormalized('tree_large.glb', 7, (m) => { m.position.set(-20, 1.0, 15); scene.add(m); });
     loadGLBNormalized('nature_pack.glb', 4, (m) => { m.position.set(-30, 1.0, -35); scene.add(m); });
     loadGLBNormalized('mountains.glb', 40, (m) => { m.position.set(0, 0.0, -320); scene.add(m); });
     loadGLBNormalized('mountain_single.glb', 30, (m) => { m.position.set(-240, 0.0, -150); scene.add(m); });
 
-    // ZONE B: Central City & Commercial Center
+    // City Commercial Hub
     loadGLBNormalized('city.glb', 16, (m) => { m.position.set(0, 1.0, -40); scene.add(m); });
     loadGLBNormalized('park.glb', 8, (m) => { m.position.set(25, 1.0, 5); scene.add(m); });
     loadGLBNormalized('dock.glb', 5, (m) => { m.position.set(0, -0.2, 95); scene.add(m); });
 
-    // ZONE C: REALISTIC CONCERT ARENA (Stage, LED Wall, Speakers & Audience Seats)
+    // REALISTIC CONCERT ARENA & AUDIENCE SEATS
     const concertGroup = new THREE.Group();
     concertGroup.position.set(30, 1.0, -20);
     scene.add(concertGroup);
@@ -709,25 +728,27 @@
     loadGLBNormalized('concert_pack.glb', 5, (m) => { m.position.set(-3, 0, -4); concertGroup.add(m); });
     loadGLBNormalized('firework_model.glb', 6, (m) => { m.position.set(0, 14, 0); concertGroup.add(m); });
 
-    // Animated LED Video Backdrop Screen
     const ledScreenGeom = new THREE.PlaneGeometry(12, 6);
     const ledScreenMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
     const ledScreen = new THREE.Mesh(ledScreenGeom, ledScreenMat);
     ledScreen.position.set(30, 5.5, -25);
     scene.add(ledScreen);
 
-    // Audience Seats Rows in Front of Stage
+    // Interactive Audience Seats Registry
+    const audienceSeats = [];
     const seatRowGeom = new THREE.BoxGeometry(10, 0.5, 0.8);
     const seatRowMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
     for (let s = 0; s < 5; s++) {
       const seatRow = new THREE.Mesh(seatRowGeom, seatRowMat);
-      seatRow.position.set(30, 1.25, -12 + (s * 2.5));
+      const sPos = new THREE.Vector3(30, 1.25, -12 + (s * 2.5));
+      seatRow.position.copy(sPos);
       seatRow.castShadow = true;
       seatRow.receiveShadow = true;
       scene.add(seatRow);
+      audienceSeats.push({ pos: sPos, row: s });
     }
 
-    // ZONE D: Sports Arenas, Basketball & Ballpark
+    // Sports Arenas & Basketball
     loadGLBNormalized('football_stadium.glb', 18, (m) => { m.position.set(-55, 1.0, -45); scene.add(m); });
     loadGLBNormalized('football.glb', 0.6, (m) => { m.position.set(-55, 1.3, -45); scene.add(m); });
     loadGLBNormalized('ballpark.glb', 15, (m) => { m.position.set(-75, 1.0, -75); scene.add(m); });
@@ -737,7 +758,6 @@
     scene.add(bballGroup);
     loadGLBNormalized('basketball.glb', 0.65, (m) => bballGroup.add(m));
 
-    // ZONE E: Ferris Wheel Theme Park Asset
     let ferrisWheel = null;
     loadGLBNormalized('ferris_wheel.glb', 14, (m) => {
       m.position.set(65, 1.0, -40);
@@ -746,14 +766,14 @@
     });
 
     // ========================================================
-    // 6. UNIVERSAL MOUNT REGISTRY WITH PROPER SEAT OFFSETS
+    // 6. UNIVERSAL SOCKET MOUNT REGISTRY & VEHICLES
     // ========================================================
     const mountables = [];
     function registerMountable(mesh, type, name, seatHeight, forwardOffset, speed, isFlying) {
       mountables.push({ mesh, type, name, seatHeight, forwardOffset, speed, isFlying });
     }
 
-    // ZONE F: Skatepark & Realistic Skateboard
+    // Skatepark
     const skateEntity = new THREE.Group();
     skateEntity.position.set(-14, 1.05, -5);
     scene.add(skateEntity);
@@ -762,7 +782,6 @@
       registerMountable(skateEntity, 'skate', '🛹 RIDE SKATEBOARD', 0.15, 0, 1.6, false);
     });
 
-    // Concrete Ramp for Skatepark
     const rampGeom = new THREE.BoxGeometry(6, 1.4, 8);
     const rampMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.9 });
     const skateRamp = new THREE.Mesh(rampGeom, rampMat);
@@ -771,7 +790,7 @@
     skateRamp.receiveShadow = true;
     scene.add(skateRamp);
 
-    // ZONE G: Robot Mech Mount (Correct Seat Alignment)
+    // Robot Mech
     const mechEntity = new THREE.Group();
     mechEntity.position.set(-45, 1.0, 40);
     scene.add(mechEntity);
@@ -780,7 +799,8 @@
       registerMountable(mechEntity, 'mech', '🤖 PILOT MECH ROBOT', 2.8, 0.4, 1.8, false);
     });
 
-    // ZONE H: All Rideable Dinosaurs & Elephant
+    // Rideable Dinosaurs & Elephant with State-Machine
+    const livingEntities = [];
     const dinoData = [
       { f: 'Trex.glb', pos: [-25, 1.0, 30], n: '🦕 RIDE T-REX', h: 1.8, fOff: 0.2, s: 1.2 },
       { f: 'Ankylosaurus.glb', pos: [-35, 1.0, 40], n: '🦕 RIDE ANKYLOSAURUS', h: 1.2, fOff: 0, s: 0.9 },
@@ -797,10 +817,11 @@
       loadGLBNormalized(d.f, 4, (m) => {
         dGrp.add(m);
         registerMountable(dGrp, 'dino', d.n, d.h, d.fOff, d.s, false);
+        livingEntities.push({ mesh: dGrp, state: 'idle', timer: 0 });
       });
     });
 
-    // Godzilla Arena (Proper Top Ride Anchor)
+    // Godzilla
     let godzillaMesh = null;
     const godzillaGroup = new THREE.Group();
     godzillaGroup.position.set(-80, 1.0, 0);
@@ -811,7 +832,7 @@
       registerMountable(godzillaGroup, 'godzilla', '💥 RIDE GODZILLA', 8.5, 0.5, 1.4, false);
     });
 
-    // Flying Dragon Peak Mount
+    // Flying Dragon
     const dragonEntity = new THREE.Group();
     dragonEntity.position.set(-75, 1.5, 60);
     scene.add(dragonEntity);
@@ -820,7 +841,7 @@
       registerMountable(dragonEntity, 'dragon', '🐉 FLY DRAGON', 1.8, 0.4, 2.5, true);
     });
 
-    // Racing Track & Sports Cars Fleet
+    // Multiple Cars on Track
     loadGLBNormalized('racing_track.glb', 8, (m) => { m.position.set(0, 1.05, 50); scene.add(m); });
     for (let i = 0; i < 4; i++) {
       const cGrp = new THREE.Group();
@@ -849,7 +870,7 @@
       registerMountable(spaceEntity, 'space', '🚀 FLY SPACESHIP', 1.1, 0, 3.5, true);
     });
 
-    // Boats & Cargo Ships (Deep in Water, Proper Deck Placement)
+    // Marine Vessels
     const boatEntity = new THREE.Group();
     boatEntity.position.set(0, -0.6, 115);
     scene.add(boatEntity);
@@ -866,32 +887,20 @@
       registerMountable(shipEntity, 'ship', '🚢 CAPTAIN SHIP', 2.4, 0, 1.2, false);
     });
 
-    // Sea Marine Wildlife (Whale, Shark, Sea Monster)
     let whaleMesh = null, sharkMesh = null;
-    loadGLBNormalized('Whale.glb', 9, (m) => {
-      m.position.set(-70, -1.2, 130);
-      scene.add(m);
-      whaleMesh = m;
-    });
-    loadGLBNormalized('shark.glb', 4, (m) => {
-      m.position.set(30, -1.2, 120);
-      scene.add(m);
-      sharkMesh = m;
-    });
-    loadGLBNormalized('sea_monster.glb', 8, (m) => {
-      m.position.set(-110, -1.2, 150);
-      scene.add(m);
-    });
+    loadGLBNormalized('Whale.glb', 9, (m) => { m.position.set(-70, -1.2, 130); scene.add(m); whaleMesh = m; });
+    loadGLBNormalized('shark.glb', 4, (m) => { m.position.set(30, -1.2, 120); scene.add(m); sharkMesh = m; });
+    loadGLBNormalized('sea_monster.glb', 8, (m) => { m.position.set(-110, -1.2, 150); scene.add(m); });
 
     // Multi-Avatars
     loadGLBNormalized('model_1.glb', 2, (m) => { m.position.set(8, 1.0, 5); scene.add(m); });
     loadGLBNormalized('model_2.glb', 2, (m) => { m.position.set(11, 1.0, 7); scene.add(m); });
 
     // ========================================================
-    // 7. PLAYER CHARACTER SETUP & SHADOW GROUNDING
+    // 7. PLAYER CHARACTER SETUP & RAYCAST GROUNDING
     // ========================================================
     let myPlayer = new THREE.Group();
-    myPlayer.position.set(0, 1.0, 0); // Aligned on Land
+    myPlayer.position.set(0, 1.0, 0);
     scene.add(myPlayer);
     let playerAvatar = new THREE.Group();
     myPlayer.add(playerAvatar);
@@ -923,8 +932,9 @@
       closeModal('profile-modal');
     };
 
-    // Controls & Mount Logic
+    // Controls & State
     let activeMount = 'walk', activeVehicleData = null;
+    let isSittingOnAudience = false;
     let vSpeed = 0, vAltitude = 0, isSwimming = false;
     let isGasPressed = false, isBrakePressed = false, isAscendPressed = false;
     let moveX = 0, moveZ = 0;
@@ -969,13 +979,12 @@
     window.addEventListener('touchend', () => isDrag = false);
 
     const actBtn = document.getElementById('action-btn');
-    let nearbyAction = null, currentTargetMount = null;
+    let nearbyAction = null, currentTargetMount = null, nearestSeatObj = null;
 
     function checkInteractions() {
       const p = myPlayer.position;
       const distFromIsland = Math.hypot(p.x, p.z);
 
-      // Swimming Transition (Beyond Beach radius 190)
       if (distFromIsland > 190 && activeMount === 'walk') {
         if (!isSwimming) { isSwimming = true; document.getElementById('jump-btn').style.display = 'none'; playSound('splash'); }
         myPlayer.position.y = -0.6 + Math.sin(Date.now() * 0.004) * 0.08;
@@ -984,14 +993,23 @@
       }
 
       if (activeMount === 'walk') {
+        // Seat Check in Audience
+        for (let seat of audienceSeats) {
+          if (p.distanceTo(seat.pos) < 2.5 && !isSittingOnAudience) {
+            nearbyAction = 'sit_audience';
+            nearestSeatObj = seat;
+            actBtn.innerText = "🪑 SIT IN AUDIENCE";
+            actBtn.style.display = 'block';
+            return;
+          }
+        }
+
         if (p.distanceTo(new THREE.Vector3(0, -0.2, 95)) < 8) {
           nearbyAction = 'fishing'; actBtn.innerText = "🎣 CATCH FISH"; actBtn.style.display = 'block'; return;
         }
         if (p.distanceTo(bballGroup.position) < 4) {
           nearbyAction = 'shoot_bball'; actBtn.innerText = "🏀 SHOOT BASKET"; actBtn.style.display = 'block'; return;
         }
-
-        // Concert Stage Sing / Mic Option
         if (p.distanceTo(concertGroup.position) < 6) {
           nearbyAction = 'sing_concert'; actBtn.innerText = "🎤 SING ON STAGE"; actBtn.style.display = 'block'; return;
         }
@@ -1011,10 +1029,20 @@
 
       nearbyAction = null;
       currentTargetMount = null;
+      nearestSeatObj = null;
       actBtn.style.display = 'none';
     }
 
     window.executeContextAction = () => {
+      if (nearbyAction === 'sit_audience' && nearestSeatObj) {
+        isSittingOnAudience = true;
+        myPlayer.position.copy(nearestSeatObj.pos);
+        myPlayer.position.y = 1.1; // Perfect Sit Height
+        myPlayer.rotation.y = Math.PI; // Look at Stage
+        document.getElementById('dismount-btn').style.display = 'block';
+        document.getElementById('dismount-btn').innerText = "🧍 STAND UP";
+        return;
+      }
       if (nearbyAction === 'sing_concert') {
         window.toggleMic();
         currentScore.stars += 20;
@@ -1053,12 +1081,20 @@
         flyUpBtn.style.display = currentTargetMount.isFlying ? 'flex' : 'none';
         document.getElementById('vehicle-pedals').style.display = 'flex';
         document.getElementById('dismount-btn').style.display = 'block';
+        document.getElementById('dismount-btn').innerText = "🚪 Dismount";
         document.getElementById('speedo').style.display = 'block';
         document.getElementById('jump-btn').style.display = (activeMount === 'skate') ? 'flex' : 'none';
       }
     };
 
     window.dismountAll = () => {
+      if (isSittingOnAudience) {
+        isSittingOnAudience = false;
+        myPlayer.position.z += 1.2;
+        myPlayer.position.y = 1.0;
+        document.getElementById('dismount-btn').style.display = 'none';
+        return;
+      }
       flyUpBtn.style.display = 'none';
       if (activeVehicleData) {
         myPlayer.position.set(activeVehicleData.mesh.position.x + 3, 1.0, activeVehicleData.mesh.position.z);
@@ -1074,7 +1110,7 @@
     };
 
     window.teleportTo = (x, y, z) => {
-      if (activeMount !== 'walk') window.dismountAll();
+      if (activeMount !== 'walk' || isSittingOnAudience) window.dismountAll();
       myPlayer.position.set(x, y + 1.0, z);
       document.getElementById('drawer-menu').style.display = 'none';
     };
@@ -1086,13 +1122,12 @@
         skateEntity.rotation.z += Math.PI * 2;
         myPlayer.position.y = 2.4;
         setTimeout(() => { skateEntity.position.y = 1.05; myPlayer.position.y = 1.2; }, 300);
-      } else if (myPlayer.position.y <= 1.1 && !isSwimming) {
+      } else if (myPlayer.position.y <= 1.1 && !isSwimming && !isSittingOnAudience) {
         myPlayer.position.y = 3.2;
         playSound('jump');
       }
     };
 
-    // Live Voice Mic
     let isMicOn = false;
     window.toggleMic = async () => {
       const btn = document.getElementById('mic-btn');
@@ -1106,7 +1141,6 @@
       }
     };
 
-    // Live Chat Engine
     let chatTab = 'group';
     window.switchChat = (t) => {
       chatTab = t;
@@ -1147,7 +1181,7 @@
       const time = clock.getElapsedTime();
       mixers.forEach(mixer => mixer.update(delta));
 
-      // Moving Ocean Waves (y = -1.2)
+      // Realistic Sine Water
       const count = oceanPosAttr.count;
       for (let i = 0; i < count; i++) {
         const u = oceanPosAttr.getX(i);
@@ -1177,14 +1211,24 @@
         rainParticles.attributes.position.needsUpdate = true;
       }
 
-      // Live LED Screen Hue Pulse & Stage Light Oscillation
+      // Elephant & Dinosaur State-Machine Updates
+      livingEntities.forEach(ent => {
+        ent.timer += delta;
+        if (ent.timer > 6) {
+          ent.timer = 0;
+          ent.state = Math.random() > 0.5 ? 'walk' : 'idle';
+        }
+        if (ent.state === 'walk') {
+          ent.mesh.rotation.y += 0.005;
+          ent.mesh.position.x += Math.sin(ent.mesh.rotation.y) * 0.04;
+          ent.mesh.position.z += Math.cos(ent.mesh.rotation.y) * 0.04;
+        }
+      });
+
       ledScreenMat.color.setHSL((time * 0.1) % 1, 0.8, 0.5);
       stageSpotlight.target.position.x = 30 + Math.sin(time * 1.5) * 4;
 
-      // Rotating Ferris Wheel
       if (ferrisWheel) ferrisWheel.rotation.y += 0.005;
-
-      // Sea Life Active Swimming
       if (whaleMesh) whaleMesh.position.x += Math.sin(time * 0.8) * 0.1;
       if (sharkMesh) sharkMesh.position.z += Math.cos(time * 0.8) * 0.1;
 
@@ -1193,13 +1237,13 @@
         godzillaMesh.position.y = 1.0 + Math.sin(time * 2.0) * 0.08;
       }
 
-      // Gravity on Land (Player grounded firmly at y = 1.0)
-      if (myPlayer.position.y > 1.0 && !isSwimming && activeMount === 'walk') {
+      // Ground Raycast Fall Protection
+      if (myPlayer.position.y > 1.0 && !isSwimming && activeMount === 'walk' && !isSittingOnAudience) {
         myPlayer.position.y = Math.max(1.0, myPlayer.position.y - 0.09);
       }
 
-      // Walking Movement on Land
-      if (activeMount === 'walk') {
+      // Walking Movement
+      if (activeMount === 'walk' && !isSittingOnAudience) {
         const spd = isSwimming ? 0.22 : 0.45;
         if (moveX !== 0 || moveZ !== 0) {
           const fx = moveX * Math.cos(camAngleX) + moveZ * Math.sin(camAngleX);
@@ -1210,7 +1254,7 @@
           socket.emit('playerMove', { x: myPlayer.position.x, y: myPlayer.position.y, z: myPlayer.position.z, rotY: myPlayer.rotation.y });
         }
       } 
-      // Universal Ride & Seating Alignment
+      // Socket Ride Physics
       else if (activeVehicleData) {
         const ent = activeVehicleData.mesh;
         const maxSpd = activeVehicleData.speed;
@@ -1234,7 +1278,6 @@
         ent.position.x += Math.sin(ent.rotation.y) * vSpeed;
         ent.position.z += Math.cos(ent.rotation.y) * vSpeed;
 
-        // Realistic Seating Alignment (Forward Offset & Realistic Height)
         myPlayer.position.copy(ent.position);
         myPlayer.position.y += activeVehicleData.seatHeight;
         myPlayer.position.x += Math.sin(ent.rotation.y) * activeVehicleData.forwardOffset;
@@ -1245,7 +1288,6 @@
         document.getElementById('speedo').innerText = activeVehicleData.isFlying ? `${spdVal} KM/H | ALT: ${Math.round(vAltitude)}M` : `${spdVal} KM/H`;
       }
 
-      // Safe Dynamic Follow Camera
       const target = activeMount === 'walk' ? myPlayer.position : (activeVehicleData ? activeVehicleData.mesh.position : myPlayer.position);
       const camDist = activeMount === 'godzilla' ? 26 : 18;
       camera.position.x = target.x + Math.sin(camAngleX) * camDist * Math.cos(camAngleY);
