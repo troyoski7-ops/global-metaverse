@@ -12,23 +12,22 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
-// Environment Configuration
 const PORT = process.env.PORT || 3000;
 const BOT_TOKEN = process.env.BOT_TOKEN || "";
 const GAME_URL = process.env.RENDER_EXTERNAL_URL || "https://vibe-metaverse.onrender.com";
 
-// Telegram Native Webhook Handler (No 'telegraf' dependency required)
+// Telegram Bot Webhook Integration
 app.post('/api/telegram', (req, res) => {
   const update = req.body;
   if (update && update.message && update.message.text) {
     const chatId = update.message.chat.id;
     const text = update.message.text.trim();
-    const firstName = update.message.from.first_name || "Player";
+    const firstName = update.message.from.first_name || "GOKUL";
 
     if (text.startsWith('/start') && BOT_TOKEN) {
       const payload = JSON.stringify({
         chat_id: chatId,
-        text: `👋 ഹലോ ${firstName}!\n\n🌍 GlobeVibe 3D Metaverse-ലേക്ക് സ്വാഗതം! താഴെയുള്ള ബട്ടൺ വഴി ഗെയിമിൽ പ്രവേശിക്കുക:`,
+        text: `👋 ഹലോ ${firstName}!\n\n🌍 GlobeVibe Ultra 3D Metaverse-ലേക്ക് സ്വാഗതം!\nനിങ്ങളുടെ വാഹനം ഓടിക്കാനും, ജീവികളെ നിയന്ത്രിക്കാനും, സുഹൃത്തുക്കളുമായി സംസാരിക്കാനും താഴെയുള്ള ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക:`,
         reply_markup: {
           inline_keyboard: [
             [{ text: "🚀 Enter Metaverse", web_app: { url: GAME_URL } }],
@@ -47,7 +46,9 @@ app.post('/api/telegram', (req, res) => {
         }
       };
 
-      const tgReq = https.request(options);
+      const tgReq = https.request(options, (tgRes) => {
+        tgRes.on('data', () => {});
+      });
       tgReq.on('error', (e) => console.error("Telegram API Error:", e.message));
       tgReq.write(payload);
       tgReq.end();
@@ -56,7 +57,6 @@ app.post('/api/telegram', (req, res) => {
   res.sendStatus(200);
 });
 
-// Multiplayer State
 let players = {};
 
 io.on('connection', (socket) => {
@@ -66,7 +66,7 @@ io.on('connection', (socket) => {
       name: data.name || "GOKUL",
       gender: data.gender || "boy",
       x: data.x || 0,
-      y: data.y || 1,
+      y: data.y || 1.2,
       z: data.z || 0,
       rotY: 0
     };
@@ -104,5 +104,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`GlobeVibe Metaverse live on port ${PORT}`);
+  console.log(`GlobeVibe Master Server live on port ${PORT}`);
 });
