@@ -205,7 +205,7 @@
     <div class="modal-card">
       <h3>⛅ Climate & Weather</h3>
       <div class="grid-btns">
-        <button class="btn-action" onclick="applyWeather('sunny')">☀️ Sunny</button>
+        <button class="btn-action" onclick="applyWeather('sunny')">☀️️ Sunny</button>
         <button class="btn-action" onclick="applyWeather('sunset')">🌅 Sunset</button>
         <button class="btn-action" onclick="applyWeather('storm')">⛈️ Storm & Rain</button>
         <button class="btn-action" onclick="applyWeather('night')">🌙 Night</button>
@@ -313,7 +313,7 @@
       closeModal('stars-modal');
     };
 
-    // Web Audio Synthesizer (Realistic SFX: Ocean Waves, Roars, Trumpet, Engines, BGM)
+    // Web Audio Synthesizer (Realistic SFX: Ocean Waves, Roars, Engines, BGM)
     const actx = new (window.AudioContext || window.webkitAudioContext)();
     let micStream = null, loopbackNode = null, isSinging = false;
     let bgmOsc = null, isMusicPlaying = false;
@@ -364,15 +364,6 @@
         osc.frequency.exponentialRampToValueAtTime(40, now + 0.5);
         gain.gain.setValueAtTime(0.4, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
         osc.start(now); osc.stop(now + 0.5);
-      } else if (type === 'elephant') {
-        const osc = actx.createOscillator(); const gain = actx.createGain();
-        osc.connect(gain); gain.connect(actx.destination);
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(320, now);
-        osc.frequency.linearRampToValueAtTime(540, now + 0.25);
-        osc.frequency.exponentialRampToValueAtTime(190, now + 0.65);
-        gain.gain.setValueAtTime(0.45, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.65);
-        osc.start(now); osc.stop(now + 0.65);
       }
     }
 
@@ -407,9 +398,9 @@
           loopbackNode = actx.createGain();
           loopbackNode.gain.value = 0.85;
           micSource.connect(loopbackNode);
-          loopbackNode.connect(actx.destination); // Hear own voice
+          loopbackNode.connect(actx.destination);
           isSinging = true;
-          alert("🎤 Live Stage Mic ON! You can sing now. Your voice loops back to your ears and broadcasts to all.");
+          alert("🎤 Live Stage Mic ON! Your singing loops back to your ears and broadcasts to all.");
         } catch(e) { alert("Microphone access needed to sing on stage!"); }
       } else {
         if (loopbackNode) loopbackNode.disconnect();
@@ -448,7 +439,7 @@
     }
 
     // =========================================================================
-    // SECTION 2: THREE.JS ENGINE, LIGHTS, DYNAMIC OCEAN WAVES & TERRAIN
+    // SECTION 2: THREE.JS ENGINE, LIGHTS, OCEAN & TERRAIN
     // =========================================================================
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x7ec0ee);
@@ -545,7 +536,7 @@
       });
     }
 
-    // Nature: Trees & Rocks (Basketball Court Cleared of Trees)
+    // Nature: Trees & Rocks (Basketball Court & Dock Cleaned of Trees)
     loadGLB('tree_large.glb', 8.5, m => {
       m.position.set(-20, 0.1, -15); scene.add(m);
       const m2 = m.clone(); m2.position.set(15, 0.1, -25); scene.add(m2);
@@ -554,10 +545,10 @@
       for (let i = 0; i < 8; i++) {
         const tr = m.clone();
         const ang = (i / 8) * Math.PI * 2;
-        // Keep clear of basketball court & center
         const tx = Math.cos(ang) * 48;
         const tz = Math.sin(ang) * 48;
-        if (!(tx > 20 && tz < -20)) {
+        // Keep clear of basketball court & dock bridge
+        if (!(tx > 15 && tz < -15) && !(Math.abs(tx) < 12 && tz > 35)) {
           tr.position.set(tx, 0.1, tz);
           scene.add(tr);
         }
@@ -577,30 +568,17 @@
     loadGLB('city_shop.glb', 7.5, m => { m.position.set(12, 0, -8); cityGroup.add(m); });
     loadGLB('street_light.glb', 4, m => { m.position.set(8, 0, 8); cityGroup.add(m); });
 
-    // 2. Football Penalty (Stadium Removed, Court Clamped)
+    // 2. Football Penalty (No Big Court, No Giant Ball - Small Ball & Goalpost Direct)
     const penaltyPost = new THREE.Group(); penaltyPost.position.set(-35, 0.1, -26); scene.add(penaltyPost);
     loadGLB('goalpost.glb', 4.8, m => penaltyPost.add(m));
 
     const fBall = new THREE.Group(); fBall.position.set(-35, 0.35, -20); scene.add(fBall);
     loadGLB('football.glb', 0.65, m => fBall.add(m));
 
-    // 3. Concert Stage & Audience Benches (Clean Layout)
+    // 3. Concert Stage (Completely Removed Side Stadiums / Benches)
     const concertGroup = new THREE.Group(); concertGroup.position.set(30, 0.1, -20); scene.add(concertGroup);
     loadGLB('concert_stage.glb', 14, m => concertGroup.add(m));
     loadGLB('concert_pack.glb', 5, m => { m.position.set(0, 1.35, -2); concertGroup.add(m); });
-
-    const benchPositions = [];
-    loadGLB('park_bench.glb', 2.2, m => {
-      for (let r = 0; r < 2; r++) {
-        for (let c = -1; c <= 1; c++) {
-          const b = m.clone();
-          b.position.set(30 + c * 4.5, 0.1, -12 + r * 3.5);
-          b.rotation.y = Math.PI; // Face the stage
-          scene.add(b);
-          benchPositions.push(b.position.clone());
-        }
-      }
-    });
 
     // 4. Harbor Jetty / Bridge
     const dockGroup = new THREE.Group(); dockGroup.position.set(0, 0.1, 48); scene.add(dockGroup);
@@ -610,20 +588,20 @@
     // SECTION 4: WATER ONLY ENTITIES & SHIP FIX
     // =========================================================================
 
-    // A. Deep Sea Godzilla (Standing Tall in Deep Ocean)
+    // Deep Sea Godzilla
     const godzillaSea = new THREE.Group();
     godzillaSea.position.set(-85, 0.0, -65);
     scene.add(godzillaSea);
     loadGLB('godzilla.glb', 26, m => godzillaSea.add(m));
 
-    // B. Marine Animals
+    // Marine Animals
     const whaleMesh = new THREE.Group(); whaleMesh.position.set(-110, -1.8, 60); scene.add(whaleMesh);
     loadGLB('Whale.glb', 12, m => whaleMesh.add(m));
 
     const sharkMesh = new THREE.Group(); sharkMesh.position.set(80, -1.2, 80); scene.add(sharkMesh);
     loadGLB('shark.glb', 5.5, m => sharkMesh.add(m));
 
-    // C. Harbor Crafts (Water Clamped & Proper Deck Rigging)
+    // Small Boat
     const seaBoat = new THREE.Group(); seaBoat.position.set(0, -0.2, 58); scene.add(seaBoat);
     loadGLB('low_poly_boat.glb', 4.5, m => seaBoat.add(m));
     registerRig('boat', seaBoat, 4, [
@@ -633,31 +611,21 @@
       new THREE.Vector3(0, 0.2, -0.7)
     ], false);
 
-    // Ship Clamped to Water (Photo 1 Fix)
+    // Cargo Ship
     const cargoShip = new THREE.Group(); cargoShip.position.set(0, 0.5, 75); scene.add(cargoShip);
     loadGLB('low_poly_cargo_ship.glb', 18, m => cargoShip.add(m));
     registerRig('ship', cargoShip, 4, [
-      new THREE.Vector3(0, 3.8, 1.2),   // Deck Center
-      new THREE.Vector3(-1.2, 3.8, 0.2), // Deck Left
-      new THREE.Vector3(1.2, 3.8, 0.2),  // Deck Right
-      new THREE.Vector3(0, 3.8, -1.8)    // Deck Rear
+      new THREE.Vector3(0, 3.8, 1.2),
+      new THREE.Vector3(-1.2, 3.8, 0.2),
+      new THREE.Vector3(1.2, 3.8, 0.2),
+      new THREE.Vector3(0, 3.8, -1.8)
     ], false);
 
     // =========================================================================
-    // SECTION 5: PROPER SEATING RIGGED MOUNTS (Elephant, Jet, Heli, Dino)
+    // SECTION 5: MOUNTS & VEHICLES (IN-CABIN DRIVER CONFIGURATION)
     // =========================================================================
 
-    // 1. Elephant (Proper Saddle Seating)
-    const elephantEntity = new THREE.Group(); elephantEntity.position.set(20, 0.1, 25); scene.add(elephantEntity);
-    loadGLB('elephant.glb', 4.6, m => elephantEntity.add(m));
-    registerRig('elephant', elephantEntity, 4, [
-      new THREE.Vector3(0, 1.85, 0.4),  // Saddle Rider
-      new THREE.Vector3(0, 1.8, -0.3),
-      new THREE.Vector3(-0.35, 1.75, -0.8),
-      new THREE.Vector3(0.35, 1.75, -0.8)
-    ], false);
-
-    // 2. Space Jet (Cabin Inside, Head Protected)
+    // Space Jet
     const spaceJetEntity = new THREE.Group(); spaceJetEntity.position.set(-25, 0.1, 0); scene.add(spaceJetEntity);
     loadGLB('spaceship.glb', 6.0, m => spaceJetEntity.add(m));
     registerRig('jet', spaceJetEntity, 4, [
@@ -667,7 +635,7 @@
       new THREE.Vector3(0.35, 0.45, -0.9)
     ], true);
 
-    // 3. Helicopter (Cockpit Inside)
+    // Helicopter
     const heliEntity = new THREE.Group(); heliEntity.position.set(-15, 0.1, 10); scene.add(heliEntity);
     loadGLB('helicopter.glb', 5.5, m => heliEntity.add(m));
     registerRig('heli', heliEntity, 4, [
@@ -677,7 +645,7 @@
       new THREE.Vector3(0.35, 0.45, -0.3)
     ], true);
 
-    // 4. Flying Dragon
+    // Flying Dragon
     const dragonEntity = new THREE.Group(); dragonEntity.position.set(-45, 0.1, 10); scene.add(dragonEntity);
     loadGLB('dragon.glb', 7.0, m => dragonEntity.add(m));
     registerRig('dragon', dragonEntity, 4, [
@@ -687,12 +655,12 @@
       new THREE.Vector3(0.3, 1.6, -0.5)
     ], true);
 
-    // 5. Robot Mech
+    // Robot Mech
     const mechEntity = new THREE.Group(); mechEntity.position.set(10, 0.1, -10); scene.add(mechEntity);
     loadGLB('mech.glb', 5.0, m => mechEntity.add(m));
     registerRig('mech', mechEntity, 2, [new THREE.Vector3(0, 2.6, 0.2), new THREE.Vector3(0, 2.4, -0.4)], false);
 
-    // 6. Dinosaurs
+    // Dinosaurs
     const trexEntity = new THREE.Group(); trexEntity.position.set(-35, 0.1, 30); scene.add(trexEntity);
     loadGLB('Trex.glb', 5.5, m => trexEntity.add(m));
     registerRig('trex', trexEntity, 4, [
@@ -807,7 +775,7 @@
       b.scrollTop = b.scrollHeight;
     });
 
-    // Touch & Joystick Controls (Smooth Cubic Curve)
+    // Touch & Joystick Controls (Smooth Curve)
     let joyX = 0, joyZ = 0, camRotX = 0;
     const jBase = document.getElementById('joy-base');
     const jStick = document.getElementById('joy-stick');
@@ -846,7 +814,7 @@
     // SECTION 7: INTERACTIONS & RIG MOUNTING
     // =========================================================================
     const actBtn = document.getElementById('action-btn');
-    let currentActiveSeat = null; // { rigKey, isDriver, seatIndex }
+    let currentActiveSeat = null;
     let vSpeed = 0, vAlt = 0;
     let isGas = false, isBrake = false, isFly = false;
 
@@ -869,22 +837,7 @@
         return;
       }
 
-      // 2. Audience Benches
-      for (let bp of benchPositions) {
-        if (p.distanceTo(bp) < 2.2) {
-          actBtn.innerText = "🪑 SIT ON BENCH"; actBtn.style.display = 'block';
-          actBtn.onclick = () => {
-            currentActiveSeat = { type: 'bench' };
-            localPlayer.position.copy(bp);
-            localPlayer.position.y = 0.55;
-            localAvatar.rotation.y = Math.PI;
-            document.getElementById('dismount-btn').style.display = 'block';
-          };
-          return;
-        }
-      }
-
-      // 3. Penalty Kick
+      // 2. Penalty Kick (Clean Goal Target)
       if (p.distanceTo(fBall.position) < 2.5) {
         actBtn.innerText = "⚽ PENALTY KICK"; actBtn.style.display = 'block';
         actBtn.onclick = () => {
@@ -901,7 +854,7 @@
         return;
       }
 
-      // 4. Friend Requests
+      // 3. Friend Requests
       for (let id in networkPlayers) {
         const rPlayer = networkPlayers[id];
         if (p.distanceTo(rPlayer.position) < 3.0) {
@@ -915,7 +868,7 @@
         }
       }
 
-      // 5. Vehicles & Mounts (Ship radius expanded to 25)
+      // 4. Vehicles & Mounts (In-Cabin Driver Mode: Avatar Invisible while Driving)
       for (let key in multiVehicles) {
         const v = multiVehicles[key];
         const dist = p.distanceTo(v.object.position);
@@ -926,8 +879,7 @@
           actBtn.style.display = 'block';
           actBtn.onclick = () => {
             if (v.passengers.length >= v.maxSeats) { alert("Mount is full!"); return; }
-            if (key === 'elephant') playSfx('elephant');
-            else if (key === 'trex' || key === 'tri') playSfx('dino');
+            if (key === 'trex' || key === 'tri') playSfx('dino');
 
             const sIdx = v.passengers.length;
             v.passengers.push(myPlayerId);
@@ -936,6 +888,9 @@
             v.object.add(localAvatar);
             localAvatar.position.copy(v.offsets[sIdx]);
             localAvatar.rotation.set(0, 0, 0);
+
+            // In-cabin mode: hide driver avatar from sticking outside
+            localAvatar.visible = false;
 
             if (isDriver) {
               document.getElementById('vehicle-pedals').style.display = 'flex';
@@ -953,21 +908,17 @@
 
     window.exitSeatOrVehicle = () => {
       if (!currentActiveSeat) return;
-      if (currentActiveSeat.type === 'bench') {
-        localPlayer.position.z += 1.2;
-        localPlayer.position.y = 0.1;
-      } else {
-        const v = multiVehicles[currentActiveSeat.rigKey];
-        if (v) {
-          v.passengers = v.passengers.filter(id => id !== myPlayerId);
-          localPlayer.add(localAvatar);
-          localAvatar.position.set(0, 0, 0);
-          localAvatar.rotation.set(0, 0, 0);
-          localPlayer.position.set(v.object.position.x + 3.0, 0.1, v.object.position.z);
-        }
-        document.getElementById('vehicle-pedals').style.display = 'none';
-        document.getElementById('speedo').style.display = 'none';
+      const v = multiVehicles[currentActiveSeat.rigKey];
+      if (v) {
+        v.passengers = v.passengers.filter(id => id !== myPlayerId);
+        localPlayer.add(localAvatar);
+        localAvatar.position.set(0, 0, 0);
+        localAvatar.rotation.set(0, 0, 0);
+        localAvatar.visible = true; // Show avatar again after exiting
+        localPlayer.position.set(v.object.position.x + 3.0, 0.1, v.object.position.z);
       }
+      document.getElementById('vehicle-pedals').style.display = 'none';
+      document.getElementById('speedo').style.display = 'none';
       currentActiveSeat = null;
       vSpeed = 0; vAlt = 0;
       document.getElementById('dismount-btn').style.display = 'none';
@@ -1006,7 +957,6 @@
       // Dinosaurs
       trexEntity.rotation.y = Math.sin(time * 0.8) * 0.15;
       triEntity.rotation.y = -Math.sin(time * 0.6) * 0.1;
-      elephantEntity.position.y = 0.1 + Math.sin(time * 1.5) * 0.04;
 
       if (!currentActiveSeat) {
         if (joyX !== 0 || joyZ !== 0) {
@@ -1031,13 +981,13 @@
           });
         }
 
-        // Bridge / Jetty & Stage Floor Locks (Photo 2 Bug Resolved: Clamped to y = 1.6)
+        // Bridge / Jetty & Stage Floor Locks (Deck Floor Clamped to y = 1.6)
         const distToStage = localPlayer.position.distanceTo(new THREE.Vector3(30, 0, -20));
         const distToDock = localPlayer.position.distanceTo(new THREE.Vector3(0, 0, 48));
 
         let curFloor = 0.1;
         if (distToStage < 7.0) curFloor = 1.35;
-        else if (distToDock < 9.0) curFloor = 1.6; // Solid Bridge Deck Height
+        else if (distToDock < 9.0) curFloor = 1.6;
 
         if (localPlayer.position.y > curFloor) {
           localPlayer.position.y = Math.max(curFloor, localPlayer.position.y - 0.08);
@@ -1079,12 +1029,20 @@
         });
       }
 
-      // Camera Rig
-      const target = (currentActiveSeat && currentActiveSeat.rigKey) ? multiVehicles[currentActiveSeat.rigKey].object : localPlayer;
-      camera.position.x = target.position.x + Math.sin(camRotX) * 12;
-      camera.position.y = target.position.y + 4.2;
-      camera.position.z = target.position.z + Math.cos(camRotX) * 12;
-      camera.lookAt(target.position.x, target.position.y + 1.2, target.position.z);
+      // Camera Rig (Special Sky View for Cargo Ship)
+      if (currentActiveSeat && currentActiveSeat.rigKey === 'ship') {
+        const shipObj = multiVehicles['ship'].object;
+        camera.position.x = shipObj.position.x + Math.sin(camRotX) * 24;
+        camera.position.y = shipObj.position.y + 14.0; // Elevated for full sky view
+        camera.position.z = shipObj.position.z + Math.cos(camRotX) * 24;
+        camera.lookAt(shipObj.position.x, shipObj.position.y + 6.0, shipObj.position.z);
+      } else {
+        const target = (currentActiveSeat && currentActiveSeat.rigKey) ? multiVehicles[currentActiveSeat.rigKey].object : localPlayer;
+        camera.position.x = target.position.x + Math.sin(camRotX) * 12;
+        camera.position.y = target.position.y + 4.2;
+        camera.position.z = target.position.z + Math.cos(camRotX) * 12;
+        camera.lookAt(target.position.x, target.position.y + 1.2, target.position.z);
+      }
 
       renderer.render(scene, camera);
     }
