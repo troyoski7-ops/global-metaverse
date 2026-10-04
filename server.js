@@ -16,10 +16,10 @@ const PORT = process.env.PORT || 3000;
 const BOT_TOKEN = "8592382374:AAGP1RJLcWgIhHU0cTk5fZZqqqwsPOLuEug";
 const GAME_URL = process.env.RENDER_EXTERNAL_URL || "https://vibe-metaverse.onrender.com";
 
-// Clean Bot Webhooks and Start Long-Polling Engine
+// Flush Old Stuck Telegram Webhook & Start Clean Polling
 function initTelegramBot() {
   https.get(`https://api.telegram.org/bot${BOT_TOKEN}/deleteWebhook?drop_pending_updates=true`, () => {
-    console.log("[Telegram] Webhook cleaned. English polling daemon active.");
+    console.log("[Telegram] Webhook cleared. Pure English daemon running...");
     pollTelegramUpdates();
   }).on('error', (err) => {
     console.error("[Telegram Init Error]", err.message);
@@ -54,7 +54,7 @@ function pollTelegramUpdates() {
 function sendEnglishWelcome(chatId, userName) {
   const payload = JSON.stringify({
     chat_id: chatId,
-    text: `🌟 Welcome to GlobeVibe Ultra 3D Metaverse, ${userName}!\n\nFly fire-breathing dragons, captain ships, explore sports arenas, drift sports cars, and hang out with friends in real-time.\n\nTap below to launch the world:`,
+    text: `🌟 Welcome to GlobeVibe Ultra 3D Metaverse, ${userName}!\n\nStep onto the island, pilot giant mechs, ride dinosaurs, drift sports cars, and hang out with friends in real-time.\n\nTap below to enter:`,
     reply_markup: {
       inline_keyboard: [
         [{ text: "🚀 Enter Metaverse", web_app: { url: GAME_URL } }],
@@ -69,14 +69,14 @@ function sendEnglishWelcome(chatId, userName) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) }
   });
-  req.on('error', (e) => console.error("[Telegram Send Error]", e.message));
+  req.on('error', (e) => console.error(e));
   req.write(payload);
   req.end();
 }
 
 initTelegramBot();
 
-// Multiplayer & Real-Time Synchronizer
+// Multiplayer Room & Score Sync Engine
 let players = new Map();
 
 io.on('connection', (socket) => {
@@ -128,5 +128,5 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`GlobeVibe Multi-Engine Live on port ${PORT}`);
+  console.log(`[Engine] GlobeVibe Core Architecture operational on port ${PORT}`);
 });
