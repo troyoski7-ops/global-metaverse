@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GlobeVibe Metaverse GTA</title>
+  <title>GlobeVibe Metaverse GTA Island</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -25,11 +25,12 @@
     .btn-circle { width: 38px; height: 38px; border-radius: 50%; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(8px); border: 1.5px solid rgba(255,255,255,0.3); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; }
     .btn-circle.active { background: #22c55e; border-color: #4ade80; box-shadow: 0 0 10px #22c55e; }
 
-    /* Scoreboard */
-    #score-hud { position: absolute; top: 90px; left: 8px; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(8px); border: 1px solid #38bdf8; border-radius: 12px; padding: 8px 12px; color: #fff; font-size: 11px; font-weight: 700; z-index: 30; }
+    /* Scoreboard & Concert Music Control */
+    #score-hud { position: absolute; top: 90px; left: 8px; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(8px); border: 1px solid #38bdf8; border-radius: 12px; padding: 8px 12px; color: #fff; font-size: 11px; font-weight: 700; z-index: 30; display: flex; flex-direction: column; gap: 4px; }
     .score-val { color: #38bdf8; font-family: monospace; font-size: 12px; margin-left: 6px; }
+    #btn-music-toggle { background: #1e293b; border: 1px solid #38bdf8; color: #38bdf8; border-radius: 6px; padding: 3px 6px; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 4px; }
 
-    /* Action & Controls */
+    /* Controls & Interactivity */
     #action-btn { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: #0284c7; color: #fff; border: 2px solid #fff; padding: 12px 28px; border-radius: 30px; font-size: 13px; font-weight: 900; display: none; z-index: 35; box-shadow: 0 4px 15px rgba(2,132,199,0.7); }
     #dismount-btn { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: #ef4444; color: #fff; border: 1.5px solid #fff; padding: 8px 22px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; z-index: 40; cursor: pointer; }
     #speedo { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); color: #38bdf8; border: 1px solid #38bdf8; padding: 5px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; z-index: 35; }
@@ -44,7 +45,7 @@
     #pedal-brake { background: #ef4444; }
     #pedal-fly { background: #8b5cf6; display: none; }
 
-    /* Live Chat & Private Tabs */
+    /* Live Chat with Server & Private Tabs */
     #chat-box { position: absolute; bottom: 20px; left: 125px; width: 210px; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(8px); border-radius: 12px; border: 1px solid rgba(255,255,255,0.25); padding: 6px; z-index: 30; }
     .chat-tabs { display: flex; gap: 4px; margin-bottom: 4px; }
     .chat-tab { flex: 1; text-align: center; font-size: 10px; font-weight: bold; color: #94a3b8; background: rgba(0,0,0,0.4); padding: 3px; border-radius: 4px; cursor: pointer; }
@@ -71,7 +72,7 @@
   <div class="top-bar">
     <div class="hud-row">
       <div class="badges-group">
-        <div class="badge stars" onclick="openModal('stars-modal')">⭐ <span id="hud-stars">250</span> STARS</div>
+        <div class="badge stars" onclick="openModal('stars-modal')">⭐ <span id="hud-stars">300</span> STARS</div>
         <div class="badge" onclick="openModal('room-modal')">🚪 <span id="hud-room">Global</span></div>
         <div class="badge">🟢 <span id="hud-online">1</span> Online</div>
       </div>
@@ -91,9 +92,10 @@
     </div>
   </div>
 
-  <!-- Scoreboard -->
+  <!-- Scoreboard & Stage BGM -->
   <div id="score-hud">
     <div>⚽ Penalty Goals:<span id="score-goals" class="score-val">0</span></div>
+    <button id="btn-music-toggle" onclick="toggleStageMusic()">🎵 Concert BGM: OFF</button>
   </div>
 
   <!-- Controls -->
@@ -104,8 +106,8 @@
 
   <div class="vehicle-pedals" id="vehicle-pedals">
     <button id="pedal-fly" class="pedal">FLY ⬆</button>
-    <button id="pedal-gas" class="pedal">GAS 🏎</button>
-    <button id="pedal-brake" class="pedal">BRAKE 🛑</button>
+    <button id="pedal-gas" class="pedal">MOVE ⚡</button>
+    <button id="pedal-brake" class="pedal">STOP 🛑</button>
   </div>
 
   <div id="joy-base"><div id="joy-stick"></div></div>
@@ -116,7 +118,7 @@
       <div id="tab-global" class="chat-tab active" onclick="switchChatTab('global')">Server</div>
       <div id="tab-private" class="chat-tab" onclick="switchChatTab('private')">Private</div>
     </div>
-    <div id="chat-msgs"><div class="chat-bubble"><b>System:</b> Connected to Global Island!</div></div>
+    <div id="chat-msgs"><div class="chat-bubble"><b>System:</b> Welcome to GlobeVibe GTA Island!</div></div>
     <div class="chat-controls">
       <input type="text" id="chat-in" placeholder="Say something..." maxlength="45">
       <button id="chat-send" onclick="sendChatMessage()">Send</button>
@@ -127,7 +129,7 @@
   <div id="stars-modal" class="modal-overlay">
     <div class="modal-card">
       <h3>⭐ Telegram Stars Vault</h3>
-      <p style="font-size:11px; color:#cbd5e1;">Use Telegram Stars to unlock VIP rides, boosters & custom tags.</p>
+      <p style="font-size:11px; color:#cbd5e1;">Use Stars to upgrade mounts & get VIP access.</p>
       <div class="grid-btns">
         <button class="btn-action primary" onclick="buyStars(50)">Buy 50 ⭐</button>
         <button class="btn-action primary" onclick="buyStars(150)">Buy 150 ⭐</button>
@@ -143,7 +145,7 @@
     <div class="modal-card">
       <h3>🤝 Friends & Requests</h3>
       <div id="friends-list" style="font-size:11px; display:flex; flex-direction:column; gap:6px; max-height:120px; overflow-y:auto;">
-        <div style="color:#94a3b8;">No friends added yet. Tap on any player in the island to add them!</div>
+        <div style="color:#94a3b8;">No friends added yet. Stand near players to add!</div>
       </div>
       <button class="btn-action primary" onclick="openModal('profile-modal'); closeModal('friends-modal');">Share Game Link</button>
       <button class="btn-action" onclick="closeModal('friends-modal')">Close</button>
@@ -156,11 +158,11 @@
       <h3>📍 Island Teleport Locations</h3>
       <div class="grid-btns">
         <button class="btn-action primary" onclick="teleportPlayer(0, 0.1, 0)">City Center</button>
-        <button class="btn-action" onclick="teleportPlayer(-35, 0.1, -25)">Football Penalty</button>
+        <button class="btn-action" onclick="teleportPlayer(-35, 0.1, -25)">Penalty Goal</button>
         <button class="btn-action" onclick="teleportPlayer(30, 0.1, -20)">Concert Stage</button>
-        <button class="btn-action" onclick="teleportPlayer(0, 0.1, 48)">Harbor Dock</button>
-        <button class="btn-action" onclick="teleportPlayer(-35, 0.1, 30)">Dino Safari</button>
-        <button class="btn-action" onclick="teleportPlayer(-55, 0.1, 0)">Godzilla Coast</button>
+        <button class="btn-action" onclick="teleportPlayer(0, 0.8, 48)">Harbor Dock</button>
+        <button class="btn-action" onclick="teleportPlayer(-35, 0.1, 30)">Dino Park</button>
+        <button class="btn-action" onclick="teleportPlayer(20, 0.1, 25)">Elephant Zone</button>
       </div>
       <button class="btn-action" style="margin-top:8px; background:#ef4444;" onclick="closeModal('menu-modal')">Close</button>
     </div>
@@ -221,7 +223,7 @@
     </div>
   </div>
 
-  <!-- 7. Climate / Environmental Weather Modal -->
+  <!-- 7. Climate Modal -->
   <div id="weather-modal" class="modal-overlay">
     <div class="modal-card">
       <h3>⛅ Environmental Weather</h3>
@@ -244,23 +246,23 @@
     let myPlayerId = null;
     let playerName = "Player_" + Math.floor(Math.random() * 899 + 100);
     let penaltyGoals = 0;
-    let starsCount = 250;
+    let starsCount = 300;
     let activeChatTab = 'global';
     const friendsList = new Set();
 
     // 11 Languages Support
     const translations = {
-      en: { kick: "⚽ PENALTY KICK", sit: "🪑 SIT DOWN", drive: "DRIVE", jump: "JUMP" },
-      ml: { kick: "⚽ പെനാൽറ്റി കിക്ക്", sit: "🪑 ഇരിക്കുക", drive: "ഓടിക്കുക", jump: "ചാടുക" },
-      hi: { kick: "⚽ पेनाल्टी किक", sit: "🪑 बैठें", drive: "चलाएं", jump: "कूदें" },
-      fa: { kick: "⚽ ضربه پنالتی", sit: "🪑 نشستن", drive: "رانندگی", jump: "پرش" },
-      id: { kick: "⚽ TENDANGAN", sit: "🪑 DUDUK", drive: "KEMUDIKAN", jump: "LOMPAT" },
-      ru: { kick: "⚽ УДАР", sit: "🪑 СЕСТЬ", drive: "ВЕСТИ", jump: "ПРЫЖОК" },
-      it: { kick: "⚽ RIGORE", sit: "🪑 SIEDITI", drive: "GUIDA", jump: "SALTO" },
-      uz: { kick: "⚽ TEPISH", sit: "🪑 O'TIRISH", drive: "HAYDASH", jump: "SAKRASH" },
-      tg: { kick: "⚽ ЗАРБА", sit: "🪑 НИШАСТАН", drive: "РОНДАН", jump: "ҶАҲИДАН" },
-      my: { kick: "⚽ ကန်သွင်း", sit: "🪑 ထိုင်ပါ", drive: "မောင်း", jump: "ခုန်ပါ" },
-      zh: { kick: "⚽ 点球射门", sit: "🪑 坐下", drive: "驾驶", jump: "跳跃" }
+      en: { kick: "⚽ PENALTY KICK", sit: "🪑 SIT ON BENCH", jump: "JUMP" },
+      ml: { kick: "⚽ പെനാൽറ്റി കിക്ക്", sit: "🪑 ഇരിക്കുക", jump: "ചാടുക" },
+      hi: { kick: "⚽ पेनाल्टी किक", sit: "🪑 बैठें", jump: "कूदें" },
+      fa: { kick: "⚽ ضربه پنالتی", sit: "🪑 نشستن", jump: "پرش" },
+      id: { kick: "⚽ TENDANGAN", sit: "🪑 DUDUK", jump: "LOMPAT" },
+      ru: { kick: "⚽ УДАР", sit: "🪑 СЕСТЬ", jump: "ПРЫЖОК" },
+      it: { kick: "⚽ RIGORE", sit: "🪑 SIEDITI", jump: "SALTO" },
+      uz: { kick: "⚽ TEPISH", sit: "🪑 O'TIRISH", jump: "SAKRASH" },
+      tg: { kick: "⚽ ЗАРБА", sit: "🪑 НИШАСТАН", jump: "ҶАҲИДАН" },
+      my: { kick: "⚽ ကန်သွင်း", sit: "🪑 ထိုင်ပါ", jump: "ခုန်ပါ" },
+      zh: { kick: "⚽ 点球射门", sit: "🪑 坐下", jump: "跳跃" }
     };
     let currentLang = 'en';
 
@@ -271,45 +273,49 @@
       closeModal('lang-modal');
     };
 
-    // Telegram WebApp & Stars Handler
-    const tg = window.Telegram ? window.Telegram.WebApp : null;
-    if (tg) { tg.ready(); tg.expand(); }
-
-    window.buyStars = (amount) => {
-      starsCount += amount;
-      document.getElementById('hud-stars').innerText = starsCount;
-      alert(`⭐ Successfully added ${amount} Telegram Stars!`);
-      closeModal('stars-modal');
-    };
-
-    window.claimDailyReward = () => {
-      starsCount += 25;
-      document.getElementById('hud-stars').innerText = starsCount;
-      alert("🎁 Claimed Daily Gift: +25 Telegram Stars!");
-      closeModal('stars-modal');
-    };
-
-    // Social Sharing
-    window.shareSocial = (p) => {
-      const url = window.location.href;
-      const text = encodeURIComponent("Join me in GlobeVibe Metaverse Island!");
-      if (p === 'wa') window.open(`https://api.whatsapp.com/send?text=${text}%20${url}`);
-      else if (p === 'tg') window.open(`https://t.me/share/url?url=${url}&text=${text}`);
-      else if (p === 'ig') { navigator.clipboard.writeText(url); alert("Link copied for Instagram bio!"); }
-      else if (p === 'copy') { navigator.clipboard.writeText(url); alert("Link copied to clipboard!"); }
-      closeModal('profile-modal');
-    };
-
-    // Live Web Audio Synthesizer & Stage Loopback
+    // Web Audio Synthesizer (Realistic SFX: Ocean Waves, Roars, Trumpet, Engines, BGM)
     const actx = new (window.AudioContext || window.webkitAudioContext)();
     let micStream = null, loopbackNode = null, isSinging = false;
+    let bgmOsc = null, bgmGain = null, isMusicPlaying = false;
+    let oceanWaveNode = null;
 
+    // Continuous Ocean Waves Ambient Sound Generator
+    function startOceanWaveSFX() {
+      if (oceanWaveNode) return;
+      if (actx.state === 'suspended') actx.resume();
+      const bufferSize = actx.sampleRate * 3;
+      const noiseBuffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
+      const output = noiseBuffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+      }
+      const whiteNoise = actx.createBufferSource();
+      whiteNoise.buffer = noiseBuffer;
+      whiteNoise.loop = true;
+
+      const filter = actx.createBiquadFilter();
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(320, actx.currentTime);
+
+      const gain = actx.createGain();
+      gain.gain.setValueAtTime(0.04, actx.currentTime);
+
+      whiteNoise.connect(filter);
+      filter.connect(gain);
+      gain.connect(actx.destination);
+      whiteNoise.start();
+      oceanWaveNode = { whiteNoise, gain, filter };
+    }
+
+    // Dynamic Sound Effects (Vehicle Engine, Godzilla Roar, Dino Roar, Elephant Trumpet)
     function playSfx(type) {
       if (actx.state === 'suspended') actx.resume();
+      startOceanWaveSFX();
       const osc = actx.createOscillator();
       const gain = actx.createGain();
       osc.connect(gain); gain.connect(actx.destination);
       const now = actx.currentTime;
+
       if (type === 'kick') {
         osc.frequency.setValueAtTime(140, now);
         osc.frequency.exponentialRampToValueAtTime(30, now + 0.12);
@@ -323,12 +329,58 @@
         osc.start(now); osc.stop(now + 0.4);
       } else if (type === 'engine') {
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(70, now);
-        gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+        osc.frequency.setValueAtTime(75, now);
+        osc.frequency.linearRampToValueAtTime(110, now + 0.15);
+        gain.gain.setValueAtTime(0.12, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
         osc.start(now); osc.stop(now + 0.15);
+      } else if (type === 'godzilla') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(80, now);
+        osc.frequency.linearRampToValueAtTime(140, now + 0.3);
+        osc.frequency.exponentialRampToValueAtTime(25, now + 1.2);
+        gain.gain.setValueAtTime(0.8, now); gain.gain.linearRampToValueAtTime(0.01, now + 1.2);
+        osc.start(now); osc.stop(now + 1.2);
+      } else if (type === 'dino') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(120, now);
+        osc.frequency.exponentialRampToValueAtTime(45, now + 0.6);
+        gain.gain.setValueAtTime(0.5, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
+        osc.start(now); osc.stop(now + 0.6);
+      } else if (type === 'elephant') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.linearRampToValueAtTime(580, now + 0.25);
+        osc.frequency.exponentialRampToValueAtTime(200, now + 0.7);
+        gain.gain.setValueAtTime(0.65, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.7);
+        osc.start(now); osc.stop(now + 0.7);
       }
     }
 
+    // Concert BGM ON / OFF Synthesizer
+    window.toggleStageMusic = () => {
+      if (actx.state === 'suspended') actx.resume();
+      const btn = document.getElementById('btn-music-toggle');
+      if (!isMusicPlaying) {
+        bgmOsc = actx.createOscillator();
+        bgmGain = actx.createGain();
+        bgmOsc.type = 'sine';
+        bgmOsc.frequency.setValueAtTime(261.63, actx.currentTime);
+        bgmGain.gain.setValueAtTime(0.12, actx.currentTime);
+        bgmOsc.connect(bgmGain);
+        bgmGain.connect(actx.destination);
+        bgmOsc.start();
+        isMusicPlaying = true;
+        btn.innerText = "🎵 Concert BGM: ON";
+        btn.style.color = "#4ade80";
+      } else {
+        if (bgmOsc) { bgmOsc.stop(); bgmOsc.disconnect(); }
+        isMusicPlaying = false;
+        btn.innerText = "🎵 Concert BGM: OFF";
+        btn.style.color = "#38bdf8";
+      }
+    };
+
+    // Stage Live Mic & Loopback
     async function toggleStageSinging() {
       if (!isSinging) {
         try {
@@ -339,8 +391,8 @@
           micSource.connect(loopbackNode);
           loopbackNode.connect(actx.destination);
           isSinging = true;
-          alert("🎤 Live Stage Mic ON! You can sing now. Your voice loops back to your ears and broadcasts to all.");
-        } catch(e) { alert("Microphone access needed to sing on stage!"); }
+          alert("🎤 Live Stage Mic ON! Your singing loops back to your ears and broadcasts to all.");
+        } catch(e) { alert("Microphone access needed to sing!"); }
       } else {
         if (loopbackNode) loopbackNode.disconnect();
         isSinging = false;
@@ -372,7 +424,30 @@
       } else { isGlobMic = false; btn.classList.remove('active'); }
     };
 
-    // Multi-Passenger Rigging Registry (2 to 4 Players)
+    // Telegram Stars Handlers
+    window.buyStars = (amt) => {
+      starsCount += amt;
+      document.getElementById('hud-stars').innerText = starsCount;
+      alert(`⭐ Added ${amt} Telegram Stars!`);
+      closeModal('stars-modal');
+    };
+    window.claimDailyReward = () => {
+      starsCount += 25;
+      document.getElementById('hud-stars').innerText = starsCount;
+      alert("🎁 Claimed +25 Daily Stars!");
+      closeModal('stars-modal');
+    };
+
+    window.shareSocial = (p) => {
+      const url = window.location.href;
+      const text = encodeURIComponent("Join me in GlobeVibe Metaverse Island!");
+      if (p === 'wa') window.open(`https://api.whatsapp.com/send?text=${text}%20${url}`);
+      else if (p === 'tg') window.open(`https://t.me/share/url?url=${url}&text=${text}`);
+      else if (p === 'ig' || p === 'copy') { navigator.clipboard.writeText(url); alert("Link copied!"); }
+      closeModal('profile-modal');
+    };
+
+    // 2 to 4 Seater Multi-Passenger Registry
     const multiVehicles = {};
     function registerRig(name, obj, maxSeats, seatOffsets, isFlyer=false) {
       multiVehicles[name] = {
@@ -384,14 +459,15 @@
         isFlyer
       };
     }
+
     // =========================================================================
-    // SECTION 2: THREE.JS ENGINE, LIGHTING, OCEAN & SOLID ISLAND BASE
+    // SECTION 2: THREE.JS ENGINE, LIGHTS, DYNAMIC OCEAN WAVES & TERRAIN
     // =========================================================================
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x7ec0ee);
-    scene.fog = new THREE.FogExp2(0x7ec0ee, 0.007);
+    scene.fog = new THREE.FogExp2(0x7ec0ee, 0.006);
 
-    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 1200);
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 1500);
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -402,29 +478,30 @@
     scene.add(hemiLight);
 
     const sun = new THREE.DirectionalLight(0xfffaed, 2.0);
-    sun.position.set(60, 120, 50);
+    sun.position.set(60, 140, 50);
     sun.castShadow = true;
     scene.add(sun);
 
-    // 1. യഥാർത്ഥ കടൽ (Inbuilt Realistic Ocean)
-    const oceanGeo = new THREE.PlaneGeometry(700, 700);
+    // 1. റിയലിസ്റ്റിക് ഡൈനാമിക് ഓഷ്യൻ വേവ്‌സ്
+    const oceanGeo = new THREE.PlaneGeometry(800, 800, 64, 64);
     const oceanMat = new THREE.MeshStandardMaterial({
-      color: 0x0077be,
-      roughness: 0.15,
-      metalness: 0.85,
+      color: 0x006699,
+      roughness: 0.1,
+      metalness: 0.9,
       transparent: true,
-      opacity: 0.88
+      opacity: 0.88,
+      wireframe: false
     });
     const ocean = new THREE.Mesh(oceanGeo, oceanMat);
     ocean.rotation.x = -Math.PI / 2;
-    ocean.position.y = -0.4;
+    ocean.position.y = -0.3;
     scene.add(ocean);
 
-    // 2. ഉറച്ച ദ്വീപ് തറ (മോഡലുകൾ താഴേക്ക് വീഴില്ല)
-    const islandGeo = new THREE.CylinderGeometry(65, 72, 2.2, 64);
-    const islandMat = new THREE.MeshStandardMaterial({ color: 0x4ade80, roughness: 0.8 });
+    // 2. ഉറച്ച ദ്വീപ് അടിത്തറ & മണൽത്തീരം
+    const islandGeo = new THREE.CylinderGeometry(65, 72, 2.5, 64);
+    const islandMat = new THREE.MeshStandardMaterial({ color: 0x3cb371, roughness: 0.85 });
     const island = new THREE.Mesh(islandGeo, islandMat);
-    island.position.y = -1.0;
+    island.position.y = -1.15;
     island.receiveShadow = true;
     scene.add(island);
 
@@ -435,7 +512,7 @@
     sand.position.y = 0.02;
     scene.add(sand);
 
-    // Climate / Weather Particle System (Storm & Rain)
+    // Weather Particles (Storm / Rain)
     const rainCount = 1200;
     const rainGeo = new THREE.BufferGeometry();
     const rainPositions = new Float32Array(rainCount * 3);
@@ -485,32 +562,38 @@
       });
     }
 
+    // പ്രകൃതി: മരങ്ങളും പാറകളും
+    loadGLB('tree_large.glb', 8.5, m => {
+      m.position.set(-20, 0.1, -15); scene.add(m);
+      const m2 = m.clone(); m2.position.set(15, 0.1, -25); scene.add(m2);
+    });
+    loadGLB('tree.glb', 4.5, m => {
+      for (let i = 0; i < 10; i++) {
+        const tr = m.clone();
+        const ang = (i / 10) * Math.PI * 2;
+        tr.position.set(Math.cos(ang) * 45, 0.1, Math.sin(ang) * 45);
+        scene.add(tr);
+      }
+    });
+    loadGLB('boulder.glb', 3.5, m => { m.position.set(38, 0.1, 15); scene.add(m); });
+    loadGLB('small_rock.glb', 1.8, m => { m.position.set(-28, 0.1, 22); scene.add(m); });
+
     // =========================================================================
-    // SECTION 3: ദ്വീപിലെ മോഡലുകൾ & ഫ്ലോർ ലോക്ക് (FLOOR CLAMPED)
+    // SECTION 3: സ്പോട്ട് സെറ്റപ്പുകൾ & ഫ്ലോർ ലോക്കുകൾ
     // =========================================================================
 
-    // 1. സിറ്റി സെന്റർ & കാർ (4-Seater)
+    // 1. സിറ്റി സെന്റർ (കാർ പൂർണ്ണമായി ഒഴിവാക്കി)
     const cityGroup = new THREE.Group(); cityGroup.position.set(0, 0.1, 0); scene.add(cityGroup);
-    loadGLB('city.glb', 28, m => cityGroup.add(m));
-    loadGLB('city_tower.glb', 20, m => { m.position.set(-15, 0, -10); cityGroup.add(m); });
-    loadGLB('city_shop.glb', 8, m => { m.position.set(12, 0, -8); cityGroup.add(m); });
+    loadGLB('city.glb', 26, m => cityGroup.add(m));
+    loadGLB('city_tower.glb', 18, m => { m.position.set(-14, 0, -10); cityGroup.add(m); });
+    loadGLB('city_shop.glb', 7.5, m => { m.position.set(12, 0, -8); cityGroup.add(m); });
     loadGLB('street_light.glb', 4, m => { m.position.set(8, 0, 8); cityGroup.add(m); });
 
-    const carEntity = new THREE.Group(); carEntity.position.set(15, 0.1, 10); scene.add(carEntity);
-    loadGLB('car.glb', 3.2, m => carEntity.add(m));
-    registerRig('car', carEntity, 4, [
-      new THREE.Vector3(-0.35, -0.15, 0.15),
-      new THREE.Vector3(0.35, -0.15, 0.15),
-      new THREE.Vector3(-0.35, -0.15, -0.55),
-      new THREE.Vector3(0.35, -0.15, -0.55)
-    ], false);
+    // 2. ഫുട്ബോൾ പെനാൽറ്റി (സ്റ്റേഡിയം ഒഴിവാക്കി - ഒതുങ്ങിയ പെനാൽറ്റി ഗ്രൗണ്ട്)
+    const penaltyPost = new THREE.Group(); penaltyPost.position.set(-35, 0.1, -25); scene.add(penaltyPost);
+    loadGLB('goalpost.glb', 4.8, m => penaltyPost.add(m));
 
-    // 2. സ്പോർട്സ് സോൺ (Stadium, Goalpost & 0.65 Football)
-    const sportsGroup = new THREE.Group(); sportsGroup.position.set(-35, 0.1, -25); scene.add(sportsGroup);
-    loadGLB('football_stadium.glb', 28, m => sportsGroup.add(m));
-    loadGLB('goalpost.glb', 5.0, m => { m.position.set(0, 0, -10); sportsGroup.add(m); });
-
-    const fBall = new THREE.Group(); fBall.position.set(-35, 0.35, -28); scene.add(fBall);
+    const fBall = new THREE.Group(); fBall.position.set(-35, 0.35, -18); scene.add(fBall);
     loadGLB('football.glb', 0.65, m => fBall.add(m));
 
     // 3. കൺസേർട്ട് സ്റ്റേജ് (Floor locked at y = 1.35)
@@ -518,42 +601,108 @@
     loadGLB('concert_stage.glb', 14, m => concertGroup.add(m));
     loadGLB('concert_pack.glb', 5, m => { m.position.set(0, 1.35, -2); concertGroup.add(m); });
 
+    // പ്രേക്ഷകരുടെ ഇരിപ്പിടങ്ങൾ (Audience Benches)
     const benchPositions = [];
     loadGLB('park_bench.glb', 2.2, m => {
       for (let i = -1; i <= 1; i++) {
         const b = m.clone();
         b.position.set(30 + i * 4, 0.1, -12);
+        b.rotation.y = Math.PI;
         scene.add(b);
         benchPositions.push(b.position.clone());
       }
     });
 
-    // 4. ഹാർബർ ബോട്ട് (4-Seater)
+    // 4. ഹാർബർ ജെട്ടിയും ബോട്ടും (ജെട്ടിക്ക് അടിയിൽ വീഴില്ല - y = 0.8 ലോക്ക്)
     const dockGroup = new THREE.Group(); dockGroup.position.set(0, 0.1, 48); scene.add(dockGroup);
     loadGLB('dock.glb', 10, m => dockGroup.add(m));
 
-    const seaBoat = new THREE.Group(); seaBoat.position.set(0, -0.15, 58); scene.add(seaBoat);
+    // =========================================================================
+    // SECTION 4: ആഴക്കടലിലെ ജീവികളും വാഹനങ്ങളും (IN WATER ONLY)
+    // =========================================================================
+
+    // A. ഗോഡ്‌സില്ല (ആഴക്കടലിൽ മുഴുവൻ ശരീരവും വ്യക്തമായി കാണുന്ന ഭീമൻ ടൈറ്റാൻ)
+    const godzillaSea = new THREE.Group();
+    godzillaSea.position.set(-85, 0.0, -65);
+    scene.add(godzillaSea);
+    loadGLB('godzilla.glb', 26, m => godzillaSea.add(m));
+
+    // B. കടലിലെ ജീവികൾ (Marine Fauna)
+    const whaleMesh = new THREE.Group(); whaleMesh.position.set(-110, -1.8, 60); scene.add(whaleMesh);
+    loadGLB('Whale.glb', 12, m => whaleMesh.add(m));
+
+    const sharkMesh = new THREE.Group(); sharkMesh.position.set(80, -1.2, 80); scene.add(sharkMesh);
+    loadGLB('shark.glb', 5.5, m => sharkMesh.add(m));
+
+    // C. കടലിലെ ബോട്ടും കപ്പലും (Water Crafts Only)
+    const seaBoat = new THREE.Group(); seaBoat.position.set(0, -0.2, 58); scene.add(seaBoat);
     loadGLB('low_poly_boat.glb', 4.5, m => seaBoat.add(m));
     registerRig('boat', seaBoat, 4, [
-      new THREE.Vector3(0, 0.1, 0.3),
-      new THREE.Vector3(-0.3, 0.1, -0.3),
-      new THREE.Vector3(0.3, 0.1, -0.3),
-      new THREE.Vector3(0, 0.1, -0.7)
+      new THREE.Vector3(0, 0.2, 0.3),
+      new THREE.Vector3(-0.35, 0.2, -0.3),
+      new THREE.Vector3(0.35, 0.2, -0.3),
+      new THREE.Vector3(0, 0.2, -0.7)
     ], false);
 
-    // 5. ഫെറിസ് വീലും ആനയും (തറയിൽ ഉറപ്പിച്ചു നിർത്തിയത്)
-    let ferrisWheelMesh = null;
-    loadGLB('ferris_wheel.glb', 14, m => {
-      m.position.set(35, 6.8, 25);
-      scene.add(m);
-      ferrisWheelMesh = m;
-    });
+    const cargoShip = new THREE.Group(); cargoShip.position.set(45, -0.8, 110); scene.add(cargoShip);
+    loadGLB('low_poly_cargo_ship.glb', 18, m => cargoShip.add(m));
+    registerRig('ship', cargoShip, 4, [
+      new THREE.Vector3(0, 2.8, 2.5),
+      new THREE.Vector3(-1.0, 2.2, 0),
+      new THREE.Vector3(1.0, 2.2, 0),
+      new THREE.Vector3(0, 2.2, -2.5)
+    ], false);
 
-    const elephantEntity = new THREE.Group(); elephantEntity.position.set(20, 0.1, 30); scene.add(elephantEntity);
-    loadGLB('elephant.glb', 4.2, m => elephantEntity.add(m));
+    // =========================================================================
+    // SECTION 5: കരയിലെ ജീവികൾ, ദിനോസറുകൾ, റോബോട്ട് & ഫ്ലൈയിംഗ് റൈഡുകൾ
+    // =========================================================================
 
-    // 6. സ്പേസ് ജെറ്റ് (4-Seater Flyer)
-    const spaceJetEntity = new THREE.Group(); spaceJetEntity.position.set(-15, 0.1, 20); scene.add(spaceJetEntity);
+    // 1. ആന (Elephant Rideable Mount)
+    const elephantEntity = new THREE.Group(); elephantEntity.position.set(20, 0.1, 25); scene.add(elephantEntity);
+    loadGLB('elephant.glb', 4.6, m => elephantEntity.add(m));
+    registerRig('elephant', elephantEntity, 4, [
+      new THREE.Vector3(0, 2.2, 0.3),
+      new THREE.Vector3(0, 2.1, -0.3),
+      new THREE.Vector3(-0.3, 2.0, -0.8),
+      new THREE.Vector3(0.3, 2.0, -0.8)
+    ], false);
+
+    // 2. റോബോട്ട് (Mech Suit - 2 Seater)
+    const mechEntity = new THREE.Group(); mechEntity.position.set(10, 0.1, -10); scene.add(mechEntity);
+    loadGLB('mech.glb', 5.0, m => mechEntity.add(m));
+    registerRig('mech', mechEntity, 2, [new THREE.Vector3(0, 2.6, 0.2), new THREE.Vector3(0, 2.4, -0.4)], false);
+
+    // 3. ദിനോസറുകൾ (T-Rex, Triceratops, Stegosaurus, Oviraptor)
+    const trexEntity = new THREE.Group(); trexEntity.position.set(-35, 0.1, 30); scene.add(trexEntity);
+    loadGLB('Trex.glb', 5.5, m => trexEntity.add(m));
+    registerRig('trex', trexEntity, 4, [
+      new THREE.Vector3(0, 2.3, 0.4),
+      new THREE.Vector3(0, 2.2, -0.1),
+      new THREE.Vector3(-0.25, 2.1, -0.6),
+      new THREE.Vector3(0.25, 2.1, -0.6)
+    ], false);
+
+    const triEntity = new THREE.Group(); triEntity.position.set(-45, 0.1, 38); scene.add(triEntity);
+    loadGLB('Triceratops.glb', 4.5, m => triEntity.add(m));
+    registerRig('tri', triEntity, 3, [new THREE.Vector3(0, 1.8, 0.3), new THREE.Vector3(0, 1.7, -0.3), new THREE.Vector3(0, 1.6, -0.8)], false);
+
+    const stegoEntity = new THREE.Group(); stegoEntity.position.set(-25, 0.1, 42); scene.add(stegoEntity);
+    loadGLB('Stegosaurus.glb', 4.5, m => stegoEntity.add(m));
+
+    const oviEntity = new THREE.Group(); oviEntity.position.set(-50, 0.1, 25); scene.add(oviEntity);
+    loadGLB('Oviraptor.glb', 3.2, m => oviEntity.add(m));
+
+    // 4. ഫ്ലൈയേഴ്സ് (ഹെലികോപ്റ്റർ, സ്പേസ് ജെറ്റ്, ഡ്രാഗൺ)
+    const heliEntity = new THREE.Group(); heliEntity.position.set(-15, 0.1, 10); scene.add(heliEntity);
+    loadGLB('helicopter.glb', 5.5, m => heliEntity.add(m));
+    registerRig('heli', heliEntity, 4, [
+      new THREE.Vector3(-0.35, 0.4, 0.2),
+      new THREE.Vector3(0.35, 0.4, 0.2),
+      new THREE.Vector3(-0.35, 0.4, -0.5),
+      new THREE.Vector3(0.35, 0.4, -0.5)
+    ], true);
+
+    const spaceJetEntity = new THREE.Group(); spaceJetEntity.position.set(-25, 0.1, 0); scene.add(spaceJetEntity);
     loadGLB('spaceship.glb', 6.0, m => spaceJetEntity.add(m));
     registerRig('jet', spaceJetEntity, 4, [
       new THREE.Vector3(0, 0.5, 0.6),
@@ -562,8 +711,7 @@
       new THREE.Vector3(0.4, 0.5, -0.6)
     ], true);
 
-    // 7. ഫ്ലൈയിംഗ് ഡ്രാഗൺ (4-Seater Flyer)
-    const dragonEntity = new THREE.Group(); dragonEntity.position.set(-45, 0.1, 20); scene.add(dragonEntity);
+    const dragonEntity = new THREE.Group(); dragonEntity.position.set(-45, 0.1, 10); scene.add(dragonEntity);
     loadGLB('dragon.glb', 7.0, m => dragonEntity.add(m));
     registerRig('dragon', dragonEntity, 4, [
       new THREE.Vector3(0, 1.8, 0.5),
@@ -572,28 +720,8 @@
       new THREE.Vector3(0.3, 1.6, -0.5)
     ], true);
 
-    // 8. ദിനോസർ - T-Rex (4-Seater Ground Mount)
-    const dinoEntity = new THREE.Group(); dinoEntity.position.set(-35, 0.1, 35); scene.add(dinoEntity);
-    loadGLB('Trex.glb', 5.5, m => dinoEntity.add(m));
-    registerRig('dino', dinoEntity, 4, [
-      new THREE.Vector3(0, 2.2, 0.4),
-      new THREE.Vector3(0, 2.1, -0.1),
-      new THREE.Vector3(-0.25, 2.0, -0.6),
-      new THREE.Vector3(0.25, 2.0, -0.6)
-    ], false);
-
-    // 9. ഗോഡ്‌സില്ല (4-Seater Giant Titan Mount)
-    const godzillaEntity = new THREE.Group(); godzillaEntity.position.set(-55, 0.1, 0); scene.add(godzillaEntity);
-    loadGLB('godzilla.glb', 12, m => godzillaEntity.add(m));
-    registerRig('godzilla', godzillaEntity, 4, [
-      new THREE.Vector3(0, 4.8, 0.4),
-      new THREE.Vector3(-0.7, 4.2, 0),
-      new THREE.Vector3(0.7, 4.2, 0),
-      new THREE.Vector3(0, 3.8, -0.8)
-    ], false);
-
     // =========================================================================
-    // SECTION 4: പ്ലെയർ അവതാർ, മൾട്ടിപ്ലെയർ സമന്വയം & നെയിംടാഗുകൾ
+    // SECTION 6: പ്ലെയർ, മൾട്ടിപ്ലെയർ & ടച്ച് കൺട്രോളുകൾ
     // =========================================================================
     const localPlayer = new THREE.Group(); localPlayer.position.set(0, 0.1, 0); scene.add(localPlayer);
     const localAvatar = new THREE.Group(); localPlayer.add(localAvatar);
@@ -693,7 +821,7 @@
       b.scrollTop = b.scrollHeight;
     });
 
-    // Touch & Joystick Controls
+    // Touch & Joystick
     let joyX = 0, joyZ = 0, camRotX = 0;
     const jBase = document.getElementById('joy-base');
     const jStick = document.getElementById('joy-stick');
@@ -730,7 +858,7 @@
     };
 
     // =========================================================================
-    // SECTION 5: 2 - 4 പാസഞ്ചർ സീറ്റിംഗ് ഫിസിക്സ് & ഇന്ററാക്ഷൻ
+    // SECTION 7: ഇന്ററാക്ഷൻസ്, മൗണ്ടിംഗ് & ഡ്രൈവിംഗ്
     // =========================================================================
     const actBtn = document.getElementById('action-btn');
     let currentActiveSeat = null; // { rigKey, isDriver, seatIndex }
@@ -748,7 +876,7 @@
       if (currentActiveSeat) { actBtn.style.display = 'none'; return; }
       const p = localPlayer.position;
 
-      // 1. ലൈവ് സ്റ്റേജ് മൈക്ക്
+      // 1. സ്റ്റേജ് മൈക്ക്
       if (p.distanceTo(new THREE.Vector3(30, 1.35, -20)) < 3.2) {
         actBtn.innerText = isSinging ? "🛑 STOP SINGING" : "🎤 PERFORM / SING";
         actBtn.style.display = 'block';
@@ -756,7 +884,7 @@
         return;
       }
 
-      // 2. പ്രേക്ഷകരുടെ ഇരിപ്പിടങ്ങൾ (Audience Benches)
+      // 2. കാണികളുടെ ബെഞ്ചുകൾ (Audience Benches)
       for (let bp of benchPositions) {
         if (p.distanceTo(bp) < 2.0) {
           actBtn.innerText = "🪑 SIT ON BENCH"; actBtn.style.display = 'block';
@@ -776,19 +904,19 @@
         actBtn.innerText = "⚽ PENALTY KICK"; actBtn.style.display = 'block';
         actBtn.onclick = () => {
           playSfx('kick');
-          fBall.position.set(-35, 1.8, -35);
+          fBall.position.set(-35, 1.8, -25);
           setTimeout(() => {
             playSfx('goal');
             penaltyGoals++; starsCount += 10;
             document.getElementById('score-goals').innerText = penaltyGoals;
             document.getElementById('hud-stars').innerText = starsCount;
-            fBall.position.set(-35, 0.35, -28);
+            fBall.position.set(-35, 0.35, -18);
           }, 450);
         };
         return;
       }
 
-      // 4. അടുത്തുള്ള മറ്റ് കളിക്കാർക്ക് ഫ്രണ്ട് റിക്വസ്റ്റ് അയക്കുക
+      // 4. ഫ്രണ്ട് റിക്വസ്റ്റ്
       for (let id in networkPlayers) {
         const rPlayer = networkPlayers[id];
         if (p.distanceTo(rPlayer.position) < 3.0) {
@@ -797,35 +925,30 @@
           actBtn.onclick = () => {
             friendsList.add(rPlayer.userData.name);
             alert(`🤝 Sent Friend Request to ${rPlayer.userData.name}!`);
-            const fl = document.getElementById('friends-list');
-            fl.innerHTML = '';
-            friendsList.forEach(name => {
-              const row = document.createElement('div');
-              row.style.cssText = "display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.06); padding:4px 8px; border-radius:6px;";
-              row.innerHTML = `<span>👤 ${name}</span><span style="color:#4ade80;">Friends</span>`;
-              fl.appendChild(row);
-            });
           };
           return;
         }
       }
 
-      // 5. 2 - 4 സീറ്റർ റൈഡുകൾ (കാർ, ജെറ്റ്, ഡ്രാഗൺ, ഡിനോ, ഗോഡ്‌സില്ല, ബോട്ട്)
+      // 5. എല്ലാ റൈഡുകളും (2 - 4 Seater Mounts & Crafts)
       for (let key in multiVehicles) {
         const v = multiVehicles[key];
         const dist = p.distanceTo(v.object.position);
-        if (dist < (key === 'godzilla' ? 8.0 : 4.5)) {
+        if (dist < (key === 'ship' ? 12 : 5.0)) {
           const isDriver = v.passengers.length === 0;
-          actBtn.innerText = isDriver ? `DRIVE ${key.toUpperCase()}` : `RIDE AS PASSENGER (${v.passengers.length}/${v.maxSeats})`;
+          actBtn.innerText = isDriver ? `MOUNT ${key.toUpperCase()}` : `RIDE AS PASSENGER (${v.passengers.length}/${v.maxSeats})`;
           actBtn.style.display = 'block';
           actBtn.onclick = () => {
-            if (v.passengers.length >= v.maxSeats) { alert("Vehicle is full!"); return; }
-            const seatIdx = v.passengers.length;
+            if (v.passengers.length >= v.maxSeats) { alert("Mount is full!"); return; }
+            if (key === 'elephant') playSfx('elephant');
+            else if (key === 'trex' || key === 'tri') playSfx('dino');
+
+            const sIdx = v.passengers.length;
             v.passengers.push(myPlayerId);
-            currentActiveSeat = { rigKey: key, isDriver, seatIndex: seatIdx };
+            currentActiveSeat = { rigKey: key, isDriver, seatIndex: sIdx };
 
             v.object.add(localAvatar);
-            localAvatar.position.copy(v.offsets[seatIdx]);
+            localAvatar.position.copy(v.offsets[sIdx]);
             localAvatar.rotation.set(0, 0, 0);
 
             if (isDriver) {
@@ -866,7 +989,7 @@
     };
 
     // =========================================================================
-    // SECTION 6: പ്രധാന റെൻഡർ ലൂപ്പ് & ഫ്ലോർ എലവേഷൻ ലോക്കുകൾ
+    // SECTION 8: റെൻഡർ ലൂപ്പ്, അനിമേഷൻസ്, വേവ്‌സ് & ജെട്ടി ഫ്ലോർ ലോക്ക്
     // =========================================================================
     const clock = new THREE.Clock();
 
@@ -875,18 +998,30 @@
       checkInteractions();
       const time = clock.getElapsedTime();
 
-      // ഫെറിസ് വീൽ കറക്കം
-      if (ferrisWheelMesh) ferrisWheelMesh.rotation.z += 0.005;
-
-      // മഴത്തുള്ളികളുടെ ആനിമേഷൻ (Storm mode)
-      if (rainParticles.visible) {
-        const pos = rainGeo.attributes.position.array;
-        for (let i = 1; i < rainCount * 3; i += 3) {
-          pos[i] -= 1.8;
-          if (pos[i] < 0) pos[i] = 60;
-        }
-        rainGeo.attributes.position.needsUpdate = true;
+      // 1. ഡൈനാമിക് ഓഷ്യൻ വേവ്‌സ് ആനിമേഷൻ
+      const pos = oceanGeo.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const u = pos.getX(i);
+        const v = pos.getY(i);
+        const z = Math.sin(u * 0.05 + time * 1.5) * 0.25 + Math.cos(v * 0.05 + time * 1.2) * 0.25;
+        pos.setZ(i, z);
       }
+      pos.needsUpdate = true;
+
+      // 2. ആഴക്കടലിലെ ഗോഡ്‌സില്ല ആനിമേഷൻ & സൗണ്ട് (മുഴുവൻ ശരീരവും ഉയർന്നുനിൽക്കുന്നു)
+      godzillaSea.position.y = 0.0 + Math.sin(time * 1.0) * 0.25;
+      godzillaSea.rotation.y = -0.5 + Math.sin(time * 0.4) * 0.2;
+      if (Math.sin(time * 0.12) > 0.994) playSfx('godzilla');
+
+      // 3. കടലിലെ തിമിംഗലവും സ്രാവും
+      whaleMesh.position.x = -110 + Math.sin(time * 0.6) * 18;
+      whaleMesh.position.y = -1.8 + Math.sin(time * 1.2) * 0.3;
+      sharkMesh.position.z = 80 + Math.cos(time * 0.8) * 15;
+
+      // 4. ദിനോസറുകളുടെയും ആനയുടെയും ആനിമേഷൻ
+      trexEntity.rotation.y = Math.sin(time * 0.8) * 0.15;
+      triEntity.rotation.y = -Math.sin(time * 0.6) * 0.1;
+      elephantEntity.position.y = 0.1 + Math.sin(time * 1.5) * 0.04;
 
       if (!currentActiveSeat) {
         // നടക്കുമ്പോൾ
@@ -899,7 +1034,7 @@
 
           // കരയുടെ അതിർത്തി കടന്ന് ആരും വീഴില്ല
           const d = Math.hypot(localPlayer.position.x, localPlayer.position.z);
-          if (d > 58) {
+          if (d > 58 && localPlayer.position.z < 44) {
             localPlayer.position.x = (localPlayer.position.x / d) * 58;
             localPlayer.position.z = (localPlayer.position.z / d) * 58;
           }
@@ -913,9 +1048,14 @@
           });
         }
 
-        // സ്റ്റേജ് ഫ്ലോർ ലോക്ക് (y = 1.35)
+        // ഫ്ലോർ ലോക്ക്: സ്റ്റേജിലും (y = 1.35) ഹാർബർ ജെട്ടിയിലും (y = 0.8) താഴെ വീഴില്ല
         const distToStage = localPlayer.position.distanceTo(new THREE.Vector3(30, 0, -20));
-        const curFloor = (distToStage < 7.0) ? 1.35 : 0.1;
+        const distToDock = localPlayer.position.distanceTo(new THREE.Vector3(0, 0, 48));
+
+        let curFloor = 0.1;
+        if (distToStage < 7.0) curFloor = 1.35;
+        else if (distToDock < 7.0) curFloor = 0.8;
+
         if (localPlayer.position.y > curFloor) {
           localPlayer.position.y = Math.max(curFloor, localPlayer.position.y - 0.08);
         } else {
@@ -923,13 +1063,18 @@
         }
 
       } else if (currentActiveSeat.isDriver) {
-        // ഡ്രൈവർ നിയന്ത്രിക്കുമ്പോൾ
+        // ഡ്രൈവർ നിയന്ത്രിക്കുമ്പോൾ മാത്രം ശബ്ദം
         const v = multiVehicles[currentActiveSeat.rigKey];
         const obj = v.object;
 
-        if (isGas) { vSpeed = Math.min(vSpeed + 0.03, 1.3); playSfx('engine'); }
-        else if (isBrake) { vSpeed = Math.max(vSpeed - 0.04, -0.3); }
-        else { vSpeed *= 0.95; }
+        if (isGas) {
+          vSpeed = Math.min(vSpeed + 0.03, 1.2);
+          playSfx('engine');
+        } else if (isBrake) {
+          vSpeed = Math.max(vSpeed - 0.04, -0.3);
+        } else {
+          vSpeed *= 0.95;
+        }
 
         if (v.isFlyer) {
           if (isFly) { vAlt = Math.min(vAlt + 0.15, 35); obj.position.y = 0.1 + vAlt; }
