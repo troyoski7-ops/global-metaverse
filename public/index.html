@@ -615,7 +615,7 @@
     forestRiver.position.set(-23, 0.06, 28);
     scene.add(forestRiver);
 
-    // River Water Waves Motion Line
+    // River Bed
     const riverBedGeo = new THREE.PlaneGeometry(10, 36);
     const riverBedMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, roughness: 0.9 });
     const riverBed = new THREE.Mesh(riverBedGeo, riverBedMat);
@@ -745,7 +745,7 @@
     loadGLB('city_house.glb', 8.0, m => { m.position.set(-6, 0, -14); cityGroup.add(m); });
     loadGLB('street_light.glb', 4, m => { m.position.set(8, 0, 8); cityGroup.add(m); });
 
-    // Compact Penalty Corner (Restricted to far corner)
+    // Compact Penalty Corner
     const penaltyPost = new THREE.Group(); penaltyPost.position.set(-48, 0.1, -40); scene.add(penaltyPost);
     loadGLB('goalpost.glb', 4.8, m => penaltyPost.add(m));
     const fBall = new THREE.Group(); fBall.position.set(-48, 0.35, -34); scene.add(fBall);
@@ -817,7 +817,7 @@
       document.getElementById('btn-sel-girl').style.borderColor = gender === 'girl' ? '#38bdf8' : 'rgba(255,255,255,0.15)';
     };
 
-    // Downward Raycaster for Mountain Climbing
+    // Downward Raycaster for Mountain Surface Climbing
     const downRay = new THREE.Raycaster();
     const downVec = new THREE.Vector3(0, -1, 0);
 
@@ -1147,7 +1147,7 @@
 
         if (distToStage < 7.0) targetFloor = Math.max(targetFloor, 1.35);
         if (distToDock < 9.0) targetFloor = Math.max(targetFloor, 1.6);
-        if (distToForestBridge < 6.5) targetFloor = Math.max(targetFloor, 1.15); // Stand solid on bridge planks
+        if (distToForestBridge < 6.5) targetFloor = Math.max(targetFloor, 1.15);
 
         if (localPlayer.position.y > targetFloor) {
           localPlayer.position.y = Math.max(targetFloor, localPlayer.position.y - 0.15);
