@@ -72,9 +72,9 @@
   <div class="top-bar">
     <div class="hud-row">
       <div class="badges-group">
-        <div class="badge stars" onclick="openModal('stars-modal')">⭐ <span id="hud-stars">300</span> STARS</div>
+        <div class="badge stars" onclick="openModal('stars-modal')">⭐ <span id="hud-stars">300</span> <span id="lbl-stars">STARS</span></div>
         <div class="badge" onclick="openMasterSettings()">🚪 <span id="hud-room">Global</span></div>
-        <div class="badge">🟢 <span id="hud-online">1</span> Online</div>
+        <div class="badge">🟢 <span id="hud-online">1</span> <span id="lbl-online">Online</span></div>
       </div>
       <div class="comm-btns">
         <button id="btn-prox-mic" class="btn-circle" onclick="toggleProximityMic()">🎙</button>
@@ -87,14 +87,14 @@
         <div class="badge" onclick="openMasterSettings()">🌐 <span id="hud-lang">English</span></div>
         <div class="badge" onclick="openModal('weather-modal')">⛅ <span id="hud-weather">Sunny</span></div>
         <div class="badge" onclick="openMasterSettings()">👤 <span id="hud-player">Player</span></div>
-        <div class="badge" onclick="openModal('friends-modal')">🤝 Friends</div>
+        <div class="badge" onclick="openModal('friends-modal')">🤝 <span id="lbl-friends">Friends</span></div>
       </div>
     </div>
   </div>
 
   <!-- Scoreboard & Stage BGM -->
   <div id="score-hud">
-    <div>⚽ Goals:<span id="score-goals" class="score-val">0</span></div>
+    <div>⚽ <span id="lbl-goals">Goals</span>:<span id="score-goals" class="score-val">0</span></div>
     <button id="btn-music-toggle" onclick="toggleStageMusic()">🎵 Concert BGM: OFF</button>
   </div>
 
@@ -125,12 +125,12 @@
     </div>
   </div>
 
-  <!-- Master Settings Modal -->
+  <!-- Master Settings Modal (Fully Localized) -->
   <div id="master-settings-modal" class="modal-overlay">
     <div class="modal-card">
-      <h3>⚙️ Island Settings & Profile</h3>
+      <h3 id="ui-title-settings">⚙️ Island Settings & Profile</h3>
       
-      <div style="font-size:11px; font-weight:bold; color:#38bdf8;">👤 Player Profile</div>
+      <div id="ui-lbl-profile" style="font-size:11px; font-weight:bold; color:#38bdf8;">👤 Player Profile</div>
       <input type="text" id="upd-player-name" class="btn-action" style="text-align:left; background:#000;" placeholder="Player Name">
       <input type="text" id="upd-tg-id" class="btn-action" style="text-align:left; background:#000;" placeholder="Telegram ID (@username)">
       
@@ -139,11 +139,11 @@
         <button class="btn-action" id="btn-sel-girl" onclick="applyGenderSelect('girl')">👧 Girl Character</button>
       </div>
 
-      <div style="font-size:11px; font-weight:bold; color:#38bdf8; margin-top:4px;">🚪 Server & Custom Room</div>
+      <div id="ui-lbl-room" style="font-size:11px; font-weight:bold; color:#38bdf8; margin-top:4px;">🚪 Server & Custom Room</div>
       <input type="text" id="upd-room-name" class="btn-action" style="text-align:left; background:#000;" placeholder="Enter Room Code">
       <div class="grid-btns">
-        <button class="btn-action primary" onclick="execJoinCustomRoom()">Join / Create</button>
-        <button class="btn-action" onclick="execJoinGlobalServer()">Global Server</button>
+        <button class="btn-action primary" id="ui-btn-join" onclick="execJoinCustomRoom()">Join / Create</button>
+        <button class="btn-action" id="ui-btn-global" onclick="execJoinGlobalServer()">Global Server</button>
       </div>
 
       <div style="font-size:11px; font-weight:bold; color:#38bdf8; margin-top:4px;">🌐 11 Languages</div>
@@ -161,56 +161,56 @@
         <button class="btn-action" onclick="setLanguage('zh')">中文</button>
       </div>
 
-      <div style="font-size:11px; font-weight:bold; color:#38bdf8; margin-top:4px;">🔗 Invite & Share Profile</div>
+      <div id="ui-lbl-share" style="font-size:11px; font-weight:bold; color:#38bdf8; margin-top:4px;">🔗 Invite & Share Profile</div>
       <div class="grid-btns">
         <button class="btn-action" onclick="shareSocialAction('wa')">WhatsApp</button>
         <button class="btn-action" onclick="shareSocialAction('tg')">Telegram</button>
         <button class="btn-action" onclick="shareSocialAction('ig')">Instagram</button>
-        <button class="btn-action" onclick="shareSocialAction('copy')">Copy All</button>
+        <button class="btn-action" id="ui-btn-copy" onclick="shareSocialAction('copy')">Copy All</button>
       </div>
 
-      <button class="btn-action primary" style="margin-top:6px;" onclick="closeMasterSettings()">Save & Close</button>
+      <button class="btn-action primary" id="ui-btn-save" style="margin-top:6px;" onclick="closeMasterSettings()">Save & Close</button>
     </div>
   </div>
 
   <!-- Stars Modal -->
   <div id="stars-modal" class="modal-overlay">
     <div class="modal-card">
-      <h3>⭐ Telegram Stars Vault</h3>
-      <p style="font-size:11px; color:#cbd5e1;">Use Stars to upgrade mounts & get VIP access.</p>
+      <h3 id="ui-title-stars">⭐ Telegram Stars Vault</h3>
+      <p id="ui-desc-stars" style="font-size:11px; color:#cbd5e1;">Use Stars to upgrade mounts & get VIP access.</p>
       <div class="grid-btns">
         <button class="btn-action primary" onclick="buyStars(50)">Buy 50 ⭐</button>
         <button class="btn-action primary" onclick="buyStars(150)">Buy 150 ⭐</button>
         <button class="btn-action primary" onclick="buyStars(500)">Buy 500 ⭐</button>
-        <button class="btn-action" onclick="claimDailyReward()">Daily Gift (+25 ⭐)</button>
+        <button class="btn-action" id="ui-btn-daily" onclick="claimDailyReward()">Daily Gift (+25 ⭐)</button>
       </div>
-      <button class="btn-action" onclick="closeModal('stars-modal')">Close</button>
+      <button class="btn-action" id="ui-btn-close-stars" onclick="closeModal('stars-modal')">Close</button>
     </div>
   </div>
 
   <!-- Friends Modal -->
   <div id="friends-modal" class="modal-overlay">
     <div class="modal-card">
-      <h3>🤝 Friends & Requests</h3>
+      <h3 id="ui-title-friends">🤝 Friends & Requests</h3>
       <div id="friends-list" style="font-size:11px; display:flex; flex-direction:column; gap:6px; max-height:120px; overflow-y:auto;">
-        <div style="color:#94a3b8;">No friends added yet. Walk near any player to send a request!</div>
+        <div id="ui-txt-nofriends" style="color:#94a3b8;">No friends added yet. Walk near any player to send a request!</div>
       </div>
-      <button class="btn-action primary" onclick="shareSocialAction('copy')">Share Invite Link</button>
-      <button class="btn-action" onclick="closeModal('friends-modal')">Close</button>
+      <button class="btn-action primary" id="ui-btn-share-link" onclick="shareSocialAction('copy')">Share Invite Link</button>
+      <button class="btn-action" id="ui-btn-close-friends" onclick="closeModal('friends-modal')">Close</button>
     </div>
   </div>
 
   <!-- Weather Modal -->
   <div id="weather-modal" class="modal-overlay">
     <div class="modal-card">
-      <h3>⛅ Climate & Weather</h3>
+      <h3 id="ui-title-weather">⛅ Climate & Weather</h3>
       <div class="grid-btns">
-        <button class="btn-action" onclick="applyWeather('sunny')">☀️ Sunny</button>
+        <button class="btn-action" onclick="applyWeather('sunny')">☀️️ Sunny</button>
         <button class="btn-action" onclick="applyWeather('sunset')">🌅 Sunset</button>
         <button class="btn-action" onclick="applyWeather('storm')">⛈️ Storm & Rain</button>
         <button class="btn-action" onclick="applyWeather('night')">🌙 Night</button>
       </div>
-      <button class="btn-action" onclick="closeModal('weather-modal')">Close</button>
+      <button class="btn-action" id="ui-btn-close-weather" onclick="closeModal('weather-modal')">Close</button>
     </div>
   </div>
 
@@ -228,26 +228,149 @@
     let activeChatTab = 'global';
     const friendsList = new Set();
 
-    // 11 Languages Support
-    const translations = {
-      en: { kick: "⚽ PENALTY KICK", sit: "🪑 SIT ON BENCH", jump: "JUMP" },
-      ml: { kick: "⚽ പെനാൽറ്റി കിക്ക്", sit: "🪑 ഇരിക്കുക", jump: "ചാടുക" },
-      hi: { kick: "⚽ पेनाल्टी किक", sit: "🪑 बैठें", jump: "कूदें" },
-      fa: { kick: "⚽ ضربه پنالتی", sit: "🪑 نشستن", jump: "پرش" },
-      id: { kick: "⚽ TENDANGAN", sit: "🪑 DUDUK", jump: "LOMPAT" },
-      ru: { kick: "⚽ УДАР", sit: "🪑 СЕСТЬ", jump: "ПРЫЖОК" },
-      it: { kick: "⚽ RIGORE", sit: "🪑 SIEDITI", jump: "SALTO" },
-      uz: { kick: "⚽ TEPISH", sit: "🪑 O'TIRISH", jump: "SAKRASH" },
-      tg: { kick: "⚽ ЗАРБА", sit: "🪑 НИШАСТАН", jump: "ҶАҲИДАН" },
-      my: { kick: "⚽ ကန်သွင်း", sit: "🪑 ထိုင်ပါ", jump: "ခုန်ပါ" },
-      zh: { kick: "⚽ 点球射门", sit: "🪑 坐下", jump: "跳跃" }
+    // 11 LANGUAGES COMPLETE LOCALIZATION DICTIONARY
+    const dict = {
+      en: {
+        jump: "JUMP", kick: "⚽ PENALTY KICK", sit: "🪑 SIT", board: "BOARD", exit: "🚪 EXIT",
+        goals: "Goals", stars: "STARS", online: "Online", friends: "Friends",
+        settings: "⚙️ Island Settings & Profile", profile: "👤 Player Profile", room: "🚪 Server & Custom Room",
+        join: "Join / Create", global: "Global Server", share: "🔗 Invite & Share Profile", copy: "Copy All", save: "Save & Close",
+        starsTitle: "⭐ Telegram Stars Vault", starsDesc: "Use Stars to upgrade mounts & get VIP access.", daily: "Daily Gift (+25 ⭐)",
+        friendsTitle: "🤝 Friends & Requests", noFriends: "No friends added yet. Walk near any player to send a request!",
+        shareLink: "Share Invite Link", close: "Close", weatherTitle: "⛅ Climate & Weather", boy: "👦 Boy Character", girl: "👧 Girl Character"
+      },
+      ml: {
+        jump: "ചാടുക", kick: "⚽ പെനാൽറ്റി കിക്ക്", sit: "🪑 ഇരിക്കുക", board: "കയറുക", exit: "🚪 പുറത്തിറങ്ങുക",
+        goals: "ഗോളുകൾ", stars: "സ്റ്റാറുകൾ", online: "ഓൺലൈൻ", friends: "കൂട്ടുകാർ",
+        settings: "⚙️ ഐലൻഡ് സെറ്റിങ്സ് & പ്രൊഫൈൽ", profile: "👤 പ്ലെയർ പ്രൊഫൈൽ", room: "🚪 സെർവർ & റൂം",
+        join: "റൂമിൽ കയറുക", global: "ഗ്ലോബൽ സെർവർ", share: "🔗 ക്ഷണിക്കുക & ഷെയർ ചെയ്യുക", copy: "കോപ്പി ചെയ്യുക", save: "സേവ് ചെയ്ത് അടയ്ക്കുക",
+        starsTitle: "⭐ ടെലിഗ്രാം സ്റ്റാർസ്", starsDesc: "സ്റ്റാർ ഉപയോഗിച്ച് വിഐപി റൈഡുകൾ നേടുക.", daily: "പ്രതിദിന സമ്മാനം (+25 ⭐)",
+        friendsTitle: "🤝 ഫ്രണ്ട്സ് & റിക്വസ്റ്റുകൾ", noFriends: "കൂട്ടുകാരെ ആഡ് ചെയ്തിട്ടില്ല. പ്ലെയർക്കടുത്ത് പോയി റിക്വസ്റ്റ് അയക്കൂ!",
+        shareLink: "ലിങ്ക് ഷെയർ ചെയ്യുക", close: "അടയ്ക്കുക", weatherTitle: "⛅ കാലാവസ്ഥ", boy: "👦 ആൺകുട്ടി", girl: "👧 പെൺകുട്ടി"
+      },
+      hi: {
+        jump: "कूदें", kick: "⚽ पेनाल्टी किक", sit: "🪑 बैठें", board: "सवारी करें", exit: "🚪 बाहर निकलें",
+        goals: "गोल", stars: "सितारे", online: "ऑनलाइन", friends: "मित्र",
+        settings: "⚙️ सेटिंग्स और प्रोफ़ाइल", profile: "👤 प्लेयर प्रोफ़ाइल", room: "🚪 सर्वर और रूम",
+        join: "शामिल हों", global: "ग्लोबल सर्वर", share: "🔗 आमंत्रित करें", copy: "कॉपी करें", save: "सहेजें और बंद करें",
+        starsTitle: "⭐ टेलीग्राम स्टार्स", starsDesc: "सवारी अनलॉक करने के लिए सितारों का उपयोग करें।", daily: "दैनिक उपहार (+25 ⭐)",
+        friendsTitle: "🤝 मित्र सूची", noFriends: "कोई मित्र नहीं जोड़ा गया। अनुरोध भेजने के लिए पास जाएं!",
+        shareLink: "लिंक साझा करें", close: "बंद करें", weatherTitle: "⛅ मौसम", boy: "👦 लड़का", girl: "👧 लड़की"
+      },
+      fa: {
+        jump: "پرش", kick: "⚽ پنالتی", sit: "🪑 نشستن", board: "سوار شدن", exit: "🚪 خروج",
+        goals: "گل‌ها", stars: "ستاره‌ها", online: "آنلاین", friends: "دوستان",
+        settings: "⚙️ تنظیمات و پروفایل", profile: "👤 پروفایل بازیکن", room: "🚪 سرور و اتاق",
+        join: "ورود / ساخت", global: "سرور جهانی", share: "🔗 اشتراک گذاری", copy: "کپی همه", save: "ذخیره و بستن",
+        starsTitle: "⭐ ستاره‌های تلگرام", starsDesc: "برای دریافت امکانات ویژه از ستاره استفاده کنید.", daily: "هدیه روزانه (+25 ⭐)",
+        friendsTitle: "🤝 لیست دوستان", noFriends: "هنوز دوستی اضافه نشده است.",
+        shareLink: "اشتراک لینک", close: "بستن", weatherTitle: "⛅ آب و هوا", boy: "👦 پسر", girl: "👧 دختر"
+      },
+      id: {
+        jump: "LOMPAT", kick: "⚽ PENALTI", sit: "🪑 DUDUK", board: "NAIK", exit: "🚪 KELUAR",
+        goals: "Gol", stars: "BINTANG", online: "Online", friends: "Teman",
+        settings: "⚙️ Pengaturan & Profil", profile: "👤 Profil Pemain", room: "🚪 Server & Ruangan",
+        join: "Gabung / Buat", global: "Server Global", share: "🔗 Undang & Bagikan", copy: "Salin Semua", save: "Simpan & Tutup",
+        starsTitle: "⭐ Bintang Telegram", starsDesc: "Gunakan Bintang untuk akses VIP.", daily: "Hadiah Harian (+25 ⭐)",
+        friendsTitle: "🤝 Teman & Permintaan", noFriends: "Belum ada teman yang ditambahkan.",
+        shareLink: "Bagikan Tautan", close: "Tutup", weatherTitle: "⛅ Cuaca", boy: "👦 Karakter Pria", girl: "👧 Karakter Wanita"
+      },
+      ru: {
+        jump: "ПРЫЖОК", kick: "⚽ ПЕНАЛЬТИ", sit: "🪑 СЕСТЬ", board: "СЕСТЬ В ТРАНСПОРТ", exit: "🚪 ВЫХОД",
+        goals: "Голы", stars: "ЗВЁЗДЫ", online: "Онлайн", friends: "Друзья",
+        settings: "⚙️ Настройки и профиль", profile: "👤 Профиль игрока", room: "🚪 Комната и сервер",
+        join: "Войти / Создать", global: "Глобальный сервер", share: "🔗 Поделиться", copy: "Копировать", save: "Сохранить",
+        starsTitle: "⭐ Звёзды Telegram", starsDesc: "Используйте звёзды для VIP доступа.", daily: "Ежедневный бонус (+25 ⭐)",
+        friendsTitle: "🤝 Друзья", noFriends: "Друзей пока нет. Подойдите к игроку, чтобы добавить!",
+        shareLink: "Поделиться ссылкой", close: "Закрыть", weatherTitle: "⛅ Погода", boy: "👦 Парень", girl: "👧 Девушка"
+      },
+      it: {
+        jump: "SALTO", kick: "⚽ RIGORE", sit: "🪑 SIEDITI", board: "SALI", exit: "🚪 ESCI",
+        goals: "Gol", stars: "STELLE", online: "Online", friends: "Amici",
+        settings: "⚙️ Impostazioni e Profilo", profile: "👤 Profilo Giocatore", room: "🚪 Server e Stanza",
+        join: "Entra / Crea", global: "Server Globale", share: "🔗 Invita e Condividi", copy: "Copia Tutto", save: "Salva e Chiudi",
+        starsTitle: "⭐ Stelle Telegram", starsDesc: "Usa le stelle per vantaggi VIP.", daily: "Regalo Giornaliero (+25 ⭐)",
+        friendsTitle: "🤝 Amici e Richieste", noFriends: "Nessun amico aggiunto finora.",
+        shareLink: "Condividi Link", close: "Chiudi", weatherTitle: "⛅ Meteo", boy: "👦 Ragazzo", girl: "👧 Ragazza"
+      },
+      uz: {
+        jump: "SAKRASH", kick: "⚽ PENALTI", sit: "🪑 O'TIRISH", board: "CHIQISH", exit: "🚪 CHIQISH",
+        goals: "Gollar", stars: "YULDUZLAR", online: "Onlayn", friends: "Do'stlar",
+        settings: "⚙️ Sozlamalar va Profil", profile: "👤 O'yinchi Profili", room: "🚪 Xona va Server",
+        join: "Kirish / Yaratish", global: "Global Server", share: "🔗 Ulashish", copy: "Nusxalash", save: "Saqlash va Yopish",
+        starsTitle: "⭐ Telegram Yulduzlari", starsDesc: "VIP imkoniyatlar uchun yulduzlardan foydalaning.", daily: "Kunlik Sovg'a (+25 ⭐)",
+        friendsTitle: "🤝 Do'stlar", noFriends: "Do'stlar hali qo'shilmagan.",
+        shareLink: "Havolani Ulashish", close: "Yopish", weatherTitle: "⛅ Ob-havo", boy: "👦 Bola", girl: "👧 Qiz"
+      },
+      tg: {
+        jump: "ҶАҲИДАН", kick: "⚽ ПЕНАЛТИ", sit: "🪑 НИШАСТАН", board: "САВОР ШУДАН", exit: "🚪 БАРОМАДАН",
+        goals: "Голҳо", stars: "СИТОРАҲО", online: "Онлайн", friends: "Дӯстон",
+        settings: "⚙️ Танзимот ва Профил", profile: "👤 Профили бозигар", room: "🚪 Сервер ва Хона",
+        join: "Даромадан / Сохтан", global: "Сервери Ҷаҳонӣ", share: "🔗 Мубодила кардан", copy: "Нусхабардорӣ", save: "Сабт ва Пӯшидан",
+        starsTitle: "⭐ Ситораҳои Telegram", starsDesc: "Барои VIP аз ситораҳо истифода баред.", daily: "Тӯҳфаи ҳаррӯза (+25 ⭐)",
+        friendsTitle: "🤝 Дӯстон", noFriends: "Ҳоло дӯстон нестанд.",
+        shareLink: "Пайвандро Фиристед", close: "Пӯшидан", weatherTitle: "⛅ Обу ҳаво", boy: "👦 Писар", girl: "👧 Духтар"
+      },
+      my: {
+        jump: "ခုန်ပါ", kick: "⚽ ပင်နယ်တီ", sit: "🪑 ထိုင်ပါ", board: "စီးနင်းပါ", exit: "🚪 ထွက်ပါ",
+        goals: "ဂိုးများ", stars: "ကြယ်များ", online: "လိုင်းပေါ်တွင်", friends: "သူငယ်ချင်းများ",
+        settings: "⚙️ ကျွန်းဆက်တင်နှင့် ပရိုဖိုင်", profile: "👤 ကစားသမား ပရိုဖိုင်", room: "🚪 အခန်းနှင့် ဆာဗာ",
+        join: "ဝင်မည် / ပြုလုပ်မည်", global: "ကမ္ဘာလုံးဆိုင်ရာ ဆာဗာ", share: "🔗 ဖိတ်ခေါ် မျှဝေမည်", copy: "ကူးယူမည်", save: "သိမ်းဆည်းမည်",
+        starsTitle: "⭐ တယ်လီဂရမ် ကြယ်များ", starsDesc: "VIP အထူးအခွင့်အရေးများအတွက် သုံးပါ။", daily: "နေ့စဉ် လက်ဆောင် (+25 ⭐)",
+        friendsTitle: "🤝 သူငယ်ချင်းများ", noFriends: "သူငယ်ချင်း မရှိသေးပါ။",
+        shareLink: "လင့်ခ် မျှဝေမည်", close: "ပိတ်မည်", weatherTitle: "⛅ ရာသီဥတု", boy: "👦 ယောက်ျားလေး", girl: "👧 မိန်းကလေး"
+      },
+      zh: {
+        jump: "跳跃", kick: "⚽ 点球射门", sit: "🪑 坐下", board: "乘坐", exit: "🚪 退出",
+        goals: "进球", stars: "星星", online: "在线", friends: "好友",
+        settings: "⚙️ 岛屿设置与个人资料", profile: "👤 玩家资料", room: "🚪 服务器与房间",
+        join: "加入 / 创建", global: "全球服务器", share: "🔗 邀请与分享", copy: "复制全部", save: "保存并关闭",
+        starsTitle: "⭐ Telegram 之星", starsDesc: "使用星星升级坐骑并获得 VIP 权限。", daily: "每日礼包 (+25 ⭐)",
+        friendsTitle: "🤝 好友与请求", noFriends: "暂无好友。走近任意玩家即可发送请求！",
+        shareLink: "分享邀请链接", close: "关闭", weatherTitle: "⛅ 天气与气候", boy: "👦 男孩角色", girl: "👧 女孩角色"
+      }
     };
+
     let currentLang = 'en';
 
     window.setLanguage = (lang) => {
       currentLang = lang;
+      const t = dict[lang] || dict['en'];
       document.getElementById('hud-lang').innerText = lang.toUpperCase();
-      document.getElementById('jump-btn').innerText = translations[lang].jump;
+      document.getElementById('jump-btn').innerText = t.jump;
+      document.getElementById('lbl-stars').innerText = t.stars;
+      document.getElementById('lbl-online').innerText = t.online;
+      document.getElementById('lbl-friends').innerText = t.friends;
+      document.getElementById('lbl-goals').innerText = t.goals;
+
+      // Settings UI Localization
+      document.getElementById('ui-title-settings').innerText = t.settings;
+      document.getElementById('ui-lbl-profile').innerText = t.profile;
+      document.getElementById('ui-lbl-room').innerText = t.room;
+      document.getElementById('ui-btn-join').innerText = t.join;
+      document.getElementById('ui-btn-global').innerText = t.global;
+      document.getElementById('ui-lbl-share').innerText = t.share;
+      document.getElementById('ui-btn-copy').innerText = t.copy;
+      document.getElementById('ui-btn-save').innerText = t.save;
+      document.getElementById('btn-sel-boy').innerText = t.boy;
+      document.getElementById('btn-sel-girl').innerText = t.girl;
+
+      // Stars UI Localization
+      document.getElementById('ui-title-stars').innerText = t.starsTitle;
+      document.getElementById('ui-desc-stars').innerText = t.starsDesc;
+      document.getElementById('ui-btn-daily').innerText = t.daily;
+      document.getElementById('ui-btn-close-stars').innerText = t.close;
+
+      // Friends UI Localization
+      document.getElementById('ui-title-friends').innerText = t.friendsTitle;
+      document.getElementById('ui-txt-nofriends').innerText = t.noFriends;
+      document.getElementById('ui-btn-share-link').innerText = t.shareLink;
+      document.getElementById('ui-btn-close-friends').innerText = t.close;
+
+      // Weather UI Localization
+      document.getElementById('ui-title-weather').innerText = t.weatherTitle;
+      document.getElementById('ui-btn-close-weather').innerText = t.close;
+
       closeMasterSettings();
     };
 
@@ -457,7 +580,7 @@
     sun.castShadow = true;
     scene.add(sun);
 
-    // 1. Dynamic Ocean Waves
+    // Dynamic Ocean Waves
     const oceanGeo = new THREE.PlaneGeometry(800, 800, 64, 64);
     const oceanMat = new THREE.MeshStandardMaterial({
       color: 0x006699,
@@ -471,7 +594,7 @@
     ocean.position.y = -0.3;
     scene.add(ocean);
 
-    // 2. Solid Island Base
+    // Solid Island Base
     const islandGeo = new THREE.CylinderGeometry(65, 72, 2.5, 64);
     const islandMat = new THREE.MeshStandardMaterial({ color: 0x3cb371, roughness: 0.85 });
     const island = new THREE.Mesh(islandGeo, islandMat);
@@ -535,164 +658,161 @@
       });
     }
 
-    // Nature: Trees & Rocks (Basketball Court & Dock Cleaned of Trees)
-    loadGLB('tree_large.glb', 8.5, m => {
-      m.position.set(-20, 0.1, -15); scene.add(m);
-    });
-    loadGLB('tree.glb', 4.5, m => {
-      for (let i = 0; i < 6; i++) {
-        const tr = m.clone();
-        const ang = (i / 6) * Math.PI * 2;
-        const tx = Math.cos(ang) * 48;
-        const tz = Math.sin(ang) * 48;
-        // Keep clear of basketball court, robot rear, and dock bridge
-        if (!(tx > 10 && tz < -10) && !(Math.abs(tx) < 15 && tz > 30) && !(tx > -15 && tx < 30 && tz > -30 && tz < 20)) {
-          tr.position.set(tx, 0.1, tz);
-          scene.add(tr);
-        }
-      }
-    });
-    loadGLB('boulder.glb', 3.5, m => { m.position.set(38, 0.1, 15); scene.add(m); });
-    loadGLB('small_rock.glb', 1.8, m => { m.position.set(-28, 0.1, 22); scene.add(m); });
-
     // =========================================================================
-    // SECTION 3: SPOTS, RIVER & ARENAS
+    // SECTION 3: SIDE 2 - DINO & FANTASY FOREST ZONE (FULL INTEGRATION)
     // =========================================================================
 
-    // 1. City Center
+    // 1. Forest River & Bridge
+    const forestRiverGeo = new THREE.PlaneGeometry(12, 38);
+    const forestRiverMat = new THREE.MeshStandardMaterial({ color: 0x0ea5e9, roughness: 0.15, metalness: 0.8, transparent: true, opacity: 0.88 });
+    const forestRiver = new THREE.Mesh(forestRiverGeo, forestRiverMat);
+    forestRiver.rotation.x = -Math.PI / 2;
+    forestRiver.position.set(-36, 0.04, 32);
+    scene.add(forestRiver);
+
+    // Swimming River Fish (Procedural Animation)
+    const riverFishGroup = new THREE.Group();
+    for (let f = 0; f < 5; f++) {
+      const fGeo = new THREE.ConeGeometry(0.12, 0.4, 4);
+      const fMat = new THREE.MeshBasicMaterial({ color: 0xf97316 });
+      const fMesh = new THREE.Mesh(fGeo, fMat);
+      fMesh.rotation.x = Math.PI / 2;
+      fMesh.position.set(-36 + (Math.random() - 0.5) * 6, 0.08, 20 + f * 4);
+      riverFishGroup.add(fMesh);
+    }
+    scene.add(riverFishGroup);
+
+    // Forest Wooden Bridge
+    loadGLB('dock.glb', 8.5, m => {
+      m.position.set(-36, 0.1, 32);
+      scene.add(m);
+    });
+
+    // 2. Dense Fantasy Flora (Trees, Palms, Twisted Trees & Bushes)
+    loadGLB('twisted_tree_1.glb', 6.5, m => { m.position.set(-48, 0.1, 18); scene.add(m); });
+    loadGLB('twisted_tree_2.glb', 7.0, m => { m.position.set(-28, 0.1, 46); scene.add(m); });
+    loadGLB('palm_tree.glb', 6.0, m => {
+      m.position.set(-24, 0.1, 20); scene.add(m);
+      const p2 = m.clone(); p2.position.set(-52, 0.1, 40); scene.add(p2);
+    });
+    loadGLB('forest_trees.glb', 8.0, m => {
+      m.position.set(-42, 0.1, 50); scene.add(m);
+      const f2 = m.clone(); f2.position.set(-55, 0.1, 22); scene.add(f2);
+    });
+
+    // Flowers, Bushes & Bird House
+    loadGLB('flower_bush.glb', 2.5, m => {
+      m.position.set(-32, 0.1, 24); scene.add(m);
+      const b2 = m.clone(); b2.position.set(-44, 0.1, 36); scene.add(b2);
+    });
+    loadGLB('flower_group.glb', 2.0, m => { m.position.set(-27, 0.1, 30); scene.add(m); });
+    loadGLB('flower_yellow.glb', 1.8, m => { m.position.set(-38, 0.1, 42); scene.add(m); });
+    loadGLB('flowers_small.glb', 1.6, m => { m.position.set(-45, 0.1, 28); scene.add(m); });
+    loadGLB('bird_house.glb', 2.0, m => { m.position.set(-48, 2.5, 18); scene.add(m); });
+
+    // 3. Dynamic Animated Insects (Butterflies & Bees flutter above flowers)
+    const flutterGroup = new THREE.Group(); scene.add(flutterGroup);
+    let bfBlue = null, bfOrange = null, armabeeObj = null;
+    loadGLB('butterfly_blue.glb', 1.2, m => { m.position.set(-32, 1.2, 24); flutterGroup.add(m); bfBlue = m; });
+    loadGLB('butterfly_orange.glb', 1.2, m => { m.position.set(-27, 1.0, 30); flutterGroup.add(m); bfOrange = m; });
+    loadGLB('armabee.glb', 1.0, m => { m.position.set(-38, 1.4, 42); flutterGroup.add(m); armabeeObj = m; });
+
+    // 4. Airborne Birds & Flying Pterodactylus
+    const pteroGroup = new THREE.Group(); pteroGroup.position.set(-36, 14, 32); scene.add(pteroGroup);
+    let pteroObj = null;
+    loadGLB('Pterodactylus.glb', 4.5, m => { pteroGroup.add(m); pteroObj = m; });
+
+    const birdFlyGroup = new THREE.Group(); birdFlyGroup.position.set(-36, 8, 32); scene.add(birdFlyGroup);
+    let birdObj = null, parrotObj = null;
+    loadGLB('bird.glb', 1.2, m => { m.position.set(4, 0, 0); birdFlyGroup.add(m); birdObj = m; });
+    loadGLB('parrot.glb', 1.4, m => { m.position.set(-4, 0, 0); birdFlyGroup.add(m); parrotObj = m; });
+
+    // 5. Ground Dinosaurs (Positioned naturally in the Forest)
+    const trexEntity = new THREE.Group(); trexEntity.position.set(-45, 0.1, 32); scene.add(trexEntity);
+    loadGLB('Trex.glb', 5.5, m => trexEntity.add(m));
+    registerRig('trex', trexEntity, 4, [
+      new THREE.Vector3(0, 2.3, 0.4), new THREE.Vector3(0, 2.2, -0.1),
+      new THREE.Vector3(-0.25, 2.1, -0.6), new THREE.Vector3(0.25, 2.1, -0.6)
+    ], false);
+
+    const triEntity = new THREE.Group(); triEntity.position.set(-26, 0.1, 38); scene.add(triEntity);
+    loadGLB('Triceratops.glb', 4.5, m => triEntity.add(m));
+    registerRig('tri', triEntity, 3, [new THREE.Vector3(0, 1.8, 0.3), new THREE.Vector3(0, 1.7, -0.3), new THREE.Vector3(0, 1.6, -0.8)], false);
+
+    const stegoEntity = new THREE.Group(); stegoEntity.position.set(-48, 0.1, 44); scene.add(stegoEntity);
+    loadGLB('Stegosaurus.glb', 4.5, m => stegoEntity.add(m));
+
+    const oviEntity = new THREE.Group(); oviEntity.position.set(-28, 0.1, 26); scene.add(oviEntity);
+    loadGLB('Oviraptor.glb', 3.0, m => oviEntity.add(m));
+
+    // =========================================================================
+    // SECTION 4: CITY, CONCERT, PENALTY, SEA & RIGS
+    // =========================================================================
+
+    // Middle City Center
     const cityGroup = new THREE.Group(); cityGroup.position.set(0, 0.1, 0); scene.add(cityGroup);
     loadGLB('city.glb', 26, m => cityGroup.add(m));
     loadGLB('city_tower.glb', 18, m => { m.position.set(-14, 0, -10); cityGroup.add(m); });
     loadGLB('city_shop.glb', 7.5, m => { m.position.set(12, 0, -8); cityGroup.add(m); });
     loadGLB('street_light.glb', 4, m => { m.position.set(8, 0, 8); cityGroup.add(m); });
 
-    // 2. Football Penalty (Small Ball 0.65 Scale & Direct Facing Goalpost)
+    // Penalty Kick
     const penaltyPost = new THREE.Group(); penaltyPost.position.set(-35, 0.1, -26); scene.add(penaltyPost);
     loadGLB('goalpost.glb', 4.8, m => penaltyPost.add(m));
-
     const fBall = new THREE.Group(); fBall.position.set(-35, 0.35, -18); scene.add(fBall);
     loadGLB('football.glb', 0.65, m => fBall.add(m));
 
-    // 3. Concert Stage (Clean Layout, Removed Side Stadiums & Benches)
+    // Concert Stage
     const concertGroup = new THREE.Group(); concertGroup.position.set(30, 0.1, -20); scene.add(concertGroup);
     loadGLB('concert_stage.glb', 14, m => concertGroup.add(m));
     loadGLB('concert_pack.glb', 5, m => { m.position.set(0, 1.35, -2); concertGroup.add(m); });
 
-    // 4. Harbor Jetty / Bridge with Small River Underneath
-    const riverGeo = new THREE.PlaneGeometry(16, 42);
-    const riverMat = new THREE.MeshStandardMaterial({
-      color: 0x0077be,
-      roughness: 0.1,
-      metalness: 0.8,
-      transparent: true,
-      opacity: 0.92
-    });
-    const smallRiver = new THREE.Mesh(riverGeo, riverMat);
-    smallRiver.rotation.x = -Math.PI / 2;
-    smallRiver.position.set(0, 0.05, 48); // River under Bridge
-    scene.add(smallRiver);
-
-    const dockGroup = new THREE.Group(); dockGroup.position.set(0, 0.1, 48); scene.add(dockGroup);
-    loadGLB('dock.glb', 10, m => dockGroup.add(m));
-
-    // =========================================================================
-    // SECTION 4: WATER ONLY ENTITIES & SHIP FIX
-    // =========================================================================
-
-    // Deep Sea Godzilla
-    const godzillaSea = new THREE.Group();
-    godzillaSea.position.set(-85, 0.0, -65);
-    scene.add(godzillaSea);
+    // Sea Entities
+    const godzillaSea = new THREE.Group(); godzillaSea.position.set(-85, 0.0, -65); scene.add(godzillaSea);
     loadGLB('godzilla.glb', 26, m => godzillaSea.add(m));
 
-    // Marine Animals
     const whaleMesh = new THREE.Group(); whaleMesh.position.set(-110, -1.8, 60); scene.add(whaleMesh);
     loadGLB('Whale.glb', 12, m => whaleMesh.add(m));
 
     const sharkMesh = new THREE.Group(); sharkMesh.position.set(80, -1.2, 80); scene.add(sharkMesh);
     loadGLB('shark.glb', 5.5, m => sharkMesh.add(m));
 
-    // Small Boat
+    // Sea Mounts
     const seaBoat = new THREE.Group(); seaBoat.position.set(0, -0.2, 58); scene.add(seaBoat);
     loadGLB('low_poly_boat.glb', 4.5, m => seaBoat.add(m));
-    registerRig('boat', seaBoat, 4, [
-      new THREE.Vector3(0, 0.2, 0.3),
-      new THREE.Vector3(-0.35, 0.2, -0.3),
-      new THREE.Vector3(0.35, 0.2, -0.3),
-      new THREE.Vector3(0, 0.2, -0.7)
-    ], false);
+    registerRig('boat', seaBoat, 4, [new THREE.Vector3(0, 0.2, 0.3), new THREE.Vector3(-0.35, 0.2, -0.3), new THREE.Vector3(0.35, 0.2, -0.3), new THREE.Vector3(0, 0.2, -0.7)], false);
 
-    // Cargo Ship (Configured for Joystick Steering & Deck Mounting)
     const cargoShip = new THREE.Group(); cargoShip.position.set(0, 0.5, 75); scene.add(cargoShip);
     loadGLB('low_poly_cargo_ship.glb', 18, m => cargoShip.add(m));
-    registerRig('ship', cargoShip, 4, [
-      new THREE.Vector3(0, 3.8, 1.2),
-      new THREE.Vector3(-1.2, 3.8, 0.2),
-      new THREE.Vector3(1.2, 3.8, 0.2),
-      new THREE.Vector3(0, 3.8, -1.8)
-    ], false);
+    registerRig('ship', cargoShip, 4, [new THREE.Vector3(0, 3.8, 1.2), new THREE.Vector3(-1.2, 3.8, 0.2), new THREE.Vector3(1.2, 3.8, 0.2), new THREE.Vector3(0, 3.8, -1.8)], false);
 
-    // =========================================================================
-    // SECTION 5: MOUNTS & VEHICLES (IN-CABIN DRIVER CONFIGURATION)
-    // =========================================================================
-
-    // Space Jet
-    const spaceJetEntity = new THREE.Group(); spaceJetEntity.position.set(-25, 0.1, 0); scene.add(spaceJetEntity);
-    loadGLB('spaceship.glb', 6.0, m => spaceJetEntity.add(m));
-    registerRig('jet', spaceJetEntity, 4, [
-      new THREE.Vector3(0, 0.45, 0.1),
-      new THREE.Vector3(0, 0.45, -0.5),
-      new THREE.Vector3(-0.35, 0.45, -0.9),
-      new THREE.Vector3(0.35, 0.45, -0.9)
-    ], true);
-
-    // Helicopter
-    const heliEntity = new THREE.Group(); heliEntity.position.set(-15, 0.1, 10); scene.add(heliEntity);
-    loadGLB('helicopter.glb', 5.5, m => heliEntity.add(m));
-    registerRig('heli', heliEntity, 4, [
-      new THREE.Vector3(-0.35, 0.45, 0.3),
-      new THREE.Vector3(0.35, 0.45, 0.3),
-      new THREE.Vector3(-0.35, 0.45, -0.3),
-      new THREE.Vector3(0.35, 0.45, -0.3)
-    ], true);
-
-    // Flying Dragon
+    // Flying Dragon & Vehicles
     const dragonEntity = new THREE.Group(); dragonEntity.position.set(-45, 0.1, 10); scene.add(dragonEntity);
     loadGLB('dragon.glb', 7.0, m => dragonEntity.add(m));
-    registerRig('dragon', dragonEntity, 4, [
-      new THREE.Vector3(0, 1.8, 0.5),
-      new THREE.Vector3(0, 1.7, 0.0),
-      new THREE.Vector3(-0.3, 1.6, -0.5),
-      new THREE.Vector3(0.3, 1.6, -0.5)
-    ], true);
+    registerRig('dragon', dragonEntity, 4, [new THREE.Vector3(0, 1.8, 0.5), new THREE.Vector3(0, 1.7, 0.0), new THREE.Vector3(-0.3, 1.6, -0.5), new THREE.Vector3(0.3, 1.6, -0.5)], true);
 
-    // Robot Mech
+    const spaceJetEntity = new THREE.Group(); spaceJetEntity.position.set(-25, 0.1, 0); scene.add(spaceJetEntity);
+    loadGLB('spaceship.glb', 6.0, m => spaceJetEntity.add(m));
+    registerRig('jet', spaceJetEntity, 4, [new THREE.Vector3(0, 0.45, 0.1), new THREE.Vector3(0, 0.45, -0.5), new THREE.Vector3(-0.35, 0.45, -0.9), new THREE.Vector3(0.35, 0.45, -0.9)], true);
+
+    const heliEntity = new THREE.Group(); heliEntity.position.set(-15, 0.1, 10); scene.add(heliEntity);
+    loadGLB('helicopter.glb', 5.5, m => heliEntity.add(m));
+    registerRig('heli', heliEntity, 4, [new THREE.Vector3(-0.35, 0.45, 0.3), new THREE.Vector3(0.35, 0.45, 0.3), new THREE.Vector3(-0.35, 0.45, -0.3), new THREE.Vector3(0.35, 0.45, -0.3)], true);
+
     const mechEntity = new THREE.Group(); mechEntity.position.set(10, 0.1, -10); scene.add(mechEntity);
     loadGLB('mech.glb', 5.0, m => mechEntity.add(m));
     registerRig('mech', mechEntity, 2, [new THREE.Vector3(0, 2.6, 0.2), new THREE.Vector3(0, 2.4, -0.4)], false);
 
-    // Dinosaurs
-    const trexEntity = new THREE.Group(); trexEntity.position.set(-35, 0.1, 30); scene.add(trexEntity);
-    loadGLB('Trex.glb', 5.5, m => trexEntity.add(m));
-    registerRig('trex', trexEntity, 4, [
-      new THREE.Vector3(0, 2.3, 0.4),
-      new THREE.Vector3(0, 2.2, -0.1),
-      new THREE.Vector3(-0.25, 2.1, -0.6),
-      new THREE.Vector3(0.25, 2.1, -0.6)
-    ], false);
+    // Harbor Jetty / Bridge
+    const dockGroup = new THREE.Group(); dockGroup.position.set(0, 0.1, 48); scene.add(dockGroup);
+    loadGLB('dock.glb', 10, m => dockGroup.add(m));
 
-    const triEntity = new THREE.Group(); triEntity.position.set(-45, 0.1, 38); scene.add(triEntity);
-    loadGLB('Triceratops.glb', 4.5, m => triEntity.add(m));
-    registerRig('tri', triEntity, 3, [new THREE.Vector3(0, 1.8, 0.3), new THREE.Vector3(0, 1.7, -0.3), new THREE.Vector3(0, 1.6, -0.8)], false);
-
-    const stegoEntity = new THREE.Group(); stegoEntity.position.set(-25, 0.1, 42); scene.add(stegoEntity);
-    loadGLB('Stegosaurus.glb', 4.5, m => stegoEntity.add(m));
-
-    const oviEntity = new THREE.Group(); oviEntity.position.set(-50, 0.1, 25); scene.add(oviEntity);
-    loadGLB('Oviraptor.glb', 3.2, m => oviEntity.add(m));
+    // Rocks
+    loadGLB('boulder.glb', 3.5, m => { m.position.set(38, 0.1, 15); scene.add(m); });
+    loadGLB('small_rock.glb', 1.8, m => { m.position.set(-28, 0.1, 22); scene.add(m); });
 
     // =========================================================================
-    // SECTION 6: PLAYER, MULTIPLAYER SYNC & CHAT
+    // SECTION 5: PLAYER, MULTIPLAYER SYNC & CHAT
     // =========================================================================
     const localPlayer = new THREE.Group(); localPlayer.position.set(0, 0.1, 0); scene.add(localPlayer);
     const localAvatar = new THREE.Group(); localPlayer.add(localAvatar);
@@ -821,9 +941,7 @@
 
     window.triggerJump = () => { if (localPlayer.position.y <= 0.25) localPlayer.position.y = 1.6; };
 
-    // =========================================================================
-    // SECTION 7: INTERACTIONS & RIG MOUNTING
-    // =========================================================================
+    // Interactions & Rig Mounting
     const actBtn = document.getElementById('action-btn');
     let currentActiveSeat = null;
     let vSpeed = 0, vAlt = 0;
@@ -839,8 +957,9 @@
     function checkInteractions() {
       if (currentActiveSeat) { actBtn.style.display = 'none'; return; }
       const p = localPlayer.position;
+      const t = dict[currentLang] || dict['en'];
 
-      // 1. Stage Mic
+      // Stage Mic
       if (p.distanceTo(new THREE.Vector3(30, 1.35, -20)) < 3.2) {
         actBtn.innerText = isSinging ? "🛑 STOP SINGING" : "🎤 PERFORM / SING";
         actBtn.style.display = 'block';
@@ -848,9 +967,9 @@
         return;
       }
 
-      // 2. Penalty Kick (Clean Small Football & Goalpost)
+      // Penalty Kick
       if (p.distanceTo(fBall.position) < 2.5) {
-        actBtn.innerText = "⚽ PENALTY KICK"; actBtn.style.display = 'block';
+        actBtn.innerText = t.kick; actBtn.style.display = 'block';
         actBtn.onclick = () => {
           playSfx('kick');
           fBall.position.set(-35, 1.8, -26);
@@ -865,28 +984,14 @@
         return;
       }
 
-      // 3. Friend Requests
-      for (let id in networkPlayers) {
-        const rPlayer = networkPlayers[id];
-        if (p.distanceTo(rPlayer.position) < 3.0) {
-          actBtn.innerText = `➕ Add ${rPlayer.userData.name}`;
-          actBtn.style.display = 'block';
-          actBtn.onclick = () => {
-            friendsList.add(rPlayer.userData.name);
-            alert(`🤝 Sent Friend Request to ${rPlayer.userData.name}!`);
-          };
-          return;
-        }
-      }
-
-      // 4. Vehicles & Mounts (In-Cabin Driver Mode: Avatar Invisible while Driving)
+      // Vehicles & Mounts (In-Cabin Driver Mode)
       for (let key in multiVehicles) {
         const v = multiVehicles[key];
         const dist = p.distanceTo(v.object.position);
         const checkLimit = (key === 'ship') ? 25.0 : 5.0;
         if (dist < checkLimit) {
           const isDriver = v.passengers.length === 0;
-          actBtn.innerText = isDriver ? `BOARD ${key.toUpperCase()}` : `RIDE AS PASSENGER (${v.passengers.length}/${v.maxSeats})`;
+          actBtn.innerText = isDriver ? `${t.board} ${key.toUpperCase()}` : `RIDE (${v.passengers.length}/${v.maxSeats})`;
           actBtn.style.display = 'block';
           actBtn.onclick = () => {
             if (v.passengers.length >= v.maxSeats) { alert("Mount is full!"); return; }
@@ -925,7 +1030,7 @@
         localPlayer.add(localAvatar);
         localAvatar.position.set(0, 0, 0);
         localAvatar.rotation.set(0, 0, 0);
-        localAvatar.visible = true; // Show avatar again after exiting
+        localAvatar.visible = true;
         localPlayer.position.set(v.object.position.x + 3.0, 0.1, v.object.position.z);
       }
       document.getElementById('vehicle-pedals').style.display = 'none';
@@ -936,7 +1041,7 @@
     };
 
     // =========================================================================
-    // SECTION 8: RENDER LOOP, DOCK FLOOR LOCK & ANIMATIONS
+    // SECTION 6: RENDER LOOP, ANIMATIONS & DOCK LOCKS
     // =========================================================================
     const clock = new THREE.Clock();
 
@@ -955,19 +1060,49 @@
       }
       pos.needsUpdate = true;
 
-      // Godzilla Sea Animation & Sound
+      // 1. Forest River Fish Swimming Motion
+      riverFishGroup.children.forEach((f, idx) => {
+        f.position.z += Math.sin(time * 2.0 + idx) * 0.03;
+        f.position.x += Math.cos(time * 2.5 + idx) * 0.015;
+      });
+
+      // 2. Insects Fluttering (Butterflies & Bees)
+      if (bfBlue) {
+        bfBlue.position.y = 1.2 + Math.sin(time * 3.0) * 0.25;
+        bfBlue.rotation.y = time * 1.5;
+      }
+      if (bfOrange) {
+        bfOrange.position.y = 1.0 + Math.cos(time * 2.8) * 0.2;
+        bfOrange.rotation.y = -time * 1.2;
+      }
+      if (armabeeObj) {
+        armabeeObj.position.y = 1.4 + Math.sin(time * 4.0) * 0.15;
+        armabeeObj.position.x = -38 + Math.cos(time * 1.8) * 0.8;
+      }
+
+      // 3. Airborne Circles (Pterodactylus & Birds circling over the Forest)
+      const pteroAngle = time * 0.4;
+      pteroGroup.position.x = -36 + Math.cos(pteroAngle) * 16;
+      pteroGroup.position.z = 32 + Math.sin(pteroAngle) * 16;
+      pteroGroup.rotation.y = -pteroAngle + Math.PI / 2;
+
+      const birdAngle = time * 0.6;
+      birdFlyGroup.position.x = -36 + Math.cos(birdAngle) * 12;
+      birdFlyGroup.position.z = 32 + Math.sin(birdAngle) * 12;
+      birdFlyGroup.rotation.y = -birdAngle + Math.PI / 2;
+
+      // Dinosaurs Breathing
+      trexEntity.rotation.y = Math.sin(time * 0.8) * 0.15;
+      triEntity.rotation.y = -Math.sin(time * 0.6) * 0.1;
+
+      // Sea Animals & Godzilla
       godzillaSea.position.y = 0.0 + Math.sin(time * 1.0) * 0.25;
       godzillaSea.rotation.y = -0.5 + Math.sin(time * 0.4) * 0.2;
       if (Math.sin(time * 0.1) > 0.995) playSfx('godzilla');
 
-      // Sea Animals
       whaleMesh.position.x = -110 + Math.sin(time * 0.6) * 18;
       whaleMesh.position.y = -1.8 + Math.sin(time * 1.2) * 0.3;
       sharkMesh.position.z = 80 + Math.cos(time * 0.8) * 15;
-
-      // Dinosaurs
-      trexEntity.rotation.y = Math.sin(time * 0.8) * 0.15;
-      triEntity.rotation.y = -Math.sin(time * 0.6) * 0.1;
 
       if (!currentActiveSeat) {
         if (joyX !== 0 || joyZ !== 0) {
@@ -992,13 +1127,15 @@
           });
         }
 
-        // Bridge / Jetty & Stage Floor Locks (Bridge clamped to y = 1.6)
+        // Bridge & Stage Floor Locks
         const distToStage = localPlayer.position.distanceTo(new THREE.Vector3(30, 0, -20));
         const distToDock = localPlayer.position.distanceTo(new THREE.Vector3(0, 0, 48));
+        const distToForestBridge = localPlayer.position.distanceTo(new THREE.Vector3(-36, 0, 32));
 
         let curFloor = 0.1;
         if (distToStage < 7.0) curFloor = 1.35;
         else if (distToDock < 9.0) curFloor = 1.6;
+        else if (distToForestBridge < 8.0) curFloor = 1.1;
 
         if (localPlayer.position.y > curFloor) {
           localPlayer.position.y = Math.max(curFloor, localPlayer.position.y - 0.08);
@@ -1011,28 +1148,14 @@
         const obj = v.object;
 
         if (currentActiveSeat.rigKey === 'ship') {
-          // Joystick steered Ship Mechanics
-          if (Math.abs(joyX) > 0.05) {
-            obj.rotation.y -= joyX * 0.025;
-          }
-          if (isGas) {
-            vSpeed = Math.min(vSpeed + 0.015, 0.7);
-            playSfx('engine');
-          } else if (isBrake) {
-            vSpeed = Math.max(vSpeed - 0.02, -0.2);
-          } else {
-            vSpeed *= 0.97;
-          }
+          if (Math.abs(joyX) > 0.05) obj.rotation.y -= joyX * 0.025;
+          if (isGas) { vSpeed = Math.min(vSpeed + 0.015, 0.7); playSfx('engine'); }
+          else if (isBrake) { vSpeed = Math.max(vSpeed - 0.02, -0.2); }
+          else { vSpeed *= 0.97; }
         } else {
-          // Normal vehicles (Jet, Heli, Mech, etc.)
-          if (isGas) {
-            vSpeed = Math.min(vSpeed + 0.03, 1.2);
-            playSfx('engine');
-          } else if (isBrake) {
-            vSpeed = Math.max(vSpeed - 0.04, -0.3);
-          } else {
-            vSpeed *= 0.95;
-          }
+          if (isGas) { vSpeed = Math.min(vSpeed + 0.03, 1.2); playSfx('engine'); }
+          else if (isBrake) { vSpeed = Math.max(vSpeed - 0.04, -0.3); }
+          else { vSpeed *= 0.95; }
 
           if (v.isFlyer) {
             if (isFly) { vAlt = Math.min(vAlt + 0.15, 35); obj.position.y = 0.1 + vAlt; }
@@ -1056,7 +1179,7 @@
         });
       }
 
-      // Camera Rig (Sky View for Cargo Ship)
+      // Camera Rig
       if (currentActiveSeat && currentActiveSeat.rigKey === 'ship') {
         const shipObj = multiVehicles['ship'].object;
         camera.position.x = shipObj.position.x + Math.sin(camRotX) * 24;
