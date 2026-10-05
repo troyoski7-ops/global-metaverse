@@ -30,7 +30,7 @@
     .score-val { color: #38bdf8; font-family: monospace; font-size: 12px; margin-left: 6px; }
     #btn-music-toggle { background: #1e293b; border: 1px solid #38bdf8; color: #38bdf8; border-radius: 6px; padding: 3px 6px; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 4px; }
 
-    /* Action & Navigation Controls */
+    /* Action Controls */
     #action-btn { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: #0284c7; color: #fff; border: 2px solid #fff; padding: 12px 28px; border-radius: 30px; font-size: 13px; font-weight: 900; display: none; z-index: 35; box-shadow: 0 4px 15px rgba(2,132,199,0.7); cursor: pointer; }
     #dismount-btn { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: #ef4444; color: #fff; border: 1.5px solid #fff; padding: 8px 22px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; z-index: 40; cursor: pointer; }
     #speedo { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); color: #38bdf8; border: 1px solid #38bdf8; padding: 5px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; z-index: 35; }
@@ -92,7 +92,7 @@
     </div>
   </div>
 
-  <!-- Goals Scoreboard & BGM -->
+  <!-- Goal Scoreboard & Audio -->
   <div id="score-hud">
     <div>⚽ <span id="lbl-goals">Goals</span>:<span id="score-goals" class="score-val">0</span></div>
     <button id="btn-music-toggle" onclick="toggleStageMusic()">🎵 Concert BGM: OFF</button>
@@ -125,7 +125,7 @@
     </div>
   </div>
 
-  <!-- Localized Master Settings Modal -->
+  <!-- Master Settings Modal (11 Languages) -->
   <div id="master-settings-modal" class="modal-overlay">
     <div class="modal-card">
       <h3 id="ui-title-settings">⚙️ Island Settings & Profile</h3>
@@ -366,7 +366,7 @@
       closeModal('stars-modal');
     };
 
-    // Synthesizer Audio
+    // Synthesizer Audio & Spatial Effects
     const actx = new (window.AudioContext || window.webkitAudioContext)();
     let micStream = null, loopbackNode = null, isSinging = false;
     let bgmOsc = null, isMusicPlaying = false;
@@ -411,11 +411,19 @@
       } else if (type === 'dino') {
         const osc = actx.createOscillator(); const gain = actx.createGain();
         osc.connect(gain); gain.connect(actx.destination);
-        osc.type = 'square';
-        osc.frequency.setValueAtTime(110, now);
-        osc.frequency.exponentialRampToValueAtTime(40, now + 0.5);
-        gain.gain.setValueAtTime(0.4, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
-        osc.start(now); osc.stop(now + 0.5);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(95, now);
+        osc.frequency.exponentialRampToValueAtTime(32, now + 0.6);
+        gain.gain.setValueAtTime(0.45, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.6);
+        osc.start(now); osc.stop(now + 0.6);
+      } else if (type === 'bird') {
+        const osc = actx.createOscillator(); const gain = actx.createGain();
+        osc.connect(gain); gain.connect(actx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1800, now);
+        osc.frequency.exponentialRampToValueAtTime(2400, now + 0.08);
+        gain.gain.setValueAtTime(0.12, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+        osc.start(now); osc.stop(now + 0.12);
       }
     }
 
@@ -481,7 +489,7 @@
       } else { isGlobMic = false; btn.classList.remove('active'); }
     };
 
-    // Vehicle Registry
+    // Vehicles & Mounts Registry
     const multiVehicles = {};
     function registerRig(name, obj, maxSeats, seatOffsets, isFlyer=false, controlType='pedal') {
       multiVehicles[name] = { name, object: obj, maxSeats, offsets: seatOffsets, passengers: [], isFlyer, controlType };
@@ -517,7 +525,7 @@
     ocean.position.y = -0.3;
     scene.add(ocean);
 
-    // Solid Island Base
+    // Base Island
     const islandGeo = new THREE.CylinderGeometry(65, 72, 2.5, 64);
     const islandMat = new THREE.MeshStandardMaterial({ color: 0x3cb371, roughness: 0.85 });
     const island = new THREE.Mesh(islandGeo, islandMat);
@@ -531,7 +539,7 @@
     sand.position.y = 0.02;
     scene.add(sand);
 
-    // Weather System
+    // Weather Particles
     const rainCount = 1000;
     const rainGeo = new THREE.BufferGeometry();
     const rainPositions = new Float32Array(rainCount * 3);
@@ -565,15 +573,23 @@
       closeModal('weather-modal');
     };
 
-    // GLB Asset Loader
+    // Animation Mixers
+    const mixers = [];
     const gltfLoader = new THREE.GLTFLoader();
-    function loadGLB(file, size, onLoad) {
+
+    function loadGLBWithAnim(file, size, onLoad) {
       const handle = (gltf) => {
         const root = gltf.scene;
         const bbox = new THREE.Box3().setFromObject(root);
         const sz = new THREE.Vector3(); bbox.getSize(sz);
         const maxD = Math.max(sz.x, sz.y, sz.z);
         if (maxD > 0 && size) root.scale.setScalar(size / maxD);
+        if (gltf.animations && gltf.animations.length > 0) {
+          const mixer = new THREE.AnimationMixer(root);
+          const act = mixer.clipAction(gltf.animations[0]);
+          act.play();
+          mixers.push(mixer);
+        }
         onLoad(root);
       };
       gltfLoader.load(file, handle, undefined, () => {
@@ -581,22 +597,30 @@
       });
     }
 
+    function loadGLB(file, size, onLoad) {
+      loadGLBWithAnim(file, size, onLoad);
+    }
+
     // =========================================================================
-    // SECTION 3: SIDE 2 - DINO & FANTASY FOREST (HILLS, STRICT BOUNDARY & RIDES)
+    // SECTION 3: SIDE 2 - DINO & FANTASY MOUNTAIN (RAYCAST LOCK & CIRCLING FLIGHT)
     // =========================================================================
 
-    // 1. Forest Terrain Floor (Hills & Rocks)
+    // Mountain Anchor Point: X: -38, Z: 36
+    const mtnCenter = new THREE.Vector3(-38, 0, 36);
+    let mountainMesh = null;
+
     loadGLB('forest_terrain.glb', 48, m => {
-      m.position.set(-36, 0.05, 30);
+      m.position.set(mtnCenter.x, 0.0, mtnCenter.z);
       scene.add(m);
+      mountainMesh = m;
     });
 
-    // Forest River & Bridge
-    const forestRiverGeo = new THREE.PlaneGeometry(12, 38);
+    // River & Bridge (Adjusted at the foot of the mountain)
+    const forestRiverGeo = new THREE.PlaneGeometry(10, 32);
     const forestRiverMat = new THREE.MeshStandardMaterial({ color: 0x0ea5e9, roughness: 0.15, metalness: 0.8, transparent: true, opacity: 0.88 });
     const forestRiver = new THREE.Mesh(forestRiverGeo, forestRiverMat);
     forestRiver.rotation.x = -Math.PI / 2;
-    forestRiver.position.set(-36, 0.04, 32);
+    forestRiver.position.set(-25, 0.04, 30);
     scene.add(forestRiver);
 
     // Swimming River Fish
@@ -606,79 +630,100 @@
       const fMat = new THREE.MeshBasicMaterial({ color: 0xf97316 });
       const fMesh = new THREE.Mesh(fGeo, fMat);
       fMesh.rotation.x = Math.PI / 2;
-      fMesh.position.set(-36 + (Math.random() - 0.5) * 6, 0.08, 20 + f * 4);
+      fMesh.position.set(-25 + (Math.random() - 0.5) * 4, 0.08, 18 + f * 5);
       riverFishGroup.add(fMesh);
     }
     scene.add(riverFishGroup);
 
-    // Forest Bridge
+    // Forest Dock Bridge
     loadGLB('dock.glb', 8.5, m => {
-      m.position.set(-36, 0.1, 32);
+      m.position.set(-25, 0.1, 30);
       scene.add(m);
     });
 
-    // 2. Strict Boundary Flora (STRICTLY LOCATED IN FOREST ZONE: X: -55 to -20, Z: 15 to 55)
-    loadGLB('twisted_tree_1.glb', 6.5, m => { m.position.set(-48, 0.1, 18); scene.add(m); });
-    loadGLB('twisted_tree_2.glb', 7.0, m => { m.position.set(-28, 0.1, 46); scene.add(m); });
+    // Strict Boundary Trees (CONFUSED TREE ROW REMOVED - Strictly restricted to Forest Zone)
+    loadGLB('twisted_tree_1.glb', 6.5, m => { m.position.set(-48, 0.1, 20); scene.add(m); });
+    loadGLB('twisted_tree_2.glb', 7.0, m => { m.position.set(-28, 0.1, 48); scene.add(m); });
     loadGLB('palm_tree.glb', 6.0, m => {
-      m.position.set(-24, 0.1, 20); scene.add(m);
-      const p2 = m.clone(); p2.position.set(-52, 0.1, 40); scene.add(p2);
+      m.position.set(-22, 0.1, 22); scene.add(m);
+      const p2 = m.clone(); p2.position.set(-52, 0.1, 42); scene.add(p2);
     });
     loadGLB('forest_trees.glb', 8.0, m => {
-      m.position.set(-42, 0.1, 50); scene.add(m);
-      const f2 = m.clone(); f2.position.set(-54, 0.1, 24); scene.add(f2);
+      m.position.set(-42, 0.1, 52); scene.add(m);
     });
 
-    // Flowers, Bushes & Bird House
+    // Flowers, Bushes & Bird House around the Mountain Foot
     loadGLB('flower_bush.glb', 2.5, m => {
-      m.position.set(-32, 0.1, 24); scene.add(m);
-      const b2 = m.clone(); b2.position.set(-44, 0.1, 36); scene.add(b2);
+      m.position.set(-30, 0.1, 22); scene.add(m);
+      const b2 = m.clone(); b2.position.set(-45, 0.1, 38); scene.add(b2);
     });
-    loadGLB('flower_group.glb', 2.0, m => { m.position.set(-27, 0.1, 30); scene.add(m); });
-    loadGLB('flower_yellow.glb', 1.8, m => { m.position.set(-38, 0.1, 42); scene.add(m); });
-    loadGLB('flowers_small.glb', 1.6, m => { m.position.set(-45, 0.1, 28); scene.add(m); });
-    loadGLB('bird_house.glb', 2.0, m => { m.position.set(-48, 2.5, 18); scene.add(m); });
+    loadGLB('flower_group.glb', 2.0, m => { m.position.set(-26, 0.1, 28); scene.add(m); });
+    loadGLB('flower_yellow.glb', 1.8, m => { m.position.set(-35, 0.1, 44); scene.add(m); });
+    loadGLB('flowers_small.glb', 1.6, m => { m.position.set(-46, 0.1, 26); scene.add(m); });
+    loadGLB('bird_house.glb', 2.0, m => { m.position.set(-48, 2.5, 20); scene.add(m); });
 
-    // 3. Dynamic Insects
+    // Insects Fluttering
     const flutterGroup = new THREE.Group(); scene.add(flutterGroup);
     let bfBlue = null, bfOrange = null, armabeeObj = null;
-    loadGLB('butterfly_blue.glb', 1.2, m => { m.position.set(-32, 1.2, 24); flutterGroup.add(m); bfBlue = m; });
-    loadGLB('butterfly_orange.glb', 1.2, m => { m.position.set(-27, 1.0, 30); flutterGroup.add(m); bfOrange = m; });
-    loadGLB('armabee.glb', 1.0, m => { m.position.set(-38, 1.4, 42); flutterGroup.add(m); armabeeObj = m; });
+    loadGLB('butterfly_blue.glb', 1.2, m => { m.position.set(-30, 1.2, 22); flutterGroup.add(m); bfBlue = m; });
+    loadGLB('butterfly_orange.glb', 1.2, m => { m.position.set(-26, 1.0, 28); flutterGroup.add(m); bfOrange = m; });
+    loadGLB('armabee.glb', 1.0, m => { m.position.set(-35, 1.4, 44); flutterGroup.add(m); armabeeObj = m; });
 
-    // 4. Airborne Circling Creatures
-    const pteroGroup = new THREE.Group(); pteroGroup.position.set(-36, 14, 32); scene.add(pteroGroup);
-    loadGLB('Pterodactylus.glb', 4.5, m => pteroGroup.add(m));
+    // 1. Dragon Circling the High Peak of the Mountain
+    const dragonFlightGroup = new THREE.Group();
+    dragonFlightGroup.position.copy(mtnCenter);
+    scene.add(dragonFlightGroup);
 
-    const birdFlyGroup = new THREE.Group(); birdFlyGroup.position.set(-36, 8, 32); scene.add(birdFlyGroup);
-    loadGLB('bird.glb', 1.2, m => { m.position.set(4, 0, 0); birdFlyGroup.add(m); });
-    loadGLB('parrot.glb', 1.4, m => { m.position.set(-4, 0, 0); birdFlyGroup.add(m); });
+    const dragonEntity = new THREE.Group();
+    dragonEntity.position.set(22, 14, 0); // High orbit radius
+    dragonFlightGroup.add(dragonEntity);
+    loadGLB('dragon.glb', 7.0, m => dragonEntity.add(m));
 
-    // 5. Dinosaurs (With Joystick Walking Controls)
-    const trexEntity = new THREE.Group(); trexEntity.position.set(-45, 0.1, 32); scene.add(trexEntity);
+    registerRig('dragon', dragonEntity, 4, [
+      new THREE.Vector3(0, 1.8, 0.5), new THREE.Vector3(0, 1.7, 0.0),
+      new THREE.Vector3(-0.3, 1.6, -0.5), new THREE.Vector3(0.3, 1.6, -0.5)
+    ], true, 'dragon');
+
+    // 2. Pterodactylus Circling the Mountain Ridge
+    const pteroGroup = new THREE.Group();
+    pteroGroup.position.copy(mtnCenter);
+    scene.add(pteroGroup);
+    const pteroMesh = new THREE.Group();
+    pteroMesh.position.set(16, 9.5, 0);
+    pteroGroup.add(pteroMesh);
+    loadGLB('Pterodactylus.glb', 4.5, m => pteroMesh.add(m));
+
+    // 3. Birds Circling the Mountain Base
+    const birdFlyGroup = new THREE.Group();
+    birdFlyGroup.position.copy(mtnCenter);
+    scene.add(birdFlyGroup);
+    const birdMesh = new THREE.Group();
+    birdMesh.position.set(11, 5.0, 0);
+    birdFlyGroup.add(birdMesh);
+    loadGLB('bird.glb', 1.2, m => birdMesh.add(m));
+
+    const parrotMesh = new THREE.Group();
+    parrotMesh.position.set(-11, 4.5, 0);
+    birdFlyGroup.add(parrotMesh);
+    loadGLB('parrot.glb', 1.4, m => parrotMesh.add(m));
+
+    // 4. Dinosaurs (With Walk Animations & Natural Joystick Steer)
+    const trexEntity = new THREE.Group(); trexEntity.position.set(-44, 0.1, 30); scene.add(trexEntity);
     loadGLB('Trex.glb', 5.5, m => trexEntity.add(m));
     registerRig('trex', trexEntity, 4, [
       new THREE.Vector3(0, 2.3, 0.4), new THREE.Vector3(0, 2.2, -0.1),
       new THREE.Vector3(-0.25, 2.1, -0.6), new THREE.Vector3(0.25, 2.1, -0.6)
     ], false, 'joystick');
 
-    const triEntity = new THREE.Group(); triEntity.position.set(-26, 0.1, 38); scene.add(triEntity);
+    const triEntity = new THREE.Group(); triEntity.position.set(-28, 0.1, 36); scene.add(triEntity);
     loadGLB('Triceratops.glb', 4.5, m => triEntity.add(m));
     registerRig('tri', triEntity, 3, [new THREE.Vector3(0, 1.8, 0.3), new THREE.Vector3(0, 1.7, -0.3), new THREE.Vector3(0, 1.6, -0.8)], false, 'joystick');
 
-    const stegoEntity = new THREE.Group(); stegoEntity.position.set(-48, 0.1, 44); scene.add(stegoEntity);
+    const stegoEntity = new THREE.Group(); stegoEntity.position.set(-46, 0.1, 44); scene.add(stegoEntity);
     loadGLB('Stegosaurus.glb', 4.5, m => stegoEntity.add(m));
 
-    const oviEntity = new THREE.Group(); oviEntity.position.set(-28, 0.1, 26); scene.add(oviEntity);
+    const oviEntity = new THREE.Group(); oviEntity.position.set(-27, 0.1, 24); scene.add(oviEntity);
     loadGLB('Oviraptor.glb', 3.0, m => oviEntity.add(m));
-
-    // 6. Flying Mountable Dragon (Joystick + Fly Button)
-    const dragonEntity = new THREE.Group(); dragonEntity.position.set(-45, 0.1, 10); scene.add(dragonEntity);
-    loadGLB('dragon.glb', 7.0, m => dragonEntity.add(m));
-    registerRig('dragon', dragonEntity, 4, [
-      new THREE.Vector3(0, 1.8, 0.5), new THREE.Vector3(0, 1.7, 0.0),
-      new THREE.Vector3(-0.3, 1.6, -0.5), new THREE.Vector3(0.3, 1.6, -0.5)
-    ], true, 'dragon');
 
     // =========================================================================
     // SECTION 4: CITY, CONCERT, PENALTY & SEA
@@ -691,7 +736,7 @@
     loadGLB('city_shop.glb', 7.5, m => { m.position.set(12, 0, -8); cityGroup.add(m); });
     loadGLB('street_light.glb', 4, m => { m.position.set(8, 0, 8); cityGroup.add(m); });
 
-    // Clean Penalty Kick
+    // Clean Penalty Spot
     const penaltyPost = new THREE.Group(); penaltyPost.position.set(-35, 0.1, -26); scene.add(penaltyPost);
     loadGLB('goalpost.glb', 4.8, m => penaltyPost.add(m));
     const fBall = new THREE.Group(); fBall.position.set(-35, 0.35, -18); scene.add(fBall);
@@ -702,7 +747,7 @@
     loadGLB('concert_stage.glb', 14, m => concertGroup.add(m));
     loadGLB('concert_pack.glb', 5, m => { m.position.set(0, 1.35, -2); concertGroup.add(m); });
 
-    // Sea Entities
+    // Sea Creatures
     const godzillaSea = new THREE.Group(); godzillaSea.position.set(-85, 0.0, -65); scene.add(godzillaSea);
     loadGLB('godzilla.glb', 26, m => godzillaSea.add(m));
 
@@ -740,7 +785,7 @@
     loadGLB('small_rock.glb', 1.8, m => { m.position.set(-28, 0.1, 22); scene.add(m); });
 
     // =========================================================================
-    // SECTION 5: PLAYER, MULTIPLAYER & CONTROLS
+    // SECTION 5: PLAYER, MULTIPLAYER & RAYCASTER
     // =========================================================================
     const localPlayer = new THREE.Group(); localPlayer.position.set(0, 0.1, 0); scene.add(localPlayer);
     const localAvatar = new THREE.Group(); localPlayer.add(localAvatar);
@@ -757,6 +802,10 @@
       document.getElementById('btn-sel-boy').style.borderColor = gender === 'man' ? '#38bdf8' : 'rgba(255,255,255,0.15)';
       document.getElementById('btn-sel-girl').style.borderColor = gender === 'girl' ? '#38bdf8' : 'rgba(255,255,255,0.15)';
     };
+
+    // Terrain Raycaster for walking on mountains
+    const downRay = new THREE.Raycaster();
+    const downVec = new THREE.Vector3(0, -1, 0);
 
     const networkPlayers = {};
     function createPlayerTag(name) {
@@ -869,7 +918,7 @@
 
     window.triggerJump = () => { if (localPlayer.position.y <= 0.25) localPlayer.position.y = 1.6; };
 
-    // Ride System
+    // Rides & Actions
     const actBtn = document.getElementById('action-btn');
     let currentActiveSeat = null;
     let vSpeed = 0, vAlt = 0;
@@ -915,8 +964,10 @@
       // Vehicles & Mounts
       for (let key in multiVehicles) {
         const v = multiVehicles[key];
-        const dist = p.distanceTo(v.object.position);
-        const checkLimit = (key === 'ship') ? 25.0 : 5.0;
+        const worldPos = new THREE.Vector3();
+        v.object.getWorldPosition(worldPos);
+        const dist = p.distanceTo(worldPos);
+        const checkLimit = (key === 'ship') ? 25.0 : 6.0;
         if (dist < checkLimit) {
           const isDriver = v.passengers.length === 0;
           actBtn.innerText = isDriver ? `${t.board} ${key.toUpperCase()}` : `RIDE (${v.passengers.length}/${v.maxSeats})`;
@@ -933,7 +984,6 @@
             localAvatar.position.copy(v.offsets[sIdx]);
             localAvatar.rotation.set(0, 0, 0);
 
-            // Hide driver in vehicles, show rider on dinosaurs/dragons
             if (v.controlType === 'joystick' || v.controlType === 'dragon') {
               localAvatar.visible = true;
             } else {
@@ -974,7 +1024,9 @@
         localAvatar.position.set(0, 0, 0);
         localAvatar.rotation.set(0, 0, 0);
         localAvatar.visible = true;
-        localPlayer.position.set(v.object.position.x + 3.0, 0.1, v.object.position.z);
+        const worldPos = new THREE.Vector3();
+        v.object.getWorldPosition(worldPos);
+        localPlayer.position.set(worldPos.x + 3.0, 0.1, worldPos.z);
       }
       document.getElementById('vehicle-pedals').style.display = 'none';
       document.getElementById('speedo').style.display = 'none';
@@ -984,16 +1036,20 @@
     };
 
     // =========================================================================
-    // SECTION 6: ANIMATION LOOP
+    // SECTION 6: ANIMATION LOOP, CIRCLING & RAYCAST GROUND LOCK
     // =========================================================================
     const clock = new THREE.Clock();
 
     function animate() {
       requestAnimationFrame(animate);
       checkInteractions();
+      const delta = clock.getDelta();
       const time = clock.getElapsedTime();
 
-      // Dynamic Ocean
+      // Play GLTF Internal Animations (Breathing / Walking)
+      mixers.forEach(m => m.update(delta));
+
+      // Ocean Waves
       const pos = oceanGeo.attributes.position;
       for (let i = 0; i < pos.count; i++) {
         const u = pos.getX(i);
@@ -1003,36 +1059,28 @@
       }
       pos.needsUpdate = true;
 
-      // 1. River Fish
+      // 1. River Fish Swimming
       riverFishGroup.children.forEach((f, idx) => {
         f.position.z += Math.sin(time * 2.0 + idx) * 0.03;
         f.position.x += Math.cos(time * 2.5 + idx) * 0.015;
       });
 
-      // 2. Insects
-      if (bfBlue) {
-        bfBlue.position.y = 1.2 + Math.sin(time * 3.0) * 0.25;
-        bfBlue.rotation.y = time * 1.5;
-      }
-      if (bfOrange) {
-        bfOrange.position.y = 1.0 + Math.cos(time * 2.8) * 0.2;
-        bfOrange.rotation.y = -time * 1.2;
-      }
-      if (armabeeObj) {
-        armabeeObj.position.y = 1.4 + Math.sin(time * 4.0) * 0.15;
-        armabeeObj.position.x = -38 + Math.cos(time * 1.8) * 0.8;
-      }
+      // 2. Insects Fluttering
+      if (bfBlue) { bfBlue.position.y = 1.2 + Math.sin(time * 3.0) * 0.25; bfBlue.rotation.y = time * 1.5; }
+      if (bfOrange) { bfOrange.position.y = 1.0 + Math.cos(time * 2.8) * 0.2; bfOrange.rotation.y = -time * 1.2; }
+      if (armabeeObj) { armabeeObj.position.y = 1.4 + Math.sin(time * 4.0) * 0.15; armabeeObj.position.x = -35 + Math.cos(time * 1.8) * 0.8; }
 
-      // 3. Airborne Circles (Over Forest Area)
-      const pteroAngle = time * 0.4;
-      pteroGroup.position.x = -36 + Math.cos(pteroAngle) * 16;
-      pteroGroup.position.z = 32 + Math.sin(pteroAngle) * 16;
-      pteroGroup.rotation.y = -pteroAngle + Math.PI / 2;
+      // 3. Autonomous Mountain Circling (Dragon, Pterodactylus, Birds)
+      if (!currentActiveSeat || currentActiveSeat.rigKey !== 'dragon') {
+        dragonFlightGroup.rotation.y = time * 0.35; // Circling mountain peak
+      }
+      pteroGroup.rotation.y = -time * 0.45; // Circling mountain ridge
+      birdFlyGroup.rotation.y = time * 0.65; // Circling mountain base
 
-      const birdAngle = time * 0.6;
-      birdFlyGroup.position.x = -36 + Math.cos(birdAngle) * 12;
-      birdFlyGroup.position.z = 32 + Math.sin(birdAngle) * 12;
-      birdFlyGroup.rotation.y = -birdAngle + Math.PI / 2;
+      // Natural Sound triggers based on Forest proximity
+      if (Math.random() < 0.003) {
+        if (localPlayer.position.distanceTo(mtnCenter) < 40) playSfx('bird');
+      }
 
       // Sea Animals & Godzilla
       godzillaSea.position.y = 0.0 + Math.sin(time * 1.0) * 0.25;
@@ -1043,9 +1091,8 @@
       whaleMesh.position.y = -1.8 + Math.sin(time * 1.2) * 0.3;
       sharkMesh.position.z = 80 + Math.cos(time * 0.8) * 15;
 
-      // Movement & Steering Logic
+      // Player Movement & Ground Surface Raycast Lock
       if (!currentActiveSeat) {
-        // Player Walking
         if (joyX !== 0 || joyZ !== 0) {
           const fx = joyX * Math.cos(camRotX) + joyZ * Math.sin(camRotX);
           const fz = -joyX * Math.sin(camRotX) + joyZ * Math.cos(camRotX);
@@ -1053,6 +1100,7 @@
           localPlayer.position.z += fz * 0.35;
           localPlayer.rotation.y = Math.atan2(fx, fz);
 
+          // Island edge clamp
           const d = Math.hypot(localPlayer.position.x, localPlayer.position.z);
           if (d > 58 && localPlayer.position.z < 44) {
             localPlayer.position.x = (localPlayer.position.x / d) * 58;
@@ -1068,27 +1116,35 @@
           });
         }
 
+        // Raycasting for Walking on Mountain Mesh
+        let targetFloor = 0.1;
+        if (mountainMesh) {
+          downRay.set(new THREE.Vector3(localPlayer.position.x, 30, localPlayer.position.z), downVec);
+          const hits = downRay.intersectObject(mountainMesh, true);
+          if (hits.length > 0) {
+            targetFloor = Math.max(targetFloor, hits[0].point.y + 0.05);
+          }
+        }
+
         // Bridge & Stage Floor Snapping
         const distToStage = localPlayer.position.distanceTo(new THREE.Vector3(30, 0, -20));
         const distToDock = localPlayer.position.distanceTo(new THREE.Vector3(0, 0, 48));
-        const distToForestBridge = localPlayer.position.distanceTo(new THREE.Vector3(-36, 0, 32));
+        const distToForestBridge = localPlayer.position.distanceTo(new THREE.Vector3(-25, 0, 30));
 
-        let curFloor = 0.1;
-        if (distToStage < 7.0) curFloor = 1.35;
-        else if (distToDock < 9.0) curFloor = 1.6;
-        else if (distToForestBridge < 8.0) curFloor = 1.1;
+        if (distToStage < 7.0) targetFloor = Math.max(targetFloor, 1.35);
+        if (distToDock < 9.0) targetFloor = Math.max(targetFloor, 1.6);
+        if (distToForestBridge < 8.0) targetFloor = Math.max(targetFloor, 1.1);
 
-        if (localPlayer.position.y > curFloor) {
-          localPlayer.position.y = Math.max(curFloor, localPlayer.position.y - 0.08);
+        if (localPlayer.position.y > targetFloor) {
+          localPlayer.position.y = Math.max(targetFloor, localPlayer.position.y - 0.15);
         } else {
-          localPlayer.position.y = curFloor;
+          localPlayer.position.y = THREE.MathUtils.lerp(localPlayer.position.y, targetFloor, 0.25);
         }
 
       } else if (currentActiveSeat.isDriver) {
         const v = multiVehicles[currentActiveSeat.rigKey];
         const obj = v.object;
 
-        // Dinosaur & Dragon Joystick Direct Steering
         if (v.controlType === 'joystick' || v.controlType === 'dragon') {
           if (joyX !== 0 || joyZ !== 0) {
             const moveAngle = Math.atan2(joyX, -joyZ) + camRotX;
@@ -1101,14 +1157,12 @@
             document.getElementById('speedo').innerText = `0 KM/H`;
           }
 
-          // Dragon Flight Elevation
           if (v.controlType === 'dragon') {
             if (isFly) { vAlt = Math.min(vAlt + 0.2, 35); obj.position.y = 0.1 + vAlt; }
             else if (vAlt > 0) { vAlt = Math.max(0, vAlt - 0.1); obj.position.y = 0.1 + vAlt; }
           }
 
         } else if (currentActiveSeat.rigKey === 'ship') {
-          // Large Cargo Ship Controls
           if (Math.abs(joyX) > 0.05) obj.rotation.y -= joyX * 0.025;
           if (isGas) { vSpeed = Math.min(vSpeed + 0.015, 0.7); playSfx('engine'); }
           else if (isBrake) { vSpeed = Math.max(vSpeed - 0.02, -0.2); }
@@ -1119,7 +1173,6 @@
           document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 65))} KM/H`;
 
         } else {
-          // Standard Pedal Vehicles (Jet, Helicopter, Boat, Mech)
           if (isGas) { vSpeed = Math.min(vSpeed + 0.03, 1.2); playSfx('engine'); }
           else if (isBrake) { vSpeed = Math.max(vSpeed - 0.04, -0.3); }
           else { vSpeed *= 0.95; }
@@ -1134,12 +1187,15 @@
           document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 65))} KM/H`;
         }
 
-        localPlayer.position.copy(obj.position);
+        const worldPos = new THREE.Vector3();
+        obj.getWorldPosition(worldPos);
+        localPlayer.position.copy(worldPos);
+
         socket.emit('playerMoved', {
           room: currentRoom,
-          x: obj.position.x,
-          y: obj.position.y,
-          z: obj.position.z,
+          x: worldPos.x,
+          y: worldPos.y,
+          z: worldPos.z,
           rotY: obj.rotation.y
         });
       }
@@ -1153,10 +1209,12 @@
         camera.lookAt(shipObj.position.x, shipObj.position.y + 6.0, shipObj.position.z);
       } else {
         const target = (currentActiveSeat && currentActiveSeat.rigKey) ? multiVehicles[currentActiveSeat.rigKey].object : localPlayer;
-        camera.position.x = target.position.x + Math.sin(camRotX) * 12;
-        camera.position.y = target.position.y + 4.2;
-        camera.position.z = target.position.z + Math.cos(camRotX) * 12;
-        camera.lookAt(target.position.x, target.position.y + 1.2, target.position.z);
+        const targetPos = new THREE.Vector3();
+        target.getWorldPosition(targetPos);
+        camera.position.x = targetPos.x + Math.sin(camRotX) * 12;
+        camera.position.y = targetPos.y + 4.2;
+        camera.position.z = targetPos.z + Math.cos(camRotX) * 12;
+        camera.lookAt(targetPos.x, targetPos.y + 1.2, targetPos.z);
       }
 
       renderer.render(scene, camera);
