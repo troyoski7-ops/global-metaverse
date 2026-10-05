@@ -112,7 +112,7 @@
 
   <div id="joy-base"><div id="joy-stick"></div></div>
 
-  <!-- Live Chat with Server & Private Tabs -->
+  <!-- Live Chat -->
   <div id="chat-box">
     <div class="chat-tabs">
       <div id="tab-global" class="chat-tab active" onclick="switchChatTab('global')">Server</div>
@@ -205,7 +205,7 @@
     <div class="modal-card">
       <h3>⛅ Climate & Weather</h3>
       <div class="grid-btns">
-        <button class="btn-action" onclick="applyWeather('sunny')">☀️️ Sunny</button>
+        <button class="btn-action" onclick="applyWeather('sunny')">☀️ Sunny</button>
         <button class="btn-action" onclick="applyWeather('sunset')">🌅 Sunset</button>
         <button class="btn-action" onclick="applyWeather('storm')">⛈️ Storm & Rain</button>
         <button class="btn-action" onclick="applyWeather('night')">🌙 Night</button>
@@ -313,7 +313,7 @@
       closeModal('stars-modal');
     };
 
-    // Web Audio Synthesizer (Realistic SFX: Ocean Waves, Roars, Engines, BGM)
+    // Web Audio Synthesizer
     const actx = new (window.AudioContext || window.webkitAudioContext)();
     let micStream = null, loopbackNode = null, isSinging = false;
     let bgmOsc = null, isMusicPlaying = false;
@@ -346,7 +346,6 @@
         gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
         osc.start(now); osc.stop(now + 0.15);
       } else if (type === 'godzilla') {
-        // Realistic Low Sub-Bass Rumble
         const osc = actx.createOscillator(); const gain = actx.createGain(); const filter = actx.createBiquadFilter();
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(45, now);
@@ -389,7 +388,7 @@
       }
     };
 
-    // Stage Live Mic & Earphone Loopback
+    // Stage Live Mic
     async function toggleStageSinging() {
       if (!isSinging) {
         try {
@@ -409,7 +408,7 @@
       }
     }
 
-    // Voice Networking (Proximity & Global)
+    // Voice Networking
     let isProxMic = false, isGlobMic = false;
     window.toggleProximityMic = async () => {
       const btn = document.getElementById('btn-prox-mic');
@@ -539,16 +538,15 @@
     // Nature: Trees & Rocks (Basketball Court & Dock Cleaned of Trees)
     loadGLB('tree_large.glb', 8.5, m => {
       m.position.set(-20, 0.1, -15); scene.add(m);
-      const m2 = m.clone(); m2.position.set(15, 0.1, -25); scene.add(m2);
     });
     loadGLB('tree.glb', 4.5, m => {
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < 6; i++) {
         const tr = m.clone();
-        const ang = (i / 8) * Math.PI * 2;
+        const ang = (i / 6) * Math.PI * 2;
         const tx = Math.cos(ang) * 48;
         const tz = Math.sin(ang) * 48;
-        // Keep clear of basketball court & dock bridge
-        if (!(tx > 15 && tz < -15) && !(Math.abs(tx) < 12 && tz > 35)) {
+        // Keep clear of basketball court, robot rear, and dock bridge
+        if (!(tx > 10 && tz < -10) && !(Math.abs(tx) < 15 && tz > 30) && !(tx > -15 && tx < 30 && tz > -30 && tz < 20)) {
           tr.position.set(tx, 0.1, tz);
           scene.add(tr);
         }
@@ -558,7 +556,7 @@
     loadGLB('small_rock.glb', 1.8, m => { m.position.set(-28, 0.1, 22); scene.add(m); });
 
     // =========================================================================
-    // SECTION 3: SPOTS & ARENAS
+    // SECTION 3: SPOTS, RIVER & ARENAS
     // =========================================================================
 
     // 1. City Center
@@ -568,19 +566,32 @@
     loadGLB('city_shop.glb', 7.5, m => { m.position.set(12, 0, -8); cityGroup.add(m); });
     loadGLB('street_light.glb', 4, m => { m.position.set(8, 0, 8); cityGroup.add(m); });
 
-    // 2. Football Penalty (No Big Court, No Giant Ball - Small Ball & Goalpost Direct)
+    // 2. Football Penalty (Small Ball 0.65 Scale & Direct Facing Goalpost)
     const penaltyPost = new THREE.Group(); penaltyPost.position.set(-35, 0.1, -26); scene.add(penaltyPost);
     loadGLB('goalpost.glb', 4.8, m => penaltyPost.add(m));
 
-    const fBall = new THREE.Group(); fBall.position.set(-35, 0.35, -20); scene.add(fBall);
+    const fBall = new THREE.Group(); fBall.position.set(-35, 0.35, -18); scene.add(fBall);
     loadGLB('football.glb', 0.65, m => fBall.add(m));
 
-    // 3. Concert Stage (Completely Removed Side Stadiums / Benches)
+    // 3. Concert Stage (Clean Layout, Removed Side Stadiums & Benches)
     const concertGroup = new THREE.Group(); concertGroup.position.set(30, 0.1, -20); scene.add(concertGroup);
     loadGLB('concert_stage.glb', 14, m => concertGroup.add(m));
     loadGLB('concert_pack.glb', 5, m => { m.position.set(0, 1.35, -2); concertGroup.add(m); });
 
-    // 4. Harbor Jetty / Bridge
+    // 4. Harbor Jetty / Bridge with Small River Underneath
+    const riverGeo = new THREE.PlaneGeometry(16, 42);
+    const riverMat = new THREE.MeshStandardMaterial({
+      color: 0x0077be,
+      roughness: 0.1,
+      metalness: 0.8,
+      transparent: true,
+      opacity: 0.92
+    });
+    const smallRiver = new THREE.Mesh(riverGeo, riverMat);
+    smallRiver.rotation.x = -Math.PI / 2;
+    smallRiver.position.set(0, 0.05, 48); // River under Bridge
+    scene.add(smallRiver);
+
     const dockGroup = new THREE.Group(); dockGroup.position.set(0, 0.1, 48); scene.add(dockGroup);
     loadGLB('dock.glb', 10, m => dockGroup.add(m));
 
@@ -611,7 +622,7 @@
       new THREE.Vector3(0, 0.2, -0.7)
     ], false);
 
-    // Cargo Ship
+    // Cargo Ship (Configured for Joystick Steering & Deck Mounting)
     const cargoShip = new THREE.Group(); cargoShip.position.set(0, 0.5, 75); scene.add(cargoShip);
     loadGLB('low_poly_cargo_ship.glb', 18, m => cargoShip.add(m));
     registerRig('ship', cargoShip, 4, [
@@ -775,7 +786,7 @@
       b.scrollTop = b.scrollHeight;
     });
 
-    // Touch & Joystick Controls (Smooth Curve)
+    // Touch & Joystick Controls
     let joyX = 0, joyZ = 0, camRotX = 0;
     const jBase = document.getElementById('joy-base');
     const jStick = document.getElementById('joy-stick');
@@ -837,7 +848,7 @@
         return;
       }
 
-      // 2. Penalty Kick (Clean Goal Target)
+      // 2. Penalty Kick (Clean Small Football & Goalpost)
       if (p.distanceTo(fBall.position) < 2.5) {
         actBtn.innerText = "⚽ PENALTY KICK"; actBtn.style.display = 'block';
         actBtn.onclick = () => {
@@ -848,7 +859,7 @@
             penaltyGoals++; starsCount += 10;
             document.getElementById('score-goals').innerText = penaltyGoals;
             document.getElementById('hud-stars').innerText = starsCount;
-            fBall.position.set(-35, 0.35, -20);
+            fBall.position.set(-35, 0.35, -18);
           }, 450);
         };
         return;
@@ -889,7 +900,7 @@
             localAvatar.position.copy(v.offsets[sIdx]);
             localAvatar.rotation.set(0, 0, 0);
 
-            // In-cabin mode: hide driver avatar from sticking outside
+            // In-cabin mode: hide driver avatar
             localAvatar.visible = false;
 
             if (isDriver) {
@@ -981,7 +992,7 @@
           });
         }
 
-        // Bridge / Jetty & Stage Floor Locks (Deck Floor Clamped to y = 1.6)
+        // Bridge / Jetty & Stage Floor Locks (Bridge clamped to y = 1.6)
         const distToStage = localPlayer.position.distanceTo(new THREE.Vector3(30, 0, -20));
         const distToDock = localPlayer.position.distanceTo(new THREE.Vector3(0, 0, 48));
 
@@ -999,21 +1010,37 @@
         const v = multiVehicles[currentActiveSeat.rigKey];
         const obj = v.object;
 
-        if (isGas) {
-          vSpeed = Math.min(vSpeed + 0.03, 1.2);
-          playSfx('engine');
-        } else if (isBrake) {
-          vSpeed = Math.max(vSpeed - 0.04, -0.3);
+        if (currentActiveSeat.rigKey === 'ship') {
+          // Joystick steered Ship Mechanics
+          if (Math.abs(joyX) > 0.05) {
+            obj.rotation.y -= joyX * 0.025;
+          }
+          if (isGas) {
+            vSpeed = Math.min(vSpeed + 0.015, 0.7);
+            playSfx('engine');
+          } else if (isBrake) {
+            vSpeed = Math.max(vSpeed - 0.02, -0.2);
+          } else {
+            vSpeed *= 0.97;
+          }
         } else {
-          vSpeed *= 0.95;
+          // Normal vehicles (Jet, Heli, Mech, etc.)
+          if (isGas) {
+            vSpeed = Math.min(vSpeed + 0.03, 1.2);
+            playSfx('engine');
+          } else if (isBrake) {
+            vSpeed = Math.max(vSpeed - 0.04, -0.3);
+          } else {
+            vSpeed *= 0.95;
+          }
+
+          if (v.isFlyer) {
+            if (isFly) { vAlt = Math.min(vAlt + 0.15, 35); obj.position.y = 0.1 + vAlt; }
+            else if (vAlt > 0) { vAlt = Math.max(0, vAlt - 0.08); obj.position.y = 0.1 + vAlt; }
+          }
+          obj.rotation.y -= joyX * 0.035;
         }
 
-        if (v.isFlyer) {
-          if (isFly) { vAlt = Math.min(vAlt + 0.15, 35); obj.position.y = 0.1 + vAlt; }
-          else if (vAlt > 0) { vAlt = Math.max(0, vAlt - 0.08); obj.position.y = 0.1 + vAlt; }
-        }
-
-        obj.rotation.y -= joyX * 0.035;
         obj.position.x += Math.sin(obj.rotation.y) * vSpeed;
         obj.position.z += Math.cos(obj.rotation.y) * vSpeed;
 
@@ -1029,11 +1056,11 @@
         });
       }
 
-      // Camera Rig (Special Sky View for Cargo Ship)
+      // Camera Rig (Sky View for Cargo Ship)
       if (currentActiveSeat && currentActiveSeat.rigKey === 'ship') {
         const shipObj = multiVehicles['ship'].object;
         camera.position.x = shipObj.position.x + Math.sin(camRotX) * 24;
-        camera.position.y = shipObj.position.y + 14.0; // Elevated for full sky view
+        camera.position.y = shipObj.position.y + 14.0;
         camera.position.z = shipObj.position.z + Math.cos(camRotX) * 24;
         camera.lookAt(shipObj.position.x, shipObj.position.y + 6.0, shipObj.position.z);
       } else {
