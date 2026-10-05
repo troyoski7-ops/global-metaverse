@@ -30,7 +30,7 @@
     .score-val { color: #38bdf8; font-family: monospace; font-size: 12px; margin-left: 6px; }
     #btn-music-toggle { background: #1e293b; border: 1px solid #38bdf8; color: #38bdf8; border-radius: 6px; padding: 3px 6px; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 4px; }
 
-    /* Action Controls */
+    /* Controls & Actions */
     #action-btn { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: #0284c7; color: #fff; border: 2px solid #fff; padding: 12px 28px; border-radius: 30px; font-size: 13px; font-weight: 900; display: none; z-index: 35; box-shadow: 0 4px 15px rgba(2,132,199,0.7); cursor: pointer; }
     #dismount-btn { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: #ef4444; color: #fff; border: 1.5px solid #fff; padding: 8px 22px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; z-index: 40; cursor: pointer; }
     #speedo { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); color: #38bdf8; border: 1px solid #38bdf8; padding: 5px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; z-index: 35; }
@@ -355,7 +355,7 @@
       closeModal('stars-modal');
     };
 
-    // Synthesizer Audio System
+    // Full Synthesizer Audio Engine (Zero missing assets, instant browser playback)
     const actx = new (window.AudioContext || window.webkitAudioContext)();
     let micStream = null, loopbackNode = null, isSinging = false;
     let bgmOsc = null, isMusicPlaying = false;
@@ -413,6 +413,29 @@
         osc.frequency.exponentialRampToValueAtTime(2500, now + 0.08);
         gain.gain.setValueAtTime(0.12, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
         osc.start(now); osc.stop(now + 0.08);
+      } else if (type === 'train_whistle') {
+        const osc = actx.createOscillator(); const gain = actx.createGain();
+        osc.connect(gain); gain.connect(actx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.linearRampToValueAtTime(480, now + 0.3);
+        gain.gain.setValueAtTime(0.25, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.5);
+        osc.start(now); osc.stop(now + 0.5);
+      } else if (type === 'cable_hum') {
+        const osc = actx.createOscillator(); const gain = actx.createGain();
+        osc.connect(gain); gain.connect(actx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(120, now);
+        gain.gain.setValueAtTime(0.08, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now); osc.stop(now + 0.3);
+      } else if (type === 'snow_wind') {
+        const osc = actx.createOscillator(); const gain = actx.createGain();
+        osc.connect(gain); gain.connect(actx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(280, now);
+        osc.frequency.linearRampToValueAtTime(220, now + 0.8);
+        gain.gain.setValueAtTime(0.06, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.8);
+        osc.start(now); osc.stop(now + 0.8);
       }
     }
 
@@ -488,7 +511,7 @@
     // =========================================================================
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x7ec0ee);
-    scene.fog = new THREE.FogExp2(0x7ec0ee, 0.006);
+    scene.fog = new THREE.FogExp2(0x7ec0ee, 0.005);
 
     const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.5, 1500);
     const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
@@ -514,13 +537,13 @@
     scene.add(ocean);
 
     // Full Solid Island Base
-    const islandGeo = new THREE.CylinderGeometry(65, 72, 2.5, 64);
+    const islandGeo = new THREE.CylinderGeometry(68, 75, 2.5, 64);
     const islandMat = new THREE.MeshStandardMaterial({ color: 0x3cb371, roughness: 0.85 });
     const island = new THREE.Mesh(islandGeo, islandMat);
     island.position.y = -1.15;
     scene.add(island);
 
-    const sandGeo = new THREE.RingGeometry(60, 70, 64);
+    const sandGeo = new THREE.RingGeometry(62, 73, 64);
     const sandMat = new THREE.MeshStandardMaterial({ color: 0xe2c98a, roughness: 0.9, side: THREE.DoubleSide });
     const sand = new THREE.Mesh(sandGeo, sandMat);
     sand.rotation.x = -Math.PI / 2;
@@ -580,7 +603,7 @@
         onLoad(root);
       };
       gltfLoader.load(file, handle, undefined, () => {
-        gltfLoader.load('/' + file, handle, undefined, () => console.warn("Missing: " + file));
+        gltfLoader.load('/' + file, handle, undefined, () => console.warn("Missing asset: " + file));
       });
     }
 
@@ -589,10 +612,10 @@
     }
 
     // =========================================================================
-    // SECTION 3: SIDE 2 - DINO & FANTASY MOUNTAIN (BACK ANCHORED & DENSE FOREST)
+    // SECTION 3: DINO FOREST (BACK MOUNTAIN, RIVER, TREES, FAUNA & AIR LIFE)
     // =========================================================================
 
-    // 1. Mountain Anchored ONLY IN THE BACK BACKGROUND (X: -42, Z: 50)
+    // Mountain Backdrop Anchor (X: -42, Z: 50)
     const mtnCenter = new THREE.Vector3(-42, 0, 50);
     let mountainMesh = null;
 
@@ -602,7 +625,7 @@
       mountainMesh = m;
     });
 
-    // 2. Clear Natural River & Wooden Bridge in Front of the Mountain
+    // River & Planks Bridge in the Basin
     const forestRiverGeo = new THREE.PlaneGeometry(9, 36);
     const forestRiverMat = new THREE.MeshStandardMaterial({
       color: 0x0284c7, roughness: 0.1, metalness: 0.85, transparent: true, opacity: 0.92
@@ -637,7 +660,7 @@
     scene.add(dockBridgeObj);
     loadGLB('dock.glb', 9.0, m => dockBridgeObj.add(m));
 
-    // 3. DENSE FOREST OF TREES (Plentiful clusters strictly on the ground & riverbanks, NOT on the mountain)
+    // Trees Placed Strictly in Forest Lowlands/Basin
     const treePlacements = [
       { f: 'twisted_tree_1.glb', s: 6.5, pos: [-55, 0.1, 38] },
       { f: 'twisted_tree_1.glb', s: 6.5, pos: [-48, 0.1, 24] },
@@ -660,7 +683,7 @@
       loadGLB(tp.f, tp.s, m => { m.position.set(tp.pos[0], tp.pos[1], tp.pos[2]); scene.add(m); });
     });
 
-    // 4. ABUNDANT DENSE FLOWERS, BUSHES & BIRD HOUSES
+    // Forest Flowers, Bushes & Bird Houses
     const flowerPlacements = [
       { f: 'flower_bush.glb', s: 2.5, pos: [-14, 0.1, 22] },
       { f: 'flower_bush.glb', s: 2.3, pos: [-14, 0.1, 32] },
@@ -685,7 +708,7 @@
       loadGLB(fp.f, fp.s, m => { m.position.set(fp.pos[0], fp.pos[1], fp.pos[2]); scene.add(m); });
     });
 
-    // 5. Dynamic Insects Fluttering over Flowers
+    // Fluttering Insects
     const flutterGroup = new THREE.Group(); scene.add(flutterGroup);
     let bfBlue = null, bfOrange = null, armabeeObj = null, beeObj = null;
     loadGLB('butterfly_blue.glb', 1.2, m => { m.position.set(-15, 1.2, 26); flutterGroup.add(m); bfBlue = m; });
@@ -693,8 +716,7 @@
     loadGLB('armabee.glb', 1.0, m => { m.position.set(-38, 1.4, 24); flutterGroup.add(m); armabeeObj = m; });
     loadGLB('bee.glb', 0.9, m => { m.position.set(-28, 1.2, 46); flutterGroup.add(m); beeObj = m; });
 
-    // 6. AIRBORNE FLIGHT CIRCLING OVER THE BACK MOUNTAIN
-    // Dragon Circling the High Peak
+    // Airborne Creatures Circling Mountain Skies
     const dragonFlightGroup = new THREE.Group();
     dragonFlightGroup.position.copy(mtnCenter);
     scene.add(dragonFlightGroup);
@@ -709,7 +731,6 @@
       new THREE.Vector3(-0.3, 1.6, -0.5), new THREE.Vector3(0.3, 1.6, -0.5)
     ], true, 'dragon');
 
-    // Flying Dinosaur (Pterodactylus) Circling Middle Ridge
     const pteroGroup = new THREE.Group();
     pteroGroup.position.copy(mtnCenter);
     scene.add(pteroGroup);
@@ -718,7 +739,6 @@
     pteroGroup.add(pteroMesh);
     loadGLB('Pterodactylus.glb', 4.5, m => pteroMesh.add(m));
 
-    // Birds Circling the Air Above the Forest
     const birdFlyGroup = new THREE.Group();
     birdFlyGroup.position.copy(mtnCenter);
     scene.add(birdFlyGroup);
@@ -737,7 +757,7 @@
     birdFlyGroup.add(bird2Mesh);
     loadGLB('bird_2.glb', 1.2, m => bird2Mesh.add(m));
 
-    // 7. DINOSAURS IN THE FRONT BASIN (Fully Visible, Joystick Steered & Mountable)
+    // Dinosaurs in the Basin (Visible, Joystick Steered & Mountable)
     const trexEntity = new THREE.Group(); trexEntity.position.set(-42, 0.1, 26); scene.add(trexEntity);
     loadGLB('Trex.glb', 5.5, m => trexEntity.add(m));
     registerRig('trex', trexEntity, 4, [
@@ -759,7 +779,96 @@
     loadGLB('oviraptor_2.glb', 2.8, m => ovi2Entity.add(m));
 
     // =========================================================================
-    // SECTION 4: CITY, CONCERT, CORNER PENALTY & SEA
+    // SECTION 4: NEW SNOW ZONE, TRAIN & CABLE CAR SYSTEM
+    // =========================================================================
+
+    // Snow Zone Solid Ground Mesh (White Snowy Floor)
+    const snowZoneCenter = new THREE.Vector3(34, 0.1, 32);
+    const snowFloorGeo = new THREE.CircleGeometry(24, 32);
+    const snowFloorMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.95, metalness: 0.05 });
+    const snowFloorMesh = new THREE.Mesh(snowFloorGeo, snowFloorMat);
+    snowFloorMesh.rotation.x = -Math.PI / 2;
+    snowFloorMesh.position.set(snowZoneCenter.x, 0.04, snowZoneCenter.z);
+    scene.add(snowFloorMesh);
+
+    // Falling Snow Loop GLB (Strictly over Snow Zone)
+    loadGLB('falling_snow_loop.glb', 26, m => {
+      m.position.set(snowZoneCenter.x, 5.0, snowZoneCenter.z);
+      scene.add(m);
+    });
+
+    // Ski Station & Winter Market
+    loadGLB('ski_station.glb', 12, m => {
+      m.position.set(24, 0.1, 22);
+      scene.add(m);
+    });
+
+    loadGLB('winter_market.glb', 9, m => {
+      m.position.set(40, 0.1, 26);
+      scene.add(m);
+    });
+
+    // Ice Penguins & Seal near Snowy Shore
+    loadGLB('ice_penguins.glb', 6.5, m => {
+      m.position.set(46, 0.05, 42);
+      scene.add(m);
+    });
+
+    // Track Single Detailed
+    loadGLB('track-single-detailed.glb', 4.0, m => {
+      m.position.set(28, 0.1, 36);
+      scene.add(m);
+    });
+
+    // 1. Train System (Locomotive Loop & Ride)
+    const trainStationGroup = new THREE.Group();
+    trainStationGroup.position.set(30, 0.1, 36);
+    scene.add(trainStationGroup);
+    loadGLB('train_station.glb', 16, m => trainStationGroup.add(m));
+
+    // Dynamic Train Rig
+    const trainLocomotive = new THREE.Group();
+    trainLocomotive.position.set(30, 0.2, 36);
+    const trainBodyGeo = new THREE.BoxGeometry(2.0, 1.4, 4.2);
+    const trainBodyMat = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.5 });
+    const trainMesh = new THREE.Mesh(trainBodyGeo, trainBodyMat);
+    trainMesh.position.y = 0.7;
+    trainLocomotive.add(trainMesh);
+    scene.add(trainLocomotive);
+
+    registerRig('train', trainLocomotive, 4, [
+      new THREE.Vector3(0, 1.5, 0.8), new THREE.Vector3(0, 1.5, 0.0),
+      new THREE.Vector3(-0.4, 1.5, -0.8), new THREE.Vector3(0.4, 1.5, -0.8)
+    ], false, 'pedal');
+
+    // 2. Functional Cable Car System (Gondola gliding between Ski Station & Peak)
+    const cableWirePoints = [
+      new THREE.Vector3(24, 2.6, 22), // Lower Ski Station
+      new THREE.Vector3(4, 9.5, 34),   // Mid Tower
+      new THREE.Vector3(-22, 16.0, 46) // Mountain Ridge Station
+    ];
+    const cableCurve = new THREE.CatmullRomCurve3(cableWirePoints);
+    const cableTubeGeo = new THREE.TubeGeometry(cableCurve, 32, 0.05, 8, false);
+    const cableTubeMat = new THREE.MeshBasicMaterial({ color: 0x334155 });
+    const cableLine = new THREE.Mesh(cableTubeGeo, cableTubeMat);
+    scene.add(cableLine);
+
+    // Gondola Cabin
+    const cableGondola = new THREE.Group();
+    const gondolaGeo = new THREE.BoxGeometry(1.4, 1.6, 1.8);
+    const gondolaMat = new THREE.MeshStandardMaterial({ color: 0xe11d48, metalness: 0.6, roughness: 0.3 });
+    const gondolaMesh = new THREE.Mesh(gondolaGeo, gondolaMat);
+    gondolaMesh.position.y = -0.8;
+    cableGondola.add(gondolaMesh);
+    scene.add(cableGondola);
+
+    registerRig('cablecar', cableGondola, 4, [
+      new THREE.Vector3(0, 0.1, 0.4), new THREE.Vector3(0, 0.1, -0.4),
+      new THREE.Vector3(-0.3, 0.1, 0.0), new THREE.Vector3(0.3, 0.1, 0.0)
+    ], false, 'none');
+
+    // =========================================================================
+    // SECTION 5: CITY, CONCERT, STRAIGHTENED PENALTY POST & SEA CREATURES
     // =========================================================================
 
     const cityGroup = new THREE.Group(); cityGroup.position.set(0, 0.1, 0); scene.add(cityGroup);
@@ -769,10 +878,14 @@
     loadGLB('city_house.glb', 8.0, m => { m.position.set(-6, 0, -14); cityGroup.add(m); });
     loadGLB('street_light.glb', 4, m => { m.position.set(8, 0, 8); cityGroup.add(m); });
 
-    // Penalty Corner
-    const penaltyPost = new THREE.Group(); penaltyPost.position.set(-48, 0.1, -40); scene.add(penaltyPost);
-    loadGLB('goalpost.glb', 4.8, m => penaltyPost.add(m));
-    const fBall = new THREE.Group(); fBall.position.set(-48, 0.35, -34); scene.add(fBall);
+    // Straight Ground-Level Goalpost & Penalty Football (Fixed clean on turf)
+    const penaltyPost = new THREE.Group(); penaltyPost.position.set(-48, 0.1, -38); scene.add(penaltyPost);
+    loadGLB('goalpost.glb', 4.8, m => {
+      m.rotation.set(0, 0, 0); // Perfectly straightened
+      penaltyPost.add(m);
+    });
+
+    const fBall = new THREE.Group(); fBall.position.set(-48, 0.35, -30); scene.add(fBall);
     loadGLB('football.glb', 0.65, m => fBall.add(m));
 
     // Concert Stage
@@ -798,7 +911,7 @@
     const dockGroup = new THREE.Group(); dockGroup.position.set(0, 0.1, 48); scene.add(dockGroup);
     loadGLB('dock.glb', 10, m => dockGroup.add(m));
 
-    // Vehicles
+    // Water & Airborne Vehicles
     const seaBoat = new THREE.Group(); seaBoat.position.set(0, -0.2, 58); scene.add(seaBoat);
     loadGLB('low_poly_boat.glb', 4.5, m => seaBoat.add(m));
     registerRig('boat', seaBoat, 4, [new THREE.Vector3(0, 0.2, 0.3), new THREE.Vector3(-0.35, 0.2, -0.3), new THREE.Vector3(0.35, 0.2, -0.3), new THREE.Vector3(0, 0.2, -0.7)], false, 'pedal');
@@ -823,7 +936,7 @@
     loadGLB('small_rock.glb', 1.8, m => { m.position.set(-26, 0.1, 18); scene.add(m); });
 
     // =========================================================================
-    // SECTION 5: PLAYER, MULTIPLAYER & SOLID GROUND PHYSICS
+    // SECTION 6: PLAYER, MULTIPLAYER & SOLID GROUND RAYCASTER
     // =========================================================================
     const localPlayer = new THREE.Group(); localPlayer.position.set(0, 0.1, 0); scene.add(localPlayer);
     const localAvatar = new THREE.Group(); localPlayer.add(localAvatar);
@@ -920,7 +1033,7 @@
       b.scrollTop = b.scrollHeight;
     });
 
-    // Touch & Joystick
+    // Touch & Joystick Engine
     let joyX = 0, joyZ = 0, camRotX = 0;
     const jBase = document.getElementById('joy-base');
     const jStick = document.getElementById('joy-stick');
@@ -955,7 +1068,7 @@
 
     window.triggerJump = () => { if (localPlayer.position.y <= 0.25) localPlayer.position.y = 1.6; };
 
-    // Rides & Actions
+    // Rides & Action Triggers
     const actBtn = document.getElementById('action-btn');
     let currentActiveSeat = null;
     let vSpeed = 0, vAlt = 0;
@@ -986,19 +1099,19 @@
         actBtn.innerText = t.kick; actBtn.style.display = 'block';
         actBtn.onclick = () => {
           playSfx('kick');
-          fBall.position.set(-48, 1.8, -40);
+          fBall.position.set(-48, 1.8, -38);
           setTimeout(() => {
             playSfx('goal');
             penaltyGoals++; starsCount += 10;
             document.getElementById('score-goals').innerText = penaltyGoals;
             document.getElementById('hud-stars').innerText = starsCount;
-            fBall.position.set(-48, 0.35, -34);
+            fBall.position.set(-48, 0.35, -30);
           }, 450);
         };
         return;
       }
 
-      // Vehicles & Dinosaurs Mounting
+      // Vehicles, Mounts, Train & Cable Car
       for (let key in multiVehicles) {
         const v = multiVehicles[key];
         const worldPos = new THREE.Vector3();
@@ -1007,11 +1120,16 @@
         const checkLimit = (key === 'ship') ? 25.0 : 6.0;
         if (dist < checkLimit) {
           const isDriver = v.passengers.length === 0;
-          actBtn.innerText = isDriver ? `${t.board} ${key.toUpperCase()}` : `RIDE (${v.passengers.length}/${v.maxSeats})`;
+          if (key === 'train') actBtn.innerText = "🚂 RIDE TRAIN";
+          else if (key === 'cablecar') actBtn.innerText = "🚠 RIDE CABLE CAR";
+          else actBtn.innerText = isDriver ? `${t.board} ${key.toUpperCase()}` : `RIDE (${v.passengers.length}/${v.maxSeats})`;
+
           actBtn.style.display = 'block';
           actBtn.onclick = () => {
             if (v.passengers.length >= v.maxSeats) { alert("Mount is full!"); return; }
             if (key === 'trex' || key === 'tri') playSfx('dino');
+            if (key === 'train') playSfx('train_whistle');
+            if (key === 'cablecar') playSfx('cable_hum');
 
             const sIdx = v.passengers.length;
             v.passengers.push(myPlayerId);
@@ -1021,7 +1139,7 @@
             localAvatar.position.copy(v.offsets[sIdx]);
             localAvatar.rotation.set(0, 0, 0);
 
-            if (v.controlType === 'joystick' || v.controlType === 'dragon') {
+            if (v.controlType === 'joystick' || v.controlType === 'dragon' || key === 'cablecar') {
               localAvatar.visible = true;
             } else {
               localAvatar.visible = false;
@@ -1073,9 +1191,11 @@
     };
 
     // =========================================================================
-    // SECTION 6: ANIMATION LOOP, CIRCLING & RAYCAST GROUND LOCK
+    // SECTION 7: ANIMATION LOOP, AMBIENT SOUNDS & COLLISION PHYSICS
     // =========================================================================
     const clock = new THREE.Clock();
+    let cableCarT = 0, cableCarDir = 1;
+    let trainT = 0;
 
     function animate() {
       requestAnimationFrame(animate);
@@ -1101,22 +1221,38 @@
         f.position.x += Math.cos(time * 2.5 + idx) * 0.015;
       });
 
-      // 2. Fluttering Insects over dense flowers
+      // 2. Fluttering Insects
       if (bfBlue) { bfBlue.position.y = 1.2 + Math.sin(time * 3.0) * 0.25; bfBlue.rotation.y = time * 1.5; }
       if (bfOrange) { bfOrange.position.y = 1.0 + Math.cos(time * 2.8) * 0.2; bfOrange.rotation.y = -time * 1.2; }
       if (armabeeObj) { armabeeObj.position.y = 1.4 + Math.sin(time * 4.0) * 0.15; armabeeObj.position.x = -38 + Math.cos(time * 1.8) * 0.8; }
       if (beeObj) { beeObj.position.y = 1.2 + Math.sin(time * 3.5) * 0.18; beeObj.position.x = -28 + Math.sin(time * 2.2) * 0.6; }
 
-      // 3. Creatures Circling Autonomous Flight OVER THE BACK MOUNTAIN
+      // 3. Creatures Circling Autonomous Flight Over Mountain
       if (!currentActiveSeat || currentActiveSeat.rigKey !== 'dragon') {
         dragonFlightGroup.rotation.y = time * 0.35;
       }
       pteroGroup.rotation.y = -time * 0.45;
       birdFlyGroup.rotation.y = time * 0.65;
 
-      // Spatial Sound triggers
+      // 4. Cable Car Gondola Autonomous Gliding
+      cableCarT += delta * 0.08 * cableCarDir;
+      if (cableCarT >= 1.0) { cableCarT = 1.0; cableCarDir = -1; }
+      else if (cableCarT <= 0.0) { cableCarT = 0.0; cableCarDir = 1; }
+      const gondolaPos = cableCurve.getPoint(cableCarT);
+      cableGondola.position.copy(gondolaPos);
+
+      // 5. Autonomous Train Route Gliding (Looping)
+      if (!currentActiveSeat || currentActiveSeat.rigKey !== 'train') {
+        trainT += delta * 0.18;
+        trainLocomotive.position.x = 30 + Math.sin(trainT) * 12;
+        trainLocomotive.position.z = 36 + Math.cos(trainT) * 12;
+        trainLocomotive.rotation.y = trainT + Math.PI / 2;
+      }
+
+      // Spatial Sound Triggers
       if (Math.random() < 0.003) {
         if (localPlayer.position.distanceTo(mtnCenter) < 45) playSfx('bird');
+        if (localPlayer.position.distanceTo(snowZoneCenter) < 22) playSfx('snow_wind');
       }
 
       // Sea Animals
@@ -1129,7 +1265,7 @@
       sharkMesh.position.z = 80 + Math.cos(time * 0.8) * 15;
       seaMonsterMesh.position.y = -1.0 + Math.sin(time * 0.8) * 0.3;
 
-      // Player Movement & Raycast Ground Surface Lock
+      // Player Movement & Raycast Solid Ground Lock
       if (!currentActiveSeat) {
         if (joyX !== 0 || joyZ !== 0) {
           const fx = joyX * Math.cos(camRotX) + joyZ * Math.sin(camRotX);
@@ -1138,7 +1274,7 @@
           localPlayer.position.z += fz * 0.35;
           localPlayer.rotation.y = Math.atan2(fx, fz);
 
-          // Island edge clamp
+          // Absolute edge lock
           const d = Math.hypot(localPlayer.position.x, localPlayer.position.z);
           if (d > 58 && localPlayer.position.z < 44) {
             localPlayer.position.x = (localPlayer.position.x / d) * 58;
@@ -1154,7 +1290,7 @@
           });
         }
 
-        // Raycasting on Mountain (Walk smoothly without falling down)
+        // Raycasting on Mountain (Walk smoothly without falling through)
         let targetFloor = 0.1;
         if (mountainMesh) {
           downRay.set(new THREE.Vector3(localPlayer.position.x, 35, localPlayer.position.z), downVec);
@@ -1164,7 +1300,7 @@
           }
         }
 
-        // Bridge & Stage Elevations
+        // Bridge, Dock & Stage Level elevations
         const distToStage = localPlayer.position.distanceTo(new THREE.Vector3(30, 0, -20));
         const distToDock = localPlayer.position.distanceTo(new THREE.Vector3(0, 0, 48));
         const distToForestBridge = localPlayer.position.distanceTo(new THREE.Vector3(-20, 0, 28));
@@ -1173,7 +1309,7 @@
         if (distToDock < 9.0) targetFloor = Math.max(targetFloor, 1.6);
         if (distToForestBridge < 6.5) targetFloor = Math.max(targetFloor, 1.15);
 
-        // Absolute Floor Clamp (Never fall into the sky)
+        // Absolute Solid Floor Clamp
         if (localPlayer.position.y > targetFloor) {
           localPlayer.position.y = Math.max(targetFloor, localPlayer.position.y - 0.15);
         } else {
@@ -1210,6 +1346,15 @@
           obj.position.x += Math.sin(obj.rotation.y) * vSpeed;
           obj.position.z += Math.cos(obj.rotation.y) * vSpeed;
           document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 65))} KM/H`;
+
+        } else if (currentActiveSeat.rigKey === 'train') {
+          if (isGas) { vSpeed = Math.min(vSpeed + 0.02, 0.9); playSfx('train_whistle'); }
+          else if (isBrake) { vSpeed = Math.max(vSpeed - 0.03, -0.2); }
+          else { vSpeed *= 0.98; }
+          obj.rotation.y -= joyX * 0.03;
+          obj.position.x += Math.sin(obj.rotation.y) * vSpeed;
+          obj.position.z += Math.cos(obj.rotation.y) * vSpeed;
+          document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 70))} KM/H`;
 
         } else {
           if (isGas) { vSpeed = Math.min(vSpeed + 0.03, 1.2); playSfx('engine'); }
