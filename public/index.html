@@ -56,7 +56,7 @@
     #chat-in { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; color: #fff; font-size: 10px; padding: 3px 5px; outline: none; }
     #chat-send { background: #0284c7; color: #fff; border: none; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
 
-    /* Settings & Modals */
+    /* Modals */
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
     .modal-card { background: #0f172a; border: 1.5px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 18px; width: 320px; color: #fff; display: flex; flex-direction: column; gap: 10px; max-height: 85vh; overflow-y: auto; }
     .modal-card h3 { font-size: 15px; color: #38bdf8; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
@@ -92,13 +92,13 @@
     </div>
   </div>
 
-  <!-- Scoreboard & BGM -->
+  <!-- Goal Scoreboard & Audio -->
   <div id="score-hud">
     <div>⚽ <span id="lbl-goals">Goals</span>:<span id="score-goals" class="score-val">0</span></div>
     <button id="btn-music-toggle" onclick="toggleStageMusic()">🎵 Concert BGM: OFF</button>
   </div>
 
-  <!-- Action Controls -->
+  <!-- Controls -->
   <div id="speedo">0 KM/H</div>
   <button id="action-btn">ACTION</button>
   <button id="dismount-btn" onclick="exitSeatOrVehicle()">🚪 EXIT</button>
@@ -112,7 +112,7 @@
 
   <div id="joy-base"><div id="joy-stick"></div></div>
 
-  <!-- Chat Box -->
+  <!-- Live Chat -->
   <div id="chat-box">
     <div class="chat-tabs">
       <div id="tab-global" class="chat-tab active" onclick="switchChatTab('global')">Server</div>
@@ -125,11 +125,10 @@
     </div>
   </div>
 
-  <!-- Master Settings Modal (11 Languages) -->
+  <!-- Settings Modal (11 Languages) -->
   <div id="master-settings-modal" class="modal-overlay">
     <div class="modal-card">
       <h3 id="ui-title-settings">⚙️ Island Settings & Profile</h3>
-      
       <div id="ui-lbl-profile" style="font-size:11px; font-weight:bold; color:#38bdf8;">👤 Player Profile</div>
       <input type="text" id="upd-player-name" class="btn-action" style="text-align:left; background:#000;" placeholder="Player Name">
       <input type="text" id="upd-tg-id" class="btn-action" style="text-align:left; background:#000;" placeholder="Telegram ID (@username)">
@@ -173,7 +172,7 @@
     </div>
   </div>
 
-  <!-- Stars Vault Modal -->
+  <!-- Stars Modal -->
   <div id="stars-modal" class="modal-overlay">
     <div class="modal-card">
       <h3 id="ui-title-stars">⭐ Telegram Stars Vault</h3>
@@ -356,7 +355,7 @@
       closeModal('stars-modal');
     };
 
-    // Synthesizer Audio
+    // Synthesizer Audio System
     const actx = new (window.AudioContext || window.webkitAudioContext)();
     let micStream = null, loopbackNode = null, isSinging = false;
     let bgmOsc = null, isMusicPlaying = false;
@@ -485,7 +484,7 @@
     }
 
     // =========================================================================
-    // SECTION 2: THREE.JS ENGINE & ENVIRONMENT
+    // SECTION 2: THREE.JS ENGINE & SOLID ISLAND ENVIRONMENT
     // =========================================================================
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x7ec0ee);
@@ -504,7 +503,7 @@
     sun.castShadow = true;
     scene.add(sun);
 
-    // Ocean Waves
+    // Dynamic Ocean Waves
     const oceanGeo = new THREE.PlaneGeometry(800, 800, 64, 64);
     const oceanMat = new THREE.MeshStandardMaterial({
       color: 0x006699, roughness: 0.1, metalness: 0.9, transparent: true, opacity: 0.88
@@ -514,7 +513,7 @@
     ocean.position.y = -0.3;
     scene.add(ocean);
 
-    // Solid Island Base
+    // Full Solid Island Base
     const islandGeo = new THREE.CylinderGeometry(65, 72, 2.5, 64);
     const islandMat = new THREE.MeshStandardMaterial({ color: 0x3cb371, roughness: 0.85 });
     const island = new THREE.Mesh(islandGeo, islandMat);
@@ -562,7 +561,6 @@
       closeModal('weather-modal');
     };
 
-    // Animation Mixers
     const mixers = [];
     const gltfLoader = new THREE.GLTFLoader();
 
@@ -591,11 +589,11 @@
     }
 
     // =========================================================================
-    // SECTION 3: SIDE 2 - DINO & FANTASY MOUNTAIN (SURROUNDING BASIN & AIR LIFE)
+    // SECTION 3: SIDE 2 - DINO & FANTASY MOUNTAIN (BACK ANCHORED & DENSE FOREST)
     // =========================================================================
 
-    // Mountain Anchor Point (Peak Clean of any trees or grass clutter)
-    const mtnCenter = new THREE.Vector3(-36, 0, 36);
+    // 1. Mountain Anchored ONLY IN THE BACK BACKGROUND (X: -42, Z: 50)
+    const mtnCenter = new THREE.Vector3(-42, 0, 50);
     let mountainMesh = null;
 
     loadGLB('forest_terrain.glb', 48, m => {
@@ -604,76 +602,99 @@
       mountainMesh = m;
     });
 
-    // 1. Forest River & Bed at Mountain Foot
+    // 2. Clear Natural River & Wooden Bridge in Front of the Mountain
     const forestRiverGeo = new THREE.PlaneGeometry(9, 36);
     const forestRiverMat = new THREE.MeshStandardMaterial({
       color: 0x0284c7, roughness: 0.1, metalness: 0.85, transparent: true, opacity: 0.92
     });
     const forestRiver = new THREE.Mesh(forestRiverGeo, forestRiverMat);
     forestRiver.rotation.x = -Math.PI / 2;
-    forestRiver.position.set(-20, 0.06, 32);
+    forestRiver.position.set(-20, 0.06, 28);
     scene.add(forestRiver);
 
     const riverBedGeo = new THREE.PlaneGeometry(10, 36);
     const riverBedMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, roughness: 0.9 });
     const riverBed = new THREE.Mesh(riverBedGeo, riverBedMat);
     riverBed.rotation.x = -Math.PI / 2;
-    riverBed.position.set(-20, 0.02, 32);
+    riverBed.position.set(-20, 0.02, 28);
     scene.add(riverBed);
 
-    // Swimming Fish
+    // Swimming River Fish
     const riverFishGroup = new THREE.Group();
     for (let f = 0; f < 5; f++) {
       const fGeo = new THREE.ConeGeometry(0.12, 0.45, 4);
       const fMat = new THREE.MeshBasicMaterial({ color: 0xf97316 });
       const fMesh = new THREE.Mesh(fGeo, fMat);
       fMesh.rotation.x = Math.PI / 2;
-      fMesh.position.set(-20 + (Math.random() - 0.5) * 4, 0.12, 20 + f * 5);
+      fMesh.position.set(-20 + (Math.random() - 0.5) * 4, 0.12, 16 + f * 5);
       riverFishGroup.add(fMesh);
     }
     scene.add(riverFishGroup);
 
-    // Wooden Bridge crossing river
+    // Wooden Bridge crossing river cleanly
     const dockBridgeObj = new THREE.Group();
-    dockBridgeObj.position.set(-20, 0.05, 32);
+    dockBridgeObj.position.set(-20, 0.05, 28);
     scene.add(dockBridgeObj);
     loadGLB('dock.glb', 9.0, m => dockBridgeObj.add(m));
 
-    // 2. All Trees Placed STRICTLY in the Back Area & Low Ground (NOT on Mountain slopes)
-    loadGLB('twisted_tree_1.glb', 6.5, m => { m.position.set(-52, 0.1, 46); scene.add(m); });
-    loadGLB('twisted_tree_2.glb', 7.0, m => { m.position.set(-44, 0.1, 54); scene.add(m); });
-    loadGLB('palm_tree.glb', 6.0, m => {
-      m.position.set(-16, 0.1, 20); scene.add(m);
-      const p2 = m.clone(); p2.position.set(-54, 0.1, 38); scene.add(p2);
+    // 3. DENSE FOREST OF TREES (Plentiful clusters strictly on the ground & riverbanks, NOT on the mountain)
+    const treePlacements = [
+      { f: 'twisted_tree_1.glb', s: 6.5, pos: [-55, 0.1, 38] },
+      { f: 'twisted_tree_1.glb', s: 6.5, pos: [-48, 0.1, 24] },
+      { f: 'twisted_tree_1.glb', s: 6.0, pos: [-56, 0.1, 48] },
+      { f: 'twisted_tree_2.glb', s: 7.0, pos: [-32, 0.1, 52] },
+      { f: 'twisted_tree_2.glb', s: 6.8, pos: [-24, 0.1, 48] },
+      { f: 'palm_tree.glb', s: 6.0, pos: [-14, 0.1, 16] },
+      { f: 'palm_tree.glb', s: 6.2, pos: [-15, 0.1, 38] },
+      { f: 'palm_tree.glb', s: 5.8, pos: [-26, 0.1, 14] },
+      { f: 'palm_tree.glb', s: 6.0, pos: [-52, 0.1, 18] },
+      { f: 'forest_trees.glb', s: 8.5, pos: [-56, 0.1, 28] },
+      { f: 'forest_trees.glb', s: 8.0, pos: [-36, 0.1, 55] },
+      { f: 'forest_trees.glb', s: 8.2, pos: [-48, 0.1, 54] },
+      { f: 'tree_large.glb', s: 7.5, pos: [-28, 0.1, 42] },
+      { f: 'tree_large.glb', s: 7.0, pos: [-18, 0.1, 46] },
+      { f: 'tree.glb', s: 6.0, pos: [-58, 0.1, 34] },
+      { f: 'tree.glb', s: 5.8, pos: [-38, 0.1, 20] }
+    ];
+    treePlacements.forEach(tp => {
+      loadGLB(tp.f, tp.s, m => { m.position.set(tp.pos[0], tp.pos[1], tp.pos[2]); scene.add(m); });
     });
-    loadGLB('forest_trees.glb', 8.5, m => {
-      m.position.set(-34, 0.1, 55); scene.add(m);
-      const f2 = m.clone(); f2.position.set(-50, 0.1, 52); scene.add(f2);
-    });
-    loadGLB('tree_large.glb', 7.5, m => { m.position.set(-26, 0.1, 54); scene.add(m); });
-    loadGLB('tree.glb', 6.0, m => { m.position.set(-56, 0.1, 30); scene.add(m); });
 
-    // 3. ALL Flowers, Bushes & Bird House (Strictly on Back Ground & Riverbanks)
-    loadGLB('flower_bush.glb', 2.5, m => {
-      m.position.set(-16, 0.1, 26); scene.add(m);
-      const b2 = m.clone(); b2.position.set(-48, 0.1, 50); scene.add(b2);
+    // 4. ABUNDANT DENSE FLOWERS, BUSHES & BIRD HOUSES
+    const flowerPlacements = [
+      { f: 'flower_bush.glb', s: 2.5, pos: [-14, 0.1, 22] },
+      { f: 'flower_bush.glb', s: 2.3, pos: [-14, 0.1, 32] },
+      { f: 'flower_bush.glb', s: 2.4, pos: [-26, 0.1, 22] },
+      { f: 'flower_bush.glb', s: 2.5, pos: [-46, 0.1, 26] },
+      { f: 'flower_group.glb', s: 2.0, pos: [-15, 0.1, 26] },
+      { f: 'flower_group.glb', s: 2.0, pos: [-25, 0.1, 36] },
+      { f: 'flower_group.glb', s: 1.9, pos: [-38, 0.1, 24] },
+      { f: 'flower_single.glb', s: 1.8, pos: [-15, 0.1, 36] },
+      { f: 'flower_single.glb', s: 1.8, pos: [-27, 0.1, 30] },
+      { f: 'flower_single.glb', s: 1.8, pos: [-32, 0.1, 20] },
+      { f: 'flower_yellow.glb', s: 1.8, pos: [-16, 0.1, 18] },
+      { f: 'flower_yellow.glb', s: 1.8, pos: [-28, 0.1, 46] },
+      { f: 'flower_yellow.glb', s: 1.8, pos: [-42, 0.1, 22] },
+      { f: 'flowers_small.glb', s: 1.6, pos: [-14, 0.1, 42] },
+      { f: 'flowers_small.glb', s: 1.6, pos: [-24, 0.1, 26] },
+      { f: 'flowers_small.glb', s: 1.6, pos: [-50, 0.1, 32] },
+      { f: 'bird_house.glb', s: 2.0, pos: [-55, 2.5, 38] },
+      { f: 'bird_house.glb', s: 2.0, pos: [-48, 2.5, 24] }
+    ];
+    flowerPlacements.forEach(fp => {
+      loadGLB(fp.f, fp.s, m => { m.position.set(fp.pos[0], fp.pos[1], fp.pos[2]); scene.add(m); });
     });
-    loadGLB('flower_group.glb', 2.0, m => { m.position.set(-15, 0.1, 34); scene.add(m); });
-    loadGLB('flower_single.glb', 1.8, m => { m.position.set(-15, 0.1, 40); scene.add(m); });
-    loadGLB('flower_yellow.glb', 1.8, m => { m.position.set(-40, 0.1, 52); scene.add(m); });
-    loadGLB('flowers_small.glb', 1.6, m => { m.position.set(-28, 0.1, 52); scene.add(m); });
-    loadGLB('bird_house.glb', 2.0, m => { m.position.set(-52, 2.5, 46); scene.add(m); });
 
-    // 4. Fluttering Insects (Butterflies, Bee & Armabee)
+    // 5. Dynamic Insects Fluttering over Flowers
     const flutterGroup = new THREE.Group(); scene.add(flutterGroup);
     let bfBlue = null, bfOrange = null, armabeeObj = null, beeObj = null;
-    loadGLB('butterfly_blue.glb', 1.2, m => { m.position.set(-16, 1.2, 26); flutterGroup.add(m); bfBlue = m; });
-    loadGLB('butterfly_orange.glb', 1.2, m => { m.position.set(-15, 1.0, 34); flutterGroup.add(m); bfOrange = m; });
-    loadGLB('armabee.glb', 1.0, m => { m.position.set(-40, 1.4, 52); flutterGroup.add(m); armabeeObj = m; });
-    loadGLB('bee.glb', 0.9, m => { m.position.set(-28, 1.2, 52); flutterGroup.add(m); beeObj = m; });
+    loadGLB('butterfly_blue.glb', 1.2, m => { m.position.set(-15, 1.2, 26); flutterGroup.add(m); bfBlue = m; });
+    loadGLB('butterfly_orange.glb', 1.2, m => { m.position.set(-26, 1.0, 36); flutterGroup.add(m); bfOrange = m; });
+    loadGLB('armabee.glb', 1.0, m => { m.position.set(-38, 1.4, 24); flutterGroup.add(m); armabeeObj = m; });
+    loadGLB('bee.glb', 0.9, m => { m.position.set(-28, 1.2, 46); flutterGroup.add(m); beeObj = m; });
 
-    // 5. Airborne Creatures CIRCLING OVER THE MOUNTAIN (Dragon, Dinosaurs, Birds)
-    // Dragon Circling the Peak
+    // 6. AIRBORNE FLIGHT CIRCLING OVER THE BACK MOUNTAIN
+    // Dragon Circling the High Peak
     const dragonFlightGroup = new THREE.Group();
     dragonFlightGroup.position.copy(mtnCenter);
     scene.add(dragonFlightGroup);
@@ -688,7 +709,7 @@
       new THREE.Vector3(-0.3, 1.6, -0.5), new THREE.Vector3(0.3, 1.6, -0.5)
     ], true, 'dragon');
 
-    // Flying Dinosaur (Pterodactylus) Circling Middle Slopes
+    // Flying Dinosaur (Pterodactylus) Circling Middle Ridge
     const pteroGroup = new THREE.Group();
     pteroGroup.position.copy(mtnCenter);
     scene.add(pteroGroup);
@@ -697,7 +718,7 @@
     pteroGroup.add(pteroMesh);
     loadGLB('Pterodactylus.glb', 4.5, m => pteroMesh.add(m));
 
-    // Birds Circling Mountain Air
+    // Birds Circling the Air Above the Forest
     const birdFlyGroup = new THREE.Group();
     birdFlyGroup.position.copy(mtnCenter);
     scene.add(birdFlyGroup);
@@ -716,29 +737,29 @@
     birdFlyGroup.add(bird2Mesh);
     loadGLB('bird_2.glb', 1.2, m => bird2Mesh.add(m));
 
-    // 6. Dinosaurs placed in the Back Low Ground Area with Walk/Ride Controls
-    const trexEntity = new THREE.Group(); trexEntity.position.set(-48, 0.1, 40); scene.add(trexEntity);
+    // 7. DINOSAURS IN THE FRONT BASIN (Fully Visible, Joystick Steered & Mountable)
+    const trexEntity = new THREE.Group(); trexEntity.position.set(-42, 0.1, 26); scene.add(trexEntity);
     loadGLB('Trex.glb', 5.5, m => trexEntity.add(m));
     registerRig('trex', trexEntity, 4, [
       new THREE.Vector3(0, 2.3, 0.4), new THREE.Vector3(0, 2.2, -0.1),
       new THREE.Vector3(-0.25, 2.1, -0.6), new THREE.Vector3(0.25, 2.1, -0.6)
     ], false, 'joystick');
 
-    const triEntity = new THREE.Group(); triEntity.position.set(-36, 0.1, 50); scene.add(triEntity);
+    const triEntity = new THREE.Group(); triEntity.position.set(-30, 0.1, 36); scene.add(triEntity);
     loadGLB('Triceratops.glb', 4.5, m => triEntity.add(m));
     registerRig('tri', triEntity, 3, [new THREE.Vector3(0, 1.8, 0.3), new THREE.Vector3(0, 1.7, -0.3), new THREE.Vector3(0, 1.6, -0.8)], false, 'joystick');
 
-    const stegoEntity = new THREE.Group(); stegoEntity.position.set(-46, 0.1, 48); scene.add(stegoEntity);
+    const stegoEntity = new THREE.Group(); stegoEntity.position.set(-48, 0.1, 34); scene.add(stegoEntity);
     loadGLB('Stegosaurus.glb', 4.5, m => stegoEntity.add(m));
 
-    const oviEntity = new THREE.Group(); oviEntity.position.set(-24, 0.1, 48); scene.add(oviEntity);
+    const oviEntity = new THREE.Group(); oviEntity.position.set(-34, 0.1, 16); scene.add(oviEntity);
     loadGLB('Oviraptor.glb', 3.0, m => oviEntity.add(m));
 
-    const ovi2Entity = new THREE.Group(); ovi2Entity.position.set(-28, 0.1, 46); scene.add(ovi2Entity);
+    const ovi2Entity = new THREE.Group(); ovi2Entity.position.set(-28, 0.1, 20); scene.add(ovi2Entity);
     loadGLB('oviraptor_2.glb', 2.8, m => ovi2Entity.add(m));
 
     // =========================================================================
-    // SECTION 4: CITY, CONCERT, PENALTY CORNER & SEA
+    // SECTION 4: CITY, CONCERT, CORNER PENALTY & SEA
     // =========================================================================
 
     const cityGroup = new THREE.Group(); cityGroup.position.set(0, 0.1, 0); scene.add(cityGroup);
@@ -748,7 +769,7 @@
     loadGLB('city_house.glb', 8.0, m => { m.position.set(-6, 0, -14); cityGroup.add(m); });
     loadGLB('street_light.glb', 4, m => { m.position.set(8, 0, 8); cityGroup.add(m); });
 
-    // Compact Penalty Corner
+    // Penalty Corner
     const penaltyPost = new THREE.Group(); penaltyPost.position.set(-48, 0.1, -40); scene.add(penaltyPost);
     loadGLB('goalpost.glb', 4.8, m => penaltyPost.add(m));
     const fBall = new THREE.Group(); fBall.position.set(-48, 0.35, -34); scene.add(fBall);
@@ -759,7 +780,7 @@
     loadGLB('concert_stage.glb', 14, m => concertGroup.add(m));
     loadGLB('concert_pack.glb', 5, m => { m.position.set(0, 1.35, -2); concertGroup.add(m); });
 
-    // Sea Creatures & Harbor
+    // Sea Creatures
     const godzillaSea = new THREE.Group(); godzillaSea.position.set(-85, 0.0, -65); scene.add(godzillaSea);
     loadGLB('godzilla.glb', 26, m => godzillaSea.add(m));
 
@@ -772,6 +793,7 @@
     const seaMonsterMesh = new THREE.Group(); seaMonsterMesh.position.set(90, -1.0, -70); scene.add(seaMonsterMesh);
     loadGLB('sea_monster.glb', 14, m => seaMonsterMesh.add(m));
 
+    // Harbor & Net
     loadGLB('fishing_net.glb', 3.0, m => { m.position.set(4, 0.1, 52); scene.add(m); });
     const dockGroup = new THREE.Group(); dockGroup.position.set(0, 0.1, 48); scene.add(dockGroup);
     loadGLB('dock.glb', 10, m => dockGroup.add(m));
@@ -801,7 +823,7 @@
     loadGLB('small_rock.glb', 1.8, m => { m.position.set(-26, 0.1, 18); scene.add(m); });
 
     // =========================================================================
-    // SECTION 5: PLAYER, MULTIPLAYER & RAYCASTER
+    // SECTION 5: PLAYER, MULTIPLAYER & SOLID GROUND PHYSICS
     // =========================================================================
     const localPlayer = new THREE.Group(); localPlayer.position.set(0, 0.1, 0); scene.add(localPlayer);
     const localAvatar = new THREE.Group(); localPlayer.add(localAvatar);
@@ -867,7 +889,7 @@
       networkPlayers[id] = grp;
     }
 
-    // Chat
+    // Live Chat
     window.switchChatTab = (tab) => {
       activeChatTab = tab;
       document.getElementById('tab-global').classList.toggle('active', tab === 'global');
@@ -1079,22 +1101,22 @@
         f.position.x += Math.cos(time * 2.5 + idx) * 0.015;
       });
 
-      // 2. Fluttering Insects
+      // 2. Fluttering Insects over dense flowers
       if (bfBlue) { bfBlue.position.y = 1.2 + Math.sin(time * 3.0) * 0.25; bfBlue.rotation.y = time * 1.5; }
       if (bfOrange) { bfOrange.position.y = 1.0 + Math.cos(time * 2.8) * 0.2; bfOrange.rotation.y = -time * 1.2; }
-      if (armabeeObj) { armabeeObj.position.y = 1.4 + Math.sin(time * 4.0) * 0.15; armabeeObj.position.x = -40 + Math.cos(time * 1.8) * 0.8; }
+      if (armabeeObj) { armabeeObj.position.y = 1.4 + Math.sin(time * 4.0) * 0.15; armabeeObj.position.x = -38 + Math.cos(time * 1.8) * 0.8; }
       if (beeObj) { beeObj.position.y = 1.2 + Math.sin(time * 3.5) * 0.18; beeObj.position.x = -28 + Math.sin(time * 2.2) * 0.6; }
 
-      // 3. Creatures Autonomous Flight CIRCLING OVER THE MOUNTAIN
+      // 3. Creatures Circling Autonomous Flight OVER THE BACK MOUNTAIN
       if (!currentActiveSeat || currentActiveSeat.rigKey !== 'dragon') {
-        dragonFlightGroup.rotation.y = time * 0.35; // Circling high mountain peak
+        dragonFlightGroup.rotation.y = time * 0.35;
       }
-      pteroGroup.rotation.y = -time * 0.45; // Circling mid mountain slopes
-      birdFlyGroup.rotation.y = time * 0.65; // Circling sky above trees
+      pteroGroup.rotation.y = -time * 0.45;
+      birdFlyGroup.rotation.y = time * 0.65;
 
       // Spatial Sound triggers
       if (Math.random() < 0.003) {
-        if (localPlayer.position.distanceTo(mtnCenter) < 42) playSfx('bird');
+        if (localPlayer.position.distanceTo(mtnCenter) < 45) playSfx('bird');
       }
 
       // Sea Animals
@@ -1107,7 +1129,7 @@
       sharkMesh.position.z = 80 + Math.cos(time * 0.8) * 15;
       seaMonsterMesh.position.y = -1.0 + Math.sin(time * 0.8) * 0.3;
 
-      // Player Movement & Ground Surface Raycast Lock
+      // Player Movement & Raycast Ground Surface Lock
       if (!currentActiveSeat) {
         if (joyX !== 0 || joyZ !== 0) {
           const fx = joyX * Math.cos(camRotX) + joyZ * Math.sin(camRotX);
@@ -1116,6 +1138,7 @@
           localPlayer.position.z += fz * 0.35;
           localPlayer.rotation.y = Math.atan2(fx, fz);
 
+          // Island edge clamp
           const d = Math.hypot(localPlayer.position.x, localPlayer.position.z);
           if (d > 58 && localPlayer.position.z < 44) {
             localPlayer.position.x = (localPlayer.position.x / d) * 58;
@@ -1131,7 +1154,7 @@
           });
         }
 
-        // Raycasting on Mountain (Walk smoothly on clean surface without falling)
+        // Raycasting on Mountain (Walk smoothly without falling down)
         let targetFloor = 0.1;
         if (mountainMesh) {
           downRay.set(new THREE.Vector3(localPlayer.position.x, 35, localPlayer.position.z), downVec);
@@ -1141,15 +1164,16 @@
           }
         }
 
-        // Bridge & Stage Elevation locks
+        // Bridge & Stage Elevations
         const distToStage = localPlayer.position.distanceTo(new THREE.Vector3(30, 0, -20));
         const distToDock = localPlayer.position.distanceTo(new THREE.Vector3(0, 0, 48));
-        const distToForestBridge = localPlayer.position.distanceTo(new THREE.Vector3(-20, 0, 32));
+        const distToForestBridge = localPlayer.position.distanceTo(new THREE.Vector3(-20, 0, 28));
 
         if (distToStage < 7.0) targetFloor = Math.max(targetFloor, 1.35);
         if (distToDock < 9.0) targetFloor = Math.max(targetFloor, 1.6);
-        if (distToForestBridge < 6.5) targetFloor = Math.max(targetFloor, 1.15); // Stable on bridge planks
+        if (distToForestBridge < 6.5) targetFloor = Math.max(targetFloor, 1.15);
 
+        // Absolute Floor Clamp (Never fall into the sky)
         if (localPlayer.position.y > targetFloor) {
           localPlayer.position.y = Math.max(targetFloor, localPlayer.position.y - 0.15);
         } else {
