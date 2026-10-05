@@ -25,13 +25,13 @@
     .btn-circle { width: 38px; height: 38px; border-radius: 50%; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(8px); border: 1.5px solid rgba(255,255,255,0.3); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 15px; }
     .btn-circle.active { background: #22c55e; border-color: #4ade80; box-shadow: 0 0 10px #22c55e; }
 
-    /* Stage BGM & Scoreboard */
+    /* Scoreboard & Audio */
     #score-hud { position: absolute; top: 90px; left: 8px; background: rgba(15, 23, 42, 0.88); backdrop-filter: blur(8px); border: 1px solid #38bdf8; border-radius: 12px; padding: 8px 12px; color: #fff; font-size: 11px; font-weight: 700; z-index: 30; display: flex; flex-direction: column; gap: 4px; }
     .score-val { color: #38bdf8; font-family: monospace; font-size: 12px; margin-left: 6px; }
     #btn-music-toggle { background: #1e293b; border: 1px solid #38bdf8; color: #38bdf8; border-radius: 6px; padding: 3px 6px; font-size: 10px; font-weight: bold; cursor: pointer; margin-top: 4px; }
 
-    /* Controls & Actions */
-    #action-btn { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: #0284c7; color: #fff; border: 2px solid #fff; padding: 12px 28px; border-radius: 30px; font-size: 13px; font-weight: 900; display: none; z-index: 35; box-shadow: 0 4px 15px rgba(2,132,199,0.7); }
+    /* Action & Navigation Controls */
+    #action-btn { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: #0284c7; color: #fff; border: 2px solid #fff; padding: 12px 28px; border-radius: 30px; font-size: 13px; font-weight: 900; display: none; z-index: 35; box-shadow: 0 4px 15px rgba(2,132,199,0.7); cursor: pointer; }
     #dismount-btn { position: absolute; top: 90px; left: 50%; transform: translateX(-50%); background: #ef4444; color: #fff; border: 1.5px solid #fff; padding: 8px 22px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; z-index: 40; cursor: pointer; }
     #speedo { position: absolute; bottom: 130px; left: 50%; transform: translateX(-50%); background: rgba(15, 23, 42, 0.9); color: #38bdf8; border: 1px solid #38bdf8; padding: 5px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; z-index: 35; }
 
@@ -92,7 +92,7 @@
     </div>
   </div>
 
-  <!-- Scoreboard & Stage BGM -->
+  <!-- Goals Scoreboard & BGM -->
   <div id="score-hud">
     <div>⚽ <span id="lbl-goals">Goals</span>:<span id="score-goals" class="score-val">0</span></div>
     <button id="btn-music-toggle" onclick="toggleStageMusic()">🎵 Concert BGM: OFF</button>
@@ -125,7 +125,7 @@
     </div>
   </div>
 
-  <!-- Master Settings Modal (Fully Localized) -->
+  <!-- Localized Master Settings Modal -->
   <div id="master-settings-modal" class="modal-overlay">
     <div class="modal-card">
       <h3 id="ui-title-settings">⚙️ Island Settings & Profile</h3>
@@ -173,7 +173,7 @@
     </div>
   </div>
 
-  <!-- Stars Modal -->
+  <!-- Stars Vault Modal -->
   <div id="stars-modal" class="modal-overlay">
     <div class="modal-card">
       <h3 id="ui-title-stars">⭐ Telegram Stars Vault</h3>
@@ -205,7 +205,7 @@
     <div class="modal-card">
       <h3 id="ui-title-weather">⛅ Climate & Weather</h3>
       <div class="grid-btns">
-        <button class="btn-action" onclick="applyWeather('sunny')">☀️️ Sunny</button>
+        <button class="btn-action" onclick="applyWeather('sunny')">☀ Sunny</button>
         <button class="btn-action" onclick="applyWeather('sunset')">🌅 Sunset</button>
         <button class="btn-action" onclick="applyWeather('storm')">⛈️ Storm & Rain</button>
         <button class="btn-action" onclick="applyWeather('night')">🌙 Night</button>
@@ -226,12 +226,11 @@
     let penaltyGoals = 0;
     let starsCount = 300;
     let activeChatTab = 'global';
-    const friendsList = new Set();
 
-    // 11 LANGUAGES COMPLETE LOCALIZATION DICTIONARY
+    // 11 LANGUAGES LOCALIZATION DICTIONARY
     const dict = {
       en: {
-        jump: "JUMP", kick: "⚽ PENALTY KICK", sit: "🪑 SIT", board: "BOARD", exit: "🚪 EXIT",
+        jump: "JUMP", kick: "⚽ PENALTY KICK", sit: "🪑 SIT", board: "RIDE", exit: "🚪 EXIT",
         goals: "Goals", stars: "STARS", online: "Online", friends: "Friends",
         settings: "⚙️ Island Settings & Profile", profile: "👤 Player Profile", room: "🚪 Server & Custom Room",
         join: "Join / Create", global: "Global Server", share: "🔗 Invite & Share Profile", copy: "Copy All", save: "Save & Close",
@@ -254,81 +253,17 @@
         settings: "⚙️ सेटिंग्स और प्रोफ़ाइल", profile: "👤 प्लेयर प्रोफ़ाइल", room: "🚪 सर्वर और रूम",
         join: "शामिल हों", global: "ग्लोबल सर्वर", share: "🔗 आमंत्रित करें", copy: "कॉपी करें", save: "सहेजें और बंद करें",
         starsTitle: "⭐ टेलीग्राम स्टार्स", starsDesc: "सवारी अनलॉक करने के लिए सितारों का उपयोग करें।", daily: "दैनिक उपहार (+25 ⭐)",
-        friendsTitle: "🤝 मित्र सूची", noFriends: "कोई मित्र नहीं जोड़ा गया। अनुरोध भेजने के लिए पास जाएं!",
+        friendsTitle: "🤝 मित्र सूची", noFriends: "कोई मित्र नहीं जोड़ा गया।",
         shareLink: "लिंक साझा करें", close: "बंद करें", weatherTitle: "⛅ मौसम", boy: "👦 लड़का", girl: "👧 लड़की"
       },
-      fa: {
-        jump: "پرش", kick: "⚽ پنالتی", sit: "🪑 نشستن", board: "سوار شدن", exit: "🚪 خروج",
-        goals: "گل‌ها", stars: "ستاره‌ها", online: "آنلاین", friends: "دوستان",
-        settings: "⚙️ تنظیمات و پروفایل", profile: "👤 پروفایل بازیکن", room: "🚪 سرور و اتاق",
-        join: "ورود / ساخت", global: "سرور جهانی", share: "🔗 اشتراک گذاری", copy: "کپی همه", save: "ذخیره و بستن",
-        starsTitle: "⭐ ستاره‌های تلگرام", starsDesc: "برای دریافت امکانات ویژه از ستاره استفاده کنید.", daily: "هدیه روزانه (+25 ⭐)",
-        friendsTitle: "🤝 لیست دوستان", noFriends: "هنوز دوستی اضافه نشده است.",
-        shareLink: "اشتراک لینک", close: "بستن", weatherTitle: "⛅ آب و هوا", boy: "👦 پسر", girl: "👧 دختر"
-      },
-      id: {
-        jump: "LOMPAT", kick: "⚽ PENALTI", sit: "🪑 DUDUK", board: "NAIK", exit: "🚪 KELUAR",
-        goals: "Gol", stars: "BINTANG", online: "Online", friends: "Teman",
-        settings: "⚙️ Pengaturan & Profil", profile: "👤 Profil Pemain", room: "🚪 Server & Ruangan",
-        join: "Gabung / Buat", global: "Server Global", share: "🔗 Undang & Bagikan", copy: "Salin Semua", save: "Simpan & Tutup",
-        starsTitle: "⭐ Bintang Telegram", starsDesc: "Gunakan Bintang untuk akses VIP.", daily: "Hadiah Harian (+25 ⭐)",
-        friendsTitle: "🤝 Teman & Permintaan", noFriends: "Belum ada teman yang ditambahkan.",
-        shareLink: "Bagikan Tautan", close: "Tutup", weatherTitle: "⛅ Cuaca", boy: "👦 Karakter Pria", girl: "👧 Karakter Wanita"
-      },
-      ru: {
-        jump: "ПРЫЖОК", kick: "⚽ ПЕНАЛЬТИ", sit: "🪑 СЕСТЬ", board: "СЕСТЬ В ТРАНСПОРТ", exit: "🚪 ВЫХОД",
-        goals: "Голы", stars: "ЗВЁЗДЫ", online: "Онлайн", friends: "Друзья",
-        settings: "⚙️ Настройки и профиль", profile: "👤 Профиль игрока", room: "🚪 Комната и сервер",
-        join: "Войти / Создать", global: "Глобальный сервер", share: "🔗 Поделиться", copy: "Копировать", save: "Сохранить",
-        starsTitle: "⭐ Звёзды Telegram", starsDesc: "Используйте звёзды для VIP доступа.", daily: "Ежедневный бонус (+25 ⭐)",
-        friendsTitle: "🤝 Друзья", noFriends: "Друзей пока нет. Подойдите к игроку, чтобы добавить!",
-        shareLink: "Поделиться ссылкой", close: "Закрыть", weatherTitle: "⛅ Погода", boy: "👦 Парень", girl: "👧 Девушка"
-      },
-      it: {
-        jump: "SALTO", kick: "⚽ RIGORE", sit: "🪑 SIEDITI", board: "SALI", exit: "🚪 ESCI",
-        goals: "Gol", stars: "STELLE", online: "Online", friends: "Amici",
-        settings: "⚙️ Impostazioni e Profilo", profile: "👤 Profilo Giocatore", room: "🚪 Server e Stanza",
-        join: "Entra / Crea", global: "Server Globale", share: "🔗 Invita e Condividi", copy: "Copia Tutto", save: "Salva e Chiudi",
-        starsTitle: "⭐ Stelle Telegram", starsDesc: "Usa le stelle per vantaggi VIP.", daily: "Regalo Giornaliero (+25 ⭐)",
-        friendsTitle: "🤝 Amici e Richieste", noFriends: "Nessun amico aggiunto finora.",
-        shareLink: "Condividi Link", close: "Chiudi", weatherTitle: "⛅ Meteo", boy: "👦 Ragazzo", girl: "👧 Ragazza"
-      },
-      uz: {
-        jump: "SAKRASH", kick: "⚽ PENALTI", sit: "🪑 O'TIRISH", board: "CHIQISH", exit: "🚪 CHIQISH",
-        goals: "Gollar", stars: "YULDUZLAR", online: "Onlayn", friends: "Do'stlar",
-        settings: "⚙️ Sozlamalar va Profil", profile: "👤 O'yinchi Profili", room: "🚪 Xona va Server",
-        join: "Kirish / Yaratish", global: "Global Server", share: "🔗 Ulashish", copy: "Nusxalash", save: "Saqlash va Yopish",
-        starsTitle: "⭐ Telegram Yulduzlari", starsDesc: "VIP imkoniyatlar uchun yulduzlardan foydalaning.", daily: "Kunlik Sovg'a (+25 ⭐)",
-        friendsTitle: "🤝 Do'stlar", noFriends: "Do'stlar hali qo'shilmagan.",
-        shareLink: "Havolani Ulashish", close: "Yopish", weatherTitle: "⛅ Ob-havo", boy: "👦 Bola", girl: "👧 Qiz"
-      },
-      tg: {
-        jump: "ҶАҲИДАН", kick: "⚽ ПЕНАЛТИ", sit: "🪑 НИШАСТАН", board: "САВОР ШУДАН", exit: "🚪 БАРОМАДАН",
-        goals: "Голҳо", stars: "СИТОРАҲО", online: "Онлайн", friends: "Дӯстон",
-        settings: "⚙️ Танзимот ва Профил", profile: "👤 Профили бозигар", room: "🚪 Сервер ва Хона",
-        join: "Даромадан / Сохтан", global: "Сервери Ҷаҳонӣ", share: "🔗 Мубодила кардан", copy: "Нусхабардорӣ", save: "Сабт ва Пӯшидан",
-        starsTitle: "⭐ Ситораҳои Telegram", starsDesc: "Барои VIP аз ситораҳо истифода баред.", daily: "Тӯҳфаи ҳаррӯза (+25 ⭐)",
-        friendsTitle: "🤝 Дӯстон", noFriends: "Ҳоло дӯстон нестанд.",
-        shareLink: "Пайвандро Фиристед", close: "Пӯшидан", weatherTitle: "⛅ Обу ҳаво", boy: "👦 Писар", girl: "👧 Духтар"
-      },
-      my: {
-        jump: "ခုန်ပါ", kick: "⚽ ပင်နယ်တီ", sit: "🪑 ထိုင်ပါ", board: "စီးနင်းပါ", exit: "🚪 ထွက်ပါ",
-        goals: "ဂိုးများ", stars: "ကြယ်များ", online: "လိုင်းပေါ်တွင်", friends: "သူငယ်ချင်းများ",
-        settings: "⚙️ ကျွန်းဆက်တင်နှင့် ပရိုဖိုင်", profile: "👤 ကစားသမား ပရိုဖိုင်", room: "🚪 အခန်းနှင့် ဆာဗာ",
-        join: "ဝင်မည် / ပြုလုပ်မည်", global: "ကမ္ဘာလုံးဆိုင်ရာ ဆာဗာ", share: "🔗 ဖိတ်ခေါ် မျှဝေမည်", copy: "ကူးယူမည်", save: "သိမ်းဆည်းမည်",
-        starsTitle: "⭐ တယ်လီဂရမ် ကြယ်များ", starsDesc: "VIP အထူးအခွင့်အရေးများအတွက် သုံးပါ။", daily: "နေ့စဉ် လက်ဆောင် (+25 ⭐)",
-        friendsTitle: "🤝 သူငယ်ချင်းများ", noFriends: "သူငယ်ချင်း မရှိသေးပါ။",
-        shareLink: "လင့်ခ် မျှဝေမည်", close: "ပိတ်မည်", weatherTitle: "⛅ ရာသီဥတု", boy: "👦 ယောက်ျားလေး", girl: "👧 မိန်းကလေး"
-      },
-      zh: {
-        jump: "跳跃", kick: "⚽ 点球射门", sit: "🪑 坐下", board: "乘坐", exit: "🚪 退出",
-        goals: "进球", stars: "星星", online: "在线", friends: "好友",
-        settings: "⚙️ 岛屿设置与个人资料", profile: "👤 玩家资料", room: "🚪 服务器与房间",
-        join: "加入 / 创建", global: "全球服务器", share: "🔗 邀请与分享", copy: "复制全部", save: "保存并关闭",
-        starsTitle: "⭐ Telegram 之星", starsDesc: "使用星星升级坐骑并获得 VIP 权限。", daily: "每日礼包 (+25 ⭐)",
-        friendsTitle: "🤝 好友与请求", noFriends: "暂无好友。走近任意玩家即可发送请求！",
-        shareLink: "分享邀请链接", close: "关闭", weatherTitle: "⛅ 天气与气候", boy: "👦 男孩角色", girl: "👧 女孩角色"
-      }
+      fa: { jump: "پرش", kick: "⚽ پنالتی", sit: "🪑 نشستن", board: "سوار شدن", exit: "🚪 خروج", goals: "گل‌ها", stars: "ستاره‌ها", online: "آنلاین", friends: "دوستان", settings: "⚙️ تنظیمات و پروفایل", profile: "👤 پروفایل", room: "🚪 اتاق", join: "ورود", global: "سرور اصلی", share: "اشتراک", copy: "کپی", save: "ذخیره", starsTitle: "ستاره‌ها", starsDesc: "ارتقا با ستاره", daily: "جایزه (+25)", friendsTitle: "دوستان", noFriends: "دوستی نیست", shareLink: "لینک", close: "بستن", weatherTitle: "آب و هوا", boy: "پسر", girl: "دختر" },
+      id: { jump: "LOMPAT", kick: "⚽ PENALTI", sit: "🪑 DUDUK", board: "NAIK", exit: "🚪 KELUAR", goals: "Gol", stars: "BINTANG", online: "Online", friends: "Teman", settings: "Pengaturan", profile: "Profil", room: "Ruangan", join: "Gabung", global: "Global", share: "Bagikan", copy: "Salin", save: "Simpan", starsTitle: "Bintang", starsDesc: "Akses VIP", daily: "Bonus (+25)", friendsTitle: "Teman", noFriends: "Kosong", shareLink: "Tautan", close: "Tutup", weatherTitle: "Cuaca", boy: "Pria", girl: "Wanita" },
+      ru: { jump: "ПРЫЖОК", kick: "⚽ ПЕНАЛЬТИ", sit: "🪑 СЕСТЬ", board: "ЕХАТЬ", exit: "🚪 ВЫХОД", goals: "Голы", stars: "ЗВЁЗДЫ", online: "Онлайн", friends: "Друзья", settings: "Настройки", profile: "Профиль", room: "Комната", join: "Войти", global: "Сервер", share: "Поделиться", copy: "Копировать", save: "Сохранить", starsTitle: "Звёзды", starsDesc: "VIP статус", daily: "Бонус (+25)", friendsTitle: "Друзья", noFriends: "Нет друзей", shareLink: "Ссылка", close: "Закрыть", weatherTitle: "Погода", boy: "Парень", girl: "Девушка" },
+      it: { jump: "SALTO", kick: "⚽ RIGORE", sit: "🪑 SIEDITI", board: "SALI", exit: "🚪 ESCI", goals: "Gol", stars: "STELLE", online: "Online", friends: "Amici", settings: "Impostazioni", profile: "Profilo", room: "Stanza", join: "Entra", global: "Globale", share: "Invita", copy: "Copia", save: "Salva", starsTitle: "Stelle", starsDesc: "Accesso VIP", daily: "Regalo (+25)", friendsTitle: "Amici", noFriends: "Nessun amico", shareLink: "Link", close: "Chiudi", weatherTitle: "Meteo", boy: "Ragazzo", girl: "Ragazza" },
+      uz: { jump: "SAKRASH", kick: "⚽ PENALTI", sit: "🪑 O'TIRISH", board: "MINISH", exit: "🚪 CHIQISH", goals: "Gollar", stars: "YULDUZLAR", online: "Onlayn", friends: "Do'stlar", settings: "Sozlamalar", profile: "Profil", room: "Xona", join: "Kirish", global: "Server", share: "Ulashish", copy: "Nusxalash", save: "Saqlash", starsTitle: "Yulduzlar", starsDesc: "VIP", daily: "Sovg'a (+25)", friendsTitle: "Do'stlar", noFriends: "Bo'sh", shareLink: "Havola", close: "Yopish", weatherTitle: "Ob-havo", boy: "Bola", girl: "Qiz" },
+      tg: { jump: "ҶАҲИДАН", kick: "⚽ ПЕНАЛТИ", sit: "🪑 НИШАСТАН", board: "САВОР ШУДАН", exit: "🚪 БАРОМАДАН", goals: "Голҳо", stars: "СИТОРАҲО", online: "Онлайн", friends: "Дӯстон", settings: "Танзимот", profile: "Профил", room: "Хона", join: "Даромадан", global: "Сервер", share: "Мубодила", copy: "Нусхабардорӣ", save: "Сабт", starsTitle: "Ситораҳо", starsDesc: "VIP", daily: "Тӯҳфа (+25)", friendsTitle: "Дӯстон", noFriends: "Холӣ", shareLink: "Пайванд", close: "Пӯшидан", weatherTitle: "Обу ҳаво", boy: "Писар", girl: "Духтар" },
+      my: { jump: "ခုန်ပါ", kick: "⚽ ပင်နယ်တီ", sit: "🪑 ထိုင်ပါ", board: "စီးနင်းပါ", exit: "🚪 ထွက်ပါ", goals: "ဂိုးများ", stars: "ကြယ်များ", online: "လိုင်းပေါ်တွင်", friends: "သူငယ်ချင်း", settings: "ဆက်တင်", profile: "ပရိုဖိုင်", room: "အခန်း", join: "ဝင်မည်", global: "ဆာဗာ", share: "မျှဝေမည်", copy: "ကူးယူမည်", save: "သိမ်းမည်", starsTitle: "ကြယ်များ", starsDesc: "VIP", daily: "လက်ဆောင် (+25)", friendsTitle: "သူငယ်ချင်း", noFriends: "မရှိပါ", shareLink: "လင့်ခ်", close: "ပိတ်မည်", weatherTitle: "ရာသီဥတု", boy: "ယောက်ျားလေး", girl: "မိန်းကလေး" },
+      zh: { jump: "跳跃", kick: "⚽ 点球射门", sit: "🪑 坐下", board: "乘坐", exit: "🚪 退出", goals: "进球", stars: "星星", online: "在线", friends: "好友", settings: "岛屿设置", profile: "个人资料", room: "房间", join: "加入", global: "全局服务器", share: "分享", copy: "复制", save: "保存", starsTitle: "之星", starsDesc: "VIP权限", daily: "每日礼包 (+25)", friendsTitle: "好友", noFriends: "暂无好友", shareLink: "链接", close: "关闭", weatherTitle: "天气", boy: "男孩", girl: "女孩" }
     };
 
     let currentLang = 'en';
@@ -343,7 +278,7 @@
       document.getElementById('lbl-friends').innerText = t.friends;
       document.getElementById('lbl-goals').innerText = t.goals;
 
-      // Settings UI Localization
+      // Modal Elements
       document.getElementById('ui-title-settings').innerText = t.settings;
       document.getElementById('ui-lbl-profile').innerText = t.profile;
       document.getElementById('ui-lbl-room').innerText = t.room;
@@ -355,26 +290,22 @@
       document.getElementById('btn-sel-boy').innerText = t.boy;
       document.getElementById('btn-sel-girl').innerText = t.girl;
 
-      // Stars UI Localization
       document.getElementById('ui-title-stars').innerText = t.starsTitle;
       document.getElementById('ui-desc-stars').innerText = t.starsDesc;
       document.getElementById('ui-btn-daily').innerText = t.daily;
       document.getElementById('ui-btn-close-stars').innerText = t.close;
 
-      // Friends UI Localization
       document.getElementById('ui-title-friends').innerText = t.friendsTitle;
       document.getElementById('ui-txt-nofriends').innerText = t.noFriends;
       document.getElementById('ui-btn-share-link').innerText = t.shareLink;
       document.getElementById('ui-btn-close-friends').innerText = t.close;
 
-      // Weather UI Localization
       document.getElementById('ui-title-weather').innerText = t.weatherTitle;
       document.getElementById('ui-btn-close-weather').innerText = t.close;
 
       closeMasterSettings();
     };
 
-    // Master Settings & Social
     window.openMasterSettings = () => {
       document.getElementById('upd-player-name').value = playerName;
       document.getElementById('upd-tg-id').value = userTelegramId;
@@ -418,15 +349,14 @@
       else if (p === 'tg') window.open(`https://t.me/share/url?url=${url}&text=${msg}`);
       else if (p === 'ig' || p === 'copy') {
         navigator.clipboard.writeText(`${decodeURIComponent(msg)} - ${url}`);
-        alert("✅ Profile details and Game link copied to clipboard!");
+        alert("✅ Details and Link copied to clipboard!");
       }
     };
 
-    // Telegram Stars
     window.buyStars = (amt) => {
       starsCount += amt;
       document.getElementById('hud-stars').innerText = starsCount;
-      alert(`⭐ Added ${amt} Telegram Stars!`);
+      alert(`⭐ Added ${amt} Stars!`);
       closeModal('stars-modal');
     };
     window.claimDailyReward = () => {
@@ -436,7 +366,7 @@
       closeModal('stars-modal');
     };
 
-    // Web Audio Synthesizer
+    // Synthesizer Audio
     const actx = new (window.AudioContext || window.webkitAudioContext)();
     let micStream = null, loopbackNode = null, isSinging = false;
     let bgmOsc = null, isMusicPlaying = false;
@@ -489,7 +419,6 @@
       }
     }
 
-    // Concert BGM ON / OFF
     window.toggleStageMusic = () => {
       if (actx.state === 'suspended') actx.resume();
       const btn = document.getElementById('btn-music-toggle');
@@ -511,7 +440,6 @@
       }
     };
 
-    // Stage Live Mic
     async function toggleStageSinging() {
       if (!isSinging) {
         try {
@@ -522,8 +450,8 @@
           micSource.connect(loopbackNode);
           loopbackNode.connect(actx.destination);
           isSinging = true;
-          alert("🎤 Live Stage Mic ON! Your singing loops back to your ears and broadcasts to all.");
-        } catch(e) { alert("Microphone access needed to sing on stage!"); }
+          alert("🎤 Live Stage Mic ON!");
+        } catch(e) { alert("Microphone access needed!"); }
       } else {
         if (loopbackNode) loopbackNode.disconnect();
         isSinging = false;
@@ -531,7 +459,6 @@
       }
     }
 
-    // Voice Networking
     let isProxMic = false, isGlobMic = false;
     window.toggleProximityMic = async () => {
       const btn = document.getElementById('btn-prox-mic');
@@ -554,14 +481,14 @@
       } else { isGlobMic = false; btn.classList.remove('active'); }
     };
 
-    // Multi-Passenger Registry
+    // Vehicle Registry
     const multiVehicles = {};
-    function registerRig(name, obj, maxSeats, seatOffsets, isFlyer=false) {
-      multiVehicles[name] = { name, object: obj, maxSeats, offsets: seatOffsets, passengers: [], isFlyer };
+    function registerRig(name, obj, maxSeats, seatOffsets, isFlyer=false, controlType='pedal') {
+      multiVehicles[name] = { name, object: obj, maxSeats, offsets: seatOffsets, passengers: [], isFlyer, controlType };
     }
 
     // =========================================================================
-    // SECTION 2: THREE.JS ENGINE, LIGHTS, OCEAN & TERRAIN
+    // SECTION 2: THREE.JS ENGINE, LIGHTS & TERRAIN
     // =========================================================================
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x7ec0ee);
@@ -580,14 +507,10 @@
     sun.castShadow = true;
     scene.add(sun);
 
-    // Dynamic Ocean Waves
+    // Ocean Waves
     const oceanGeo = new THREE.PlaneGeometry(800, 800, 64, 64);
     const oceanMat = new THREE.MeshStandardMaterial({
-      color: 0x006699,
-      roughness: 0.1,
-      metalness: 0.9,
-      transparent: true,
-      opacity: 0.88
+      color: 0x006699, roughness: 0.1, metalness: 0.9, transparent: true, opacity: 0.88
     });
     const ocean = new THREE.Mesh(oceanGeo, oceanMat);
     ocean.rotation.x = -Math.PI / 2;
@@ -608,7 +531,7 @@
     sand.position.y = 0.02;
     scene.add(sand);
 
-    // Weather Particles
+    // Weather System
     const rainCount = 1000;
     const rainGeo = new THREE.BufferGeometry();
     const rainPositions = new Float32Array(rainCount * 3);
@@ -659,10 +582,16 @@
     }
 
     // =========================================================================
-    // SECTION 3: SIDE 2 - DINO & FANTASY FOREST ZONE (FULL INTEGRATION)
+    // SECTION 3: SIDE 2 - DINO & FANTASY FOREST (HILLS, STRICT BOUNDARY & RIDES)
     // =========================================================================
 
-    // 1. Forest River & Bridge
+    // 1. Forest Terrain Floor (Hills & Rocks)
+    loadGLB('forest_terrain.glb', 48, m => {
+      m.position.set(-36, 0.05, 30);
+      scene.add(m);
+    });
+
+    // Forest River & Bridge
     const forestRiverGeo = new THREE.PlaneGeometry(12, 38);
     const forestRiverMat = new THREE.MeshStandardMaterial({ color: 0x0ea5e9, roughness: 0.15, metalness: 0.8, transparent: true, opacity: 0.88 });
     const forestRiver = new THREE.Mesh(forestRiverGeo, forestRiverMat);
@@ -670,7 +599,7 @@
     forestRiver.position.set(-36, 0.04, 32);
     scene.add(forestRiver);
 
-    // Swimming River Fish (Procedural Animation)
+    // Swimming River Fish
     const riverFishGroup = new THREE.Group();
     for (let f = 0; f < 5; f++) {
       const fGeo = new THREE.ConeGeometry(0.12, 0.4, 4);
@@ -682,13 +611,13 @@
     }
     scene.add(riverFishGroup);
 
-    // Forest Wooden Bridge
+    // Forest Bridge
     loadGLB('dock.glb', 8.5, m => {
       m.position.set(-36, 0.1, 32);
       scene.add(m);
     });
 
-    // 2. Dense Fantasy Flora (Trees, Palms, Twisted Trees & Bushes)
+    // 2. Strict Boundary Flora (STRICTLY LOCATED IN FOREST ZONE: X: -55 to -20, Z: 15 to 55)
     loadGLB('twisted_tree_1.glb', 6.5, m => { m.position.set(-48, 0.1, 18); scene.add(m); });
     loadGLB('twisted_tree_2.glb', 7.0, m => { m.position.set(-28, 0.1, 46); scene.add(m); });
     loadGLB('palm_tree.glb', 6.0, m => {
@@ -697,7 +626,7 @@
     });
     loadGLB('forest_trees.glb', 8.0, m => {
       m.position.set(-42, 0.1, 50); scene.add(m);
-      const f2 = m.clone(); f2.position.set(-55, 0.1, 22); scene.add(f2);
+      const f2 = m.clone(); f2.position.set(-54, 0.1, 24); scene.add(f2);
     });
 
     // Flowers, Bushes & Bird House
@@ -710,34 +639,32 @@
     loadGLB('flowers_small.glb', 1.6, m => { m.position.set(-45, 0.1, 28); scene.add(m); });
     loadGLB('bird_house.glb', 2.0, m => { m.position.set(-48, 2.5, 18); scene.add(m); });
 
-    // 3. Dynamic Animated Insects (Butterflies & Bees flutter above flowers)
+    // 3. Dynamic Insects
     const flutterGroup = new THREE.Group(); scene.add(flutterGroup);
     let bfBlue = null, bfOrange = null, armabeeObj = null;
     loadGLB('butterfly_blue.glb', 1.2, m => { m.position.set(-32, 1.2, 24); flutterGroup.add(m); bfBlue = m; });
     loadGLB('butterfly_orange.glb', 1.2, m => { m.position.set(-27, 1.0, 30); flutterGroup.add(m); bfOrange = m; });
     loadGLB('armabee.glb', 1.0, m => { m.position.set(-38, 1.4, 42); flutterGroup.add(m); armabeeObj = m; });
 
-    // 4. Airborne Birds & Flying Pterodactylus
+    // 4. Airborne Circling Creatures
     const pteroGroup = new THREE.Group(); pteroGroup.position.set(-36, 14, 32); scene.add(pteroGroup);
-    let pteroObj = null;
-    loadGLB('Pterodactylus.glb', 4.5, m => { pteroGroup.add(m); pteroObj = m; });
+    loadGLB('Pterodactylus.glb', 4.5, m => pteroGroup.add(m));
 
     const birdFlyGroup = new THREE.Group(); birdFlyGroup.position.set(-36, 8, 32); scene.add(birdFlyGroup);
-    let birdObj = null, parrotObj = null;
-    loadGLB('bird.glb', 1.2, m => { m.position.set(4, 0, 0); birdFlyGroup.add(m); birdObj = m; });
-    loadGLB('parrot.glb', 1.4, m => { m.position.set(-4, 0, 0); birdFlyGroup.add(m); parrotObj = m; });
+    loadGLB('bird.glb', 1.2, m => { m.position.set(4, 0, 0); birdFlyGroup.add(m); });
+    loadGLB('parrot.glb', 1.4, m => { m.position.set(-4, 0, 0); birdFlyGroup.add(m); });
 
-    // 5. Ground Dinosaurs (Positioned naturally in the Forest)
+    // 5. Dinosaurs (With Joystick Walking Controls)
     const trexEntity = new THREE.Group(); trexEntity.position.set(-45, 0.1, 32); scene.add(trexEntity);
     loadGLB('Trex.glb', 5.5, m => trexEntity.add(m));
     registerRig('trex', trexEntity, 4, [
       new THREE.Vector3(0, 2.3, 0.4), new THREE.Vector3(0, 2.2, -0.1),
       new THREE.Vector3(-0.25, 2.1, -0.6), new THREE.Vector3(0.25, 2.1, -0.6)
-    ], false);
+    ], false, 'joystick');
 
     const triEntity = new THREE.Group(); triEntity.position.set(-26, 0.1, 38); scene.add(triEntity);
     loadGLB('Triceratops.glb', 4.5, m => triEntity.add(m));
-    registerRig('tri', triEntity, 3, [new THREE.Vector3(0, 1.8, 0.3), new THREE.Vector3(0, 1.7, -0.3), new THREE.Vector3(0, 1.6, -0.8)], false);
+    registerRig('tri', triEntity, 3, [new THREE.Vector3(0, 1.8, 0.3), new THREE.Vector3(0, 1.7, -0.3), new THREE.Vector3(0, 1.6, -0.8)], false, 'joystick');
 
     const stegoEntity = new THREE.Group(); stegoEntity.position.set(-48, 0.1, 44); scene.add(stegoEntity);
     loadGLB('Stegosaurus.glb', 4.5, m => stegoEntity.add(m));
@@ -745,8 +672,16 @@
     const oviEntity = new THREE.Group(); oviEntity.position.set(-28, 0.1, 26); scene.add(oviEntity);
     loadGLB('Oviraptor.glb', 3.0, m => oviEntity.add(m));
 
+    // 6. Flying Mountable Dragon (Joystick + Fly Button)
+    const dragonEntity = new THREE.Group(); dragonEntity.position.set(-45, 0.1, 10); scene.add(dragonEntity);
+    loadGLB('dragon.glb', 7.0, m => dragonEntity.add(m));
+    registerRig('dragon', dragonEntity, 4, [
+      new THREE.Vector3(0, 1.8, 0.5), new THREE.Vector3(0, 1.7, 0.0),
+      new THREE.Vector3(-0.3, 1.6, -0.5), new THREE.Vector3(0.3, 1.6, -0.5)
+    ], true, 'dragon');
+
     // =========================================================================
-    // SECTION 4: CITY, CONCERT, PENALTY, SEA & RIGS
+    // SECTION 4: CITY, CONCERT, PENALTY & SEA
     // =========================================================================
 
     // Middle City Center
@@ -756,7 +691,7 @@
     loadGLB('city_shop.glb', 7.5, m => { m.position.set(12, 0, -8); cityGroup.add(m); });
     loadGLB('street_light.glb', 4, m => { m.position.set(8, 0, 8); cityGroup.add(m); });
 
-    // Penalty Kick
+    // Clean Penalty Kick
     const penaltyPost = new THREE.Group(); penaltyPost.position.set(-35, 0.1, -26); scene.add(penaltyPost);
     loadGLB('goalpost.glb', 4.8, m => penaltyPost.add(m));
     const fBall = new THREE.Group(); fBall.position.set(-35, 0.35, -18); scene.add(fBall);
@@ -777,42 +712,35 @@
     const sharkMesh = new THREE.Group(); sharkMesh.position.set(80, -1.2, 80); scene.add(sharkMesh);
     loadGLB('shark.glb', 5.5, m => sharkMesh.add(m));
 
-    // Sea Mounts
+    // Vehicles
     const seaBoat = new THREE.Group(); seaBoat.position.set(0, -0.2, 58); scene.add(seaBoat);
     loadGLB('low_poly_boat.glb', 4.5, m => seaBoat.add(m));
-    registerRig('boat', seaBoat, 4, [new THREE.Vector3(0, 0.2, 0.3), new THREE.Vector3(-0.35, 0.2, -0.3), new THREE.Vector3(0.35, 0.2, -0.3), new THREE.Vector3(0, 0.2, -0.7)], false);
+    registerRig('boat', seaBoat, 4, [new THREE.Vector3(0, 0.2, 0.3), new THREE.Vector3(-0.35, 0.2, -0.3), new THREE.Vector3(0.35, 0.2, -0.3), new THREE.Vector3(0, 0.2, -0.7)], false, 'pedal');
 
     const cargoShip = new THREE.Group(); cargoShip.position.set(0, 0.5, 75); scene.add(cargoShip);
     loadGLB('low_poly_cargo_ship.glb', 18, m => cargoShip.add(m));
-    registerRig('ship', cargoShip, 4, [new THREE.Vector3(0, 3.8, 1.2), new THREE.Vector3(-1.2, 3.8, 0.2), new THREE.Vector3(1.2, 3.8, 0.2), new THREE.Vector3(0, 3.8, -1.8)], false);
-
-    // Flying Dragon & Vehicles
-    const dragonEntity = new THREE.Group(); dragonEntity.position.set(-45, 0.1, 10); scene.add(dragonEntity);
-    loadGLB('dragon.glb', 7.0, m => dragonEntity.add(m));
-    registerRig('dragon', dragonEntity, 4, [new THREE.Vector3(0, 1.8, 0.5), new THREE.Vector3(0, 1.7, 0.0), new THREE.Vector3(-0.3, 1.6, -0.5), new THREE.Vector3(0.3, 1.6, -0.5)], true);
+    registerRig('ship', cargoShip, 4, [new THREE.Vector3(0, 3.8, 1.2), new THREE.Vector3(-1.2, 3.8, 0.2), new THREE.Vector3(1.2, 3.8, 0.2), new THREE.Vector3(0, 3.8, -1.8)], false, 'pedal');
 
     const spaceJetEntity = new THREE.Group(); spaceJetEntity.position.set(-25, 0.1, 0); scene.add(spaceJetEntity);
     loadGLB('spaceship.glb', 6.0, m => spaceJetEntity.add(m));
-    registerRig('jet', spaceJetEntity, 4, [new THREE.Vector3(0, 0.45, 0.1), new THREE.Vector3(0, 0.45, -0.5), new THREE.Vector3(-0.35, 0.45, -0.9), new THREE.Vector3(0.35, 0.45, -0.9)], true);
+    registerRig('jet', spaceJetEntity, 4, [new THREE.Vector3(0, 0.45, 0.1), new THREE.Vector3(0, 0.45, -0.5), new THREE.Vector3(-0.35, 0.45, -0.9), new THREE.Vector3(0.35, 0.45, -0.9)], true, 'pedal');
 
     const heliEntity = new THREE.Group(); heliEntity.position.set(-15, 0.1, 10); scene.add(heliEntity);
     loadGLB('helicopter.glb', 5.5, m => heliEntity.add(m));
-    registerRig('heli', heliEntity, 4, [new THREE.Vector3(-0.35, 0.45, 0.3), new THREE.Vector3(0.35, 0.45, 0.3), new THREE.Vector3(-0.35, 0.45, -0.3), new THREE.Vector3(0.35, 0.45, -0.3)], true);
+    registerRig('heli', heliEntity, 4, [new THREE.Vector3(-0.35, 0.45, 0.3), new THREE.Vector3(0.35, 0.45, 0.3), new THREE.Vector3(-0.35, 0.45, -0.3), new THREE.Vector3(0.35, 0.45, -0.3)], true, 'pedal');
 
     const mechEntity = new THREE.Group(); mechEntity.position.set(10, 0.1, -10); scene.add(mechEntity);
     loadGLB('mech.glb', 5.0, m => mechEntity.add(m));
-    registerRig('mech', mechEntity, 2, [new THREE.Vector3(0, 2.6, 0.2), new THREE.Vector3(0, 2.4, -0.4)], false);
+    registerRig('mech', mechEntity, 2, [new THREE.Vector3(0, 2.6, 0.2), new THREE.Vector3(0, 2.4, -0.4)], false, 'pedal');
 
-    // Harbor Jetty / Bridge
     const dockGroup = new THREE.Group(); dockGroup.position.set(0, 0.1, 48); scene.add(dockGroup);
     loadGLB('dock.glb', 10, m => dockGroup.add(m));
 
-    // Rocks
     loadGLB('boulder.glb', 3.5, m => { m.position.set(38, 0.1, 15); scene.add(m); });
     loadGLB('small_rock.glb', 1.8, m => { m.position.set(-28, 0.1, 22); scene.add(m); });
 
     // =========================================================================
-    // SECTION 5: PLAYER, MULTIPLAYER SYNC & CHAT
+    // SECTION 5: PLAYER, MULTIPLAYER & CONTROLS
     // =========================================================================
     const localPlayer = new THREE.Group(); localPlayer.position.set(0, 0.1, 0); scene.add(localPlayer);
     const localAvatar = new THREE.Group(); localPlayer.add(localAvatar);
@@ -906,7 +834,7 @@
       b.scrollTop = b.scrollHeight;
     });
 
-    // Touch & Joystick Controls
+    // Touch & Joystick
     let joyX = 0, joyZ = 0, camRotX = 0;
     const jBase = document.getElementById('joy-base');
     const jStick = document.getElementById('joy-stick');
@@ -941,7 +869,7 @@
 
     window.triggerJump = () => { if (localPlayer.position.y <= 0.25) localPlayer.position.y = 1.6; };
 
-    // Interactions & Rig Mounting
+    // Ride System
     const actBtn = document.getElementById('action-btn');
     let currentActiveSeat = null;
     let vSpeed = 0, vAlt = 0;
@@ -959,7 +887,7 @@
       const p = localPlayer.position;
       const t = dict[currentLang] || dict['en'];
 
-      // Stage Mic
+      // Stage Performance
       if (p.distanceTo(new THREE.Vector3(30, 1.35, -20)) < 3.2) {
         actBtn.innerText = isSinging ? "🛑 STOP SINGING" : "🎤 PERFORM / SING";
         actBtn.style.display = 'block';
@@ -984,7 +912,7 @@
         return;
       }
 
-      // Vehicles & Mounts (In-Cabin Driver Mode)
+      // Vehicles & Mounts
       for (let key in multiVehicles) {
         const v = multiVehicles[key];
         const dist = p.distanceTo(v.object.position);
@@ -1005,12 +933,27 @@
             localAvatar.position.copy(v.offsets[sIdx]);
             localAvatar.rotation.set(0, 0, 0);
 
-            // In-cabin mode: hide driver avatar
-            localAvatar.visible = false;
+            // Hide driver in vehicles, show rider on dinosaurs/dragons
+            if (v.controlType === 'joystick' || v.controlType === 'dragon') {
+              localAvatar.visible = true;
+            } else {
+              localAvatar.visible = false;
+            }
 
             if (isDriver) {
-              document.getElementById('vehicle-pedals').style.display = 'flex';
-              document.getElementById('pedal-fly').style.display = v.isFlyer ? 'flex' : 'none';
+              if (v.controlType === 'dragon') {
+                document.getElementById('vehicle-pedals').style.display = 'flex';
+                document.getElementById('pedal-gas').style.display = 'none';
+                document.getElementById('pedal-brake').style.display = 'none';
+                document.getElementById('pedal-fly').style.display = 'flex';
+              } else if (v.controlType === 'pedal') {
+                document.getElementById('vehicle-pedals').style.display = 'flex';
+                document.getElementById('pedal-gas').style.display = 'flex';
+                document.getElementById('pedal-brake').style.display = 'flex';
+                document.getElementById('pedal-fly').style.display = v.isFlyer ? 'flex' : 'none';
+              } else {
+                document.getElementById('vehicle-pedals').style.display = 'none';
+              }
               document.getElementById('speedo').style.display = 'block';
             }
             document.getElementById('dismount-btn').style.display = 'block';
@@ -1041,7 +984,7 @@
     };
 
     // =========================================================================
-    // SECTION 6: RENDER LOOP, ANIMATIONS & DOCK LOCKS
+    // SECTION 6: ANIMATION LOOP
     // =========================================================================
     const clock = new THREE.Clock();
 
@@ -1050,7 +993,7 @@
       checkInteractions();
       const time = clock.getElapsedTime();
 
-      // Dynamic Ocean Waves
+      // Dynamic Ocean
       const pos = oceanGeo.attributes.position;
       for (let i = 0; i < pos.count; i++) {
         const u = pos.getX(i);
@@ -1060,13 +1003,13 @@
       }
       pos.needsUpdate = true;
 
-      // 1. Forest River Fish Swimming Motion
+      // 1. River Fish
       riverFishGroup.children.forEach((f, idx) => {
         f.position.z += Math.sin(time * 2.0 + idx) * 0.03;
         f.position.x += Math.cos(time * 2.5 + idx) * 0.015;
       });
 
-      // 2. Insects Fluttering (Butterflies & Bees)
+      // 2. Insects
       if (bfBlue) {
         bfBlue.position.y = 1.2 + Math.sin(time * 3.0) * 0.25;
         bfBlue.rotation.y = time * 1.5;
@@ -1080,7 +1023,7 @@
         armabeeObj.position.x = -38 + Math.cos(time * 1.8) * 0.8;
       }
 
-      // 3. Airborne Circles (Pterodactylus & Birds circling over the Forest)
+      // 3. Airborne Circles (Over Forest Area)
       const pteroAngle = time * 0.4;
       pteroGroup.position.x = -36 + Math.cos(pteroAngle) * 16;
       pteroGroup.position.z = 32 + Math.sin(pteroAngle) * 16;
@@ -1091,10 +1034,6 @@
       birdFlyGroup.position.z = 32 + Math.sin(birdAngle) * 12;
       birdFlyGroup.rotation.y = -birdAngle + Math.PI / 2;
 
-      // Dinosaurs Breathing
-      trexEntity.rotation.y = Math.sin(time * 0.8) * 0.15;
-      triEntity.rotation.y = -Math.sin(time * 0.6) * 0.1;
-
       // Sea Animals & Godzilla
       godzillaSea.position.y = 0.0 + Math.sin(time * 1.0) * 0.25;
       godzillaSea.rotation.y = -0.5 + Math.sin(time * 0.4) * 0.2;
@@ -1104,7 +1043,9 @@
       whaleMesh.position.y = -1.8 + Math.sin(time * 1.2) * 0.3;
       sharkMesh.position.z = 80 + Math.cos(time * 0.8) * 15;
 
+      // Movement & Steering Logic
       if (!currentActiveSeat) {
+        // Player Walking
         if (joyX !== 0 || joyZ !== 0) {
           const fx = joyX * Math.cos(camRotX) + joyZ * Math.sin(camRotX);
           const fz = -joyX * Math.sin(camRotX) + joyZ * Math.cos(camRotX);
@@ -1127,7 +1068,7 @@
           });
         }
 
-        // Bridge & Stage Floor Locks
+        // Bridge & Stage Floor Snapping
         const distToStage = localPlayer.position.distanceTo(new THREE.Vector3(30, 0, -20));
         const distToDock = localPlayer.position.distanceTo(new THREE.Vector3(0, 0, 48));
         const distToForestBridge = localPlayer.position.distanceTo(new THREE.Vector3(-36, 0, 32));
@@ -1147,12 +1088,38 @@
         const v = multiVehicles[currentActiveSeat.rigKey];
         const obj = v.object;
 
-        if (currentActiveSeat.rigKey === 'ship') {
+        // Dinosaur & Dragon Joystick Direct Steering
+        if (v.controlType === 'joystick' || v.controlType === 'dragon') {
+          if (joyX !== 0 || joyZ !== 0) {
+            const moveAngle = Math.atan2(joyX, -joyZ) + camRotX;
+            obj.rotation.y = moveAngle;
+            const spd = (v.controlType === 'dragon') ? 0.45 : 0.28;
+            obj.position.x += Math.sin(moveAngle) * spd;
+            obj.position.z += Math.cos(moveAngle) * spd;
+            document.getElementById('speedo').innerText = `${Math.round(spd * 90)} KM/H`;
+          } else {
+            document.getElementById('speedo').innerText = `0 KM/H`;
+          }
+
+          // Dragon Flight Elevation
+          if (v.controlType === 'dragon') {
+            if (isFly) { vAlt = Math.min(vAlt + 0.2, 35); obj.position.y = 0.1 + vAlt; }
+            else if (vAlt > 0) { vAlt = Math.max(0, vAlt - 0.1); obj.position.y = 0.1 + vAlt; }
+          }
+
+        } else if (currentActiveSeat.rigKey === 'ship') {
+          // Large Cargo Ship Controls
           if (Math.abs(joyX) > 0.05) obj.rotation.y -= joyX * 0.025;
           if (isGas) { vSpeed = Math.min(vSpeed + 0.015, 0.7); playSfx('engine'); }
           else if (isBrake) { vSpeed = Math.max(vSpeed - 0.02, -0.2); }
           else { vSpeed *= 0.97; }
+
+          obj.position.x += Math.sin(obj.rotation.y) * vSpeed;
+          obj.position.z += Math.cos(obj.rotation.y) * vSpeed;
+          document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 65))} KM/H`;
+
         } else {
+          // Standard Pedal Vehicles (Jet, Helicopter, Boat, Mech)
           if (isGas) { vSpeed = Math.min(vSpeed + 0.03, 1.2); playSfx('engine'); }
           else if (isBrake) { vSpeed = Math.max(vSpeed - 0.04, -0.3); }
           else { vSpeed *= 0.95; }
@@ -1162,14 +1129,12 @@
             else if (vAlt > 0) { vAlt = Math.max(0, vAlt - 0.08); obj.position.y = 0.1 + vAlt; }
           }
           obj.rotation.y -= joyX * 0.035;
+          obj.position.x += Math.sin(obj.rotation.y) * vSpeed;
+          obj.position.z += Math.cos(obj.rotation.y) * vSpeed;
+          document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 65))} KM/H`;
         }
 
-        obj.position.x += Math.sin(obj.rotation.y) * vSpeed;
-        obj.position.z += Math.cos(obj.rotation.y) * vSpeed;
-
         localPlayer.position.copy(obj.position);
-        document.getElementById('speedo').innerText = `${Math.abs(Math.round(vSpeed * 65))} KM/H`;
-
         socket.emit('playerMoved', {
           room: currentRoom,
           x: obj.position.x,
