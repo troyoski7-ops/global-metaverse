@@ -7,16 +7,16 @@ const io = require('socket.io')(http, {
 
 app.use(express.static('public'));
 
-// സെർവറിൽ എല്ലാ കളിക്കാരുടെയും ലൈവ് വിവരങ്ങൾ സൂക്ഷിക്കുന്നു
 const players = {};
+let totalUniqueUsers = 0;
 
-// ===================================================
-// 1. MULTIPLAYER SOCKET.IO ലോജിക് (തത്സമയ സിൻക്)
-// ===================================================
+// ==========================================
+// 1. MULTIPLAYER & PROXIMITY VOICE / CHAT
+// ==========================================
 io.on('connection', (socket) => {
-  console.log('Player connected:', socket.id);
+  totalUniqueUsers++;
+  console.log(`Player connected: ${socket.id} | Total Connected: ${totalUniqueUsers}`);
 
-  // പുതിയ പ്ലെയറുടെ ഡാറ്റ രജിസ്റ്റർ ചെയ്യുന്നു
   players[socket.id] = {
     id: socket.id,
     x: 0,
@@ -26,23 +26,24 @@ io.on('connection', (socket) => {
     name: "Player_" + socket.id.substr(0, 4),
     gender: "man",
     room: "Global",
-    action: "idle"
+    action: "idle",
+    friends: []
   };
 
-  // പുതിയ പ്ലെയർക്ക് സെർവറിലുള്ള മറ്റെല്ലാ കളിക്കാരുടെയും ലിസ്റ്റ് അയക്കുന്നു
+  // വേൾഡ് ഇനിഷ്യലൈസേഷൻ
   socket.emit('initWorld', {
     myId: socket.id,
     count: Object.keys(players).length,
+    totalUsers: totalUniqueUsers,
+    isMonetized: totalUniqueUsers > 200,
     players: players
   });
 
-  // ബാക്കി എല്ലാവരിലേക്കും പുതിയ പ്ലെയർ വന്ന വിവരം എത്തിക്കുന്നു
   socket.broadcast.emit('playerJoined', {
     count: Object.keys(players).length,
     ...players[socket.id]
   });
 
-  // പ്ലെയർ നടക്കുമ്പോഴും തിരിയുമ്പോഴും ബാക്കിയുള്ള എല്ലാവർക്കും പൊസിഷൻ അപ്‌ഡേറ്റ് അയക്കുന്നു
   socket.on('playerMoved', (data) => {
     if (players[socket.id]) {
       Object.assign(players[socket.id], data);
@@ -53,16 +54,51 @@ io.on('connection', (socket) => {
     }
   });
 
-  // ലൈവ് ചാറ്റ് മെസ്സേജുകൾ ബ്രോഡ്കാസ്റ്റ് ചെയ്യുന്നു
+  // ഗ്ലോബൽ & പ്രൈവറ്റ് ചാറ്റ്
   socket.on('chatMessage', (data) => {
-    io.emit('chatMessage', {
+    if (data.targetId) {
+      // പ്രൈവറ്റ് ഫ്രണ്ട് ചാറ്റ്
+      io.to(data.targetId).emit('chatMessage', {
+        senderId: socket.id,
+        name: players[socket.id]?.name || 'Friend',
+        isPrivate: true,
+        text: data.text
+      });
+      socket.emit('chatMessage', {
+        senderId: socket.id,
+        name: players[socket.id]?.name || 'Me',
+        isPrivate: true,
+        text: data.text
+      });
+    } else {
+      // സെർവർ ചാറ്റ്
+      io.emit('chatMessage', {
+        senderId: socket.id,
+        name: players[socket.id]?.name || 'Player',
+        isPrivate: false,
+        text: data.text
+      });
+    }
+  });
+
+  // ഓഡിയോ ടോക്ക് സ്ട്രീം (മൈക്ക് വഴി പാടുമ്പോൾ / സംസാരിക്കുമ്പോൾ)
+  socket.on('voiceStream', (audioChunk) => {
+    socket.broadcast.emit('voiceStream', {
       senderId: socket.id,
-      name: players[socket.id]?.name || 'Player',
-      ...data
+      audio: audioChunk
     });
   });
 
-  // പ്ലെയർ ഡിസ്കണക്റ്റ് ആകുമ്പോൾ ലിസ്റ്റിൽ നിന്ന് നീക്കി മറ്റുള്ളവരെ അറിയിക്കുന്നു
+  // പ്രൈവറ്റ് ഫ്രണ്ട് വോയ്സ്
+  socket.on('privateVoiceStream', (data) => {
+    if (data.targetId) {
+      io.to(data.targetId).emit('privateVoiceStream', {
+        senderId: socket.id,
+        audio: data.audio
+      });
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('Player left:', socket.id);
     delete players[socket.id];
@@ -73,40 +109,38 @@ io.on('connection', (socket) => {
   });
 });
 
-// ===================================================
-// 2. TELEGRAM BOT /start WEBAPP HANDLER
-// ===================================================
-const TELEGRAM_BOT_TOKEN = process.env.BOT_TOKEN || '8592382374:AAGP1RJLcWgIhHU0cTk5fZZqqqwsPOLuEug';
+// ==========================================
+// 2. പുതിയ TELEGRAM BOT & GROUP START HANDLER
+// ==========================================
+const TELEGRAM_BOT_TOKEN = process.env.BOT_TOKEN || '8592382374:AAEZik_4Y0HLy_8iUM83MzlwxKgldjpInm4';
 const GAME_URL = process.env.GAME_URL || 'https://global-vibe-metaverse.onrender.com';
 
 try {
   const TelegramBot = require('node-telegram-bot-api');
   const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 
-  bot.onText(/\/start/, (msg) => {
+  // ഗ്രൂപ്പുകളിലും (/start@botname) പ്രൈവറ്റിലും വർക്കാവുന്ന റെജക്സ്
+  bot.onText(/\/start(@\w+)?/, (msg) => {
     const chatId = msg.chat.id;
-    bot.sendMessage(chatId, "🌴 GlobeVibe Metaverse GTA Island-ലേക്ക് സ്വാഗതം!\n\nകളിക്കാൻ താഴെയുള്ള ബട്ടണിൽ ക്ലിക്ക് ചെയ്യുക:", {
+    bot.sendMessage(chatId, "🌴 GlobeVibe Metaverse GTA Island-ലേക്ക് സ്വാഗതം!\n\nസുഹൃത്തുക്കളോടൊപ്പം കളിക്കാൻ താഴെയുള്ള ലിങ്ക് ക്ലിക്ക് ചെയ്യുക:", {
       reply_markup: {
         inline_keyboard: [
           [
-            {
-              text: "🎮 Play GTA Island",
-              web_app: { url: GAME_URL }
-            }
+            { text: "🎮 Play GTA Island", web_app: { url: GAME_URL } }
+          ],
+          [
+            { text: "👥 Share to Group / Friends", url: `https://t.me/share/url?url=${encodeURIComponent(GAME_URL)}&text=${encodeURIComponent('Join me on GlobeVibe GTA Island!')}` }
           ]
         ]
       }
     });
   });
 
-  console.log("Telegram Bot polling started successfully.");
+  console.log("Telegram Bot active with new token and Group Start support!");
 } catch (err) {
   console.log("Telegram Bot error:", err.message);
 }
 
-// ===================================================
-// 3. SERVER PORT LISTENER
-// ===================================================
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, () => {
   console.log(`Server running smoothly on port ${PORT}`);
