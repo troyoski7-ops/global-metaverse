@@ -95,7 +95,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// TELEGRAM BOT WEBHOOK CLEAR & START
+// TELEGRAM BOT WEBHOOK CLEAR & DIRECT RESPONSE
 const TELEGRAM_BOT_TOKEN = process.env.BOT_TOKEN || '8592382374:AAEZik_4Y0HLy_8iUM83MzlwxKgldjpInm4';
 const GAME_URL = process.env.GAME_URL || 'https://global-vibe-metaverse.onrender.com';
 
@@ -103,7 +103,7 @@ async function startBot() {
   try {
     const TelegramBot = require('node-telegram-bot-api');
     const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
-    await bot.deleteWebhook();
+    await bot.deleteWebhook({ drop_pending_updates: true });
     bot.startPolling();
 
     bot.on('message', (msg) => {
