@@ -20,13 +20,27 @@
     .badge.stars { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; }
     .btn-circle { width: 36px; height: 36px; border-radius: 50%; background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(255,255,255,0.3); color: #fff; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-    #score-hud { position: absolute; top: 88px; left: 8px; background: rgba(15, 23, 42, 0.9); border: 1px solid #38bdf8; border-radius: 12px; padding: 8px 12px; color: #fff; font-size: 11px; font-weight: 700; z-index: 30; }
+    #score-hud { position: absolute; top: 88px; left: 8px; background: rgba(15, 23, 42, 0.9); border: 1px solid #38bdf8; border-radius: 12px; padding: 6px 12px; color: #fff; font-size: 11px; font-weight: 700; z-index: 30; }
     #action-btn { position: absolute; bottom: 135px; left: 50%; transform: translateX(-50%); background: #0284c7; color: #fff; border: 2px solid #fff; padding: 12px 28px; border-radius: 30px; font-size: 13px; font-weight: 900; display: none; z-index: 45; cursor: pointer; }
     #dismount-btn { position: absolute; top: 88px; left: 50%; transform: translateX(-50%); background: #ef4444; color: #fff; border: 1.5px solid #fff; padding: 8px 22px; border-radius: 20px; font-size: 12px; font-weight: bold; display: none; z-index: 45; cursor: pointer; }
 
+    /* ജോയ്‌സ്റ്റിക്ക് താഴെ ഇടതുവശത്ത് സുരക്ഷിതമായി നിൽക്കും */
     #joy-base { position: absolute; left: 16px; bottom: 25px; width: 100px; height: 100px; background: rgba(15, 23, 42, 0.65); border-radius: 50%; border: 2px solid rgba(255,255,255,0.4); z-index: 30; }
     #joy-stick { position: absolute; left: 32px; top: 32px; width: 36px; height: 36px; background: #38bdf8; border-radius: 50%; pointer-events: none; }
 
+    /* ചാറ്റ് ബോക്സ് മുകൾ വശത്തേക്ക് മാറ്റി, ജോയ്‌സ്റ്റിക്കിൽ കയറില്ല */
+    #chat-box { position: absolute; top: 125px; left: 8px; width: 190px; background: rgba(15, 23, 42, 0.95); border-radius: 12px; border: 1px solid rgba(255,255,255,0.25); padding: 6px; z-index: 35; }
+    #chat-tabs { display: flex; gap: 4px; margin-bottom: 4px; }
+    .chat-tab { flex: 1; text-align: center; font-size: 9px; padding: 2px; border-radius: 4px; background: #1e293b; color: #94a3b8; cursor: pointer; }
+    .chat-tab.active { background: #0284c7; color: #fff; font-weight: bold; }
+    #chat-msgs { height: 42px; overflow-y: auto; font-size: 10px; color: #fff; margin-bottom: 4px; display: flex; flex-direction: column; gap: 2px; }
+    .chat-bubble { background: rgba(255,255,255,0.1); padding: 2px 5px; border-radius: 4px; }
+    .chat-bubble.pm { border-left: 2px solid #ec4899; }
+    .chat-controls { display: flex; gap: 4px; }
+    #chat-in { flex: 1; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; color: #fff; font-size: 10px; padding: 3px 5px; outline: none; }
+    #chat-send { background: #0284c7; color: #fff; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
+
+    /* വലതുവശത്തെ കൺട്രോൾ ബട്ടണുകൾ */
     .extra-controls { position: absolute; bottom: 25px; right: 16px; display: flex; flex-direction: column; gap: 8px; z-index: 35; align-items: flex-end; }
     .ctrl-row { display: flex; gap: 8px; }
     .btn-touch { width: 56px; height: 48px; border-radius: 12px; background: rgba(15, 23, 42, 0.88); border: 2px solid #38bdf8; color: #fff; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; cursor: pointer; }
@@ -38,17 +52,6 @@
     .btn-touch.flyup { background: #38bdf8; border-color: #bae6fd; display: none; }
     .btn-touch.flydown { background: #64748b; border-color: #94a3b8; display: none; }
     .btn-touch.shoot { background: #f97316; border-color: #fdba74; display: none; }
-
-    #chat-box { position: absolute; bottom: 20px; left: 125px; width: 200px; background: rgba(15, 23, 42, 0.95); border-radius: 12px; border: 1px solid rgba(255,255,255,0.25); padding: 6px; z-index: 50; }
-    #chat-tabs { display: flex; gap: 4px; margin-bottom: 4px; }
-    .chat-tab { flex: 1; text-align: center; font-size: 9px; padding: 2px; border-radius: 4px; background: #1e293b; color: #94a3b8; cursor: pointer; }
-    .chat-tab.active { background: #0284c7; color: #fff; font-weight: bold; }
-    #chat-msgs { height: 44px; overflow-y: auto; font-size: 10px; color: #fff; margin-bottom: 4px; display: flex; flex-direction: column; gap: 2px; }
-    .chat-bubble { background: rgba(255,255,255,0.1); padding: 2px 5px; border-radius: 4px; }
-    .chat-bubble.pm { border-left: 2px solid #ec4899; }
-    .chat-controls { display: flex; gap: 4px; }
-    #chat-in { flex: 1; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; color: #fff; font-size: 11px; padding: 3px 5px; outline: none; }
-    #chat-send { background: #0284c7; color: #fff; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
 
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 99999; align-items: center; justify-content: center; backdrop-filter: blur(6px); }
     .modal-card { background: #0f172a; border: 1.5px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 18px; width: 320px; color: #fff; display: flex; flex-direction: column; gap: 10px; max-height: 85vh; overflow-y: auto; }
@@ -80,23 +83,7 @@
 
   <div id="joy-base"><div id="joy-stick"></div></div>
 
-  <div class="extra-controls">
-    <div class="ctrl-row">
-      <button id="btn-steer-left" class="btn-touch">◀️</button>
-      <button id="btn-steer-right" class="btn-touch">▶️</button>
-      <button id="btn-sprint" class="btn-touch sprint">⚡ RUN</button>
-    </div>
-    <div class="ctrl-row">
-      <button id="btn-gas" class="btn-touch gas">⚡ GAS</button>
-      <button id="btn-brake" class="btn-touch brake">🛑 STOP</button>
-      <button id="btn-flyup" class="btn-touch flyup">🔺 FLY UP</button>
-      <button id="btn-flydown" class="btn-touch flydown">🔻 LAND</button>
-      <button id="btn-shoot" class="btn-touch shoot" onclick="shootBall()">⚽ SHOOT</button>
-      <button class="btn-touch map" onclick="toggleMapView()">🗺️ MAP</button>
-      <button id="btn-jump" class="btn-touch jump" onclick="triggerJump()">JUMP</button>
-    </div>
-  </div>
-
+  <!-- മുകളിലേക്ക് മാറ്റിയ ചാറ്റ് ബോക്സ് -->
   <div id="chat-box">
     <div id="chat-tabs">
       <div id="tab-server" class="chat-tab active" onclick="switchChatTab('server')">Server</div>
@@ -106,6 +93,23 @@
     <div class="chat-controls">
       <input type="text" id="chat-in" placeholder="Chat here...">
       <button id="chat-send" onclick="sendChatMessage()">Send</button>
+    </div>
+  </div>
+
+  <div class="extra-controls">
+    <div class="ctrl-row">
+      <button id="btn-flyup" class="btn-touch flyup">🔺 FLY</button>
+      <button id="btn-flydown" class="btn-touch flydown">🔻 LAND</button>
+      <button id="btn-steer-left" class="btn-touch">◀️</button>
+      <button id="btn-steer-right" class="btn-touch">▶️</button>
+      <button id="btn-sprint" class="btn-touch sprint">⚡ RUN</button>
+    </div>
+    <div class="ctrl-row">
+      <button id="btn-gas" class="btn-touch gas">⚡ GAS</button>
+      <button id="btn-brake" class="btn-touch brake">🛑 STOP</button>
+      <button id="btn-shoot" class="btn-touch shoot" onclick="shootBall()">⚽ SHOOT</button>
+      <button class="btn-touch map" onclick="toggleMapView()">🗺️ MAP</button>
+      <button id="btn-jump" class="btn-touch jump" onclick="triggerJump()">JUMP</button>
     </div>
   </div>
 
@@ -252,7 +256,7 @@
       }
     }
 
-    // Live Microphone Voice Streaming
+    // Live Microphone Streaming
     let mediaRecorder = null;
     window.toggleMicrophone = async () => {
       const micBtn = document.getElementById('btn-mic');
@@ -428,7 +432,7 @@
     const tram2Rig = new THREE.Group(); scene.add(tram2Rig);
     loadGLB('tram2.glb', 5.0, m => tram2Rig.add(m));
 
-    // SNOW ZONE: CABLE CAR & HOUSES (Tram 1 Removed)
+    // SNOW ZONE: ANIMALS & CABLE CAR & HOUSES (ALL PRESERVED)
     const cableCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(20, 8.5, 20), new THREE.Vector3(0, 16, 30), new THREE.Vector3(-20, 22, 40)]);
     const cableLine = new THREE.Mesh(new THREE.TubeGeometry(cableCurve, 32, 0.05, 8, false), new THREE.MeshBasicMaterial({ color: 0x334155 }));
     scene.add(cableLine);
@@ -441,7 +445,7 @@
     loadGLB('reindeer.glb', 3.4, m => { m.position.set(22, 4.4, 26); scene.add(m); });
     loadGLB('penguin_single.glb', 1.4, m => { m.position.set(34, 4.4, 32); scene.add(m); });
 
-    // FOREST VALLEY & DINOSAURS (Bridge Removed)
+    // FOREST VALLEY & DINOSAURS
     loadGLB('forest_terrain.glb', 40, m => { m.position.set(-36, 4.4, 65); scene.add(m); });
     loadGLB('Trex.glb', 5.5, m => { m.position.set(-38, 4.4, 20); scene.add(m); });
     loadGLB('Triceratops.glb', 4.5, m => { m.position.set(-28, 4.4, 28); scene.add(m); });
@@ -460,12 +464,18 @@
     loadGLB('Pterodactylus.glb', 4.2, m => { m.position.set(-15, 1, 0); flyingGroup.add(m); });
     loadGLB('eagle.glb', 2.5, m => { m.position.set(0, 2, 12); flyingGroup.add(m); });
 
+    // ഫ്ലൈയിംഗ് ആനിമേഷൻ ഉള്ള ചിത്രശലഭങ്ങളും തേനീച്ചകളും (FLYING INSECTS)
+    const insectGroup = new THREE.Group(); insectGroup.position.set(-20, 5.2, 20); scene.add(insectGroup);
+    loadGLB('armabee.glb', 1.0, m => { m.position.set(2, 0, 0); insectGroup.add(m); });
+    loadGLB('butterfly_blue.glb', 1.2, m => { m.position.set(-2, 0.3, 1); insectGroup.add(m); });
+    loadGLB('butterfly_orange.glb', 1.2, m => { m.position.set(0, -0.3, -2); insectGroup.add(m); });
+
     // CITY BUILDINGS
     loadGLB('city.glb', 26, m => { m.position.set(0, 4.4, 0); scene.add(m); });
     loadGLB('city_tower.glb', 16, m => { m.position.set(-14, 4.4, -10); scene.add(m); });
     loadGLB('city_shop.glb', 7.5, m => { m.position.set(12, 4.4, -8); scene.add(m); });
 
-    // CONCERT STAGE (ELEVATED PLATFORM AT Y: 5.8)
+    // CONCERT STAGE
     const concertStage = new THREE.Group(); concertStage.position.set(30, 4.4, -20); scene.add(concertStage);
     loadGLB('concert_stage.glb', 14, m => concertStage.add(m));
 
@@ -479,7 +489,7 @@
     regInst('guitar', 'electric_guitar.glb', new THREE.Vector3(28, 5.8, -20), 'guitar');
     regInst('violin', 'violin.glb', new THREE.Vector3(32, 5.8, -20), 'violin');
 
-    // VEHICLES (DRIVABLE & FLYABLE, Challenger Removed)
+    // VEHICLES (DRIVABLE & FLYABLE)
     const multiVehicles = {};
     function registerRig(name, obj, isFlyer=false, isBoat=false) { multiVehicles[name] = { object: obj, isFlyer, isBoat }; }
 
@@ -515,7 +525,7 @@
     loadGLB('oldbike.glb', 2.2, m => bikeOld.add(m));
     registerRig('oldbike', bikeOld);
 
-    // HUMAN DRIVABLE BOAT & SHIP
+    // HUMAN DRIVABLE BOAT, CARGO SHIP & CRUISE SHIP
     loadGLB('dock.glb', 12, m => { m.position.set(0, 1.2, 62); scene.add(m); });
     const calmBoat = new THREE.Group(); calmBoat.position.set(14, 0.4, 70); scene.add(calmBoat);
     loadGLB('low_poly_boat.glb', 5.0, m => calmBoat.add(m));
@@ -524,6 +534,11 @@
     const cargoShip = new THREE.Group(); cargoShip.position.set(0, 0.5, 95); scene.add(cargoShip);
     loadGLB('low_poly_cargo_ship.glb', 18, m => cargoShip.add(m));
     registerRig('ship', cargoShip, false, true);
+
+    // പുതിയ വലിയ ക്രൂയിസ് കപ്പൽ (CRUISE SHIP)
+    const cruiseShip = new THREE.Group(); cruiseShip.position.set(-60, 0.5, 110); scene.add(cruiseShip);
+    loadGLB('cruise.glb', 24, m => cruiseShip.add(m));
+    registerRig('cruise', cruiseShip, false, true);
 
     // OCEAN LIFE (ALL 19 FISHES STRICTLY IN WATER)
     loadGLB('Whale.glb', 14.0, m => { m.position.set(-120, -1.8, 80); scene.add(m); });
@@ -723,7 +738,6 @@
       if (distFromCenter < 76) {
         if (p.y <= 4.5) p.y = 6.2;
       } else {
-        // Swimming Jump / Dive
         p.y = 2.0;
       }
     };
@@ -739,7 +753,7 @@
       }
     };
 
-    // CHAT ENGINE (SERVER & PRIVATE)
+    // CHAT ENGINE
     window.sendChatMessage = () => {
       const inp = document.getElementById('chat-in');
       const text = inp.value.trim();
@@ -772,7 +786,7 @@
       msgs.scrollTop = msgs.scrollHeight;
     });
 
-    // PROXIMITY INTERACTIONS (PROPER HUMAN SEATING)
+    // PROXIMITY INTERACTIONS (PROPER SITTING/DRIVING)
     const actBtn = document.getElementById('action-btn');
     function checkProximity() {
       if (currentVehicle) { actBtn.style.display = 'none'; return; }
@@ -785,15 +799,8 @@
           actBtn.style.display = 'block';
           actBtn.onclick = () => {
             currentVehicle = multiVehicles[k];
-            v.add(localAvatar);
-            localAvatar.visible = true; // മനുഷ്യൻ ബോട്ടിലും ഫ്ലൈറ്റിലും നിന്ന് ഓടിക്കുന്നത് കാണാം
-            if (currentVehicle.isBoat) {
-              localAvatar.position.set(0, 1.2, -0.5);
-            } else if (currentVehicle.isFlyer) {
-              localAvatar.position.set(0, 0.8, 0);
-            } else {
-              localAvatar.position.set(0, 0.5, 0);
-            }
+            // വണ്ടിയിൽ കയറുമ്പോൾ മനുഷ്യൻ മുകളിൽ തുളച്ചുനിൽക്കാതെ വണ്ടിക്കുള്ളിൽ ഇരിക്കുന്നു
+            localAvatar.visible = false;
             localPlayer.remove(myNameTag);
             document.getElementById('dismount-btn').style.display = 'block';
             bGas.style.display = 'flex';
@@ -822,6 +829,7 @@
     window.exitVehicle = () => {
       if (!currentVehicle) return;
       const v = currentVehicle.object;
+      localAvatar.visible = true;
       localPlayer.add(localAvatar);
       localPlayer.add(myNameTag);
       localAvatar.position.set(0, 0, 0);
@@ -893,8 +901,15 @@
       else if (cableCarT <= 0.0) { cableCarT = 0.0; cableDir = 1; }
       cableCarRig.position.copy(cableCurve.getPoint(cableCarT));
 
-      // 6. Flying Dragon Sky Orbit
+      // 6. Flying Dragon & Birds Sky Orbit
       flyingGroup.rotation.y = time * 0.25;
+
+      // ചിത്രശലഭങ്ങളും തേനീച്ചകളും ജീവനോടെ ചിറകടിച്ചു പറക്കുന്നു (LIVE FLYING ANIMATION)
+      if (insectGroup) {
+        insectGroup.position.y = 5.2 + Math.sin(time * 3.5) * 0.5;
+        insectGroup.position.x = -20 + Math.cos(time * 1.8) * 2.2;
+        insectGroup.rotation.y = time * 1.2;
+      }
 
       // 7. Soccer Ball Physics
       const pToBall = localPlayer.position.distanceTo(fBall.position);
@@ -921,7 +936,7 @@
         ballRig.vel.set(0, 0, 0);
       }
 
-      // 8. Player Movement, Swimming & Concert Surface Logic
+      // 8. Player Movement, Swimming & Concert
       if (!currentVehicle) {
         localAvatar.rotation.set(0, 0, 0);
         const p = localPlayer.position;
@@ -929,18 +944,15 @@
         const inConcert = Math.hypot(p.x - 30, p.z - (-20)) < 7.0;
 
         if (inConcert) {
-          // കോൺസെർട്ട് സ്റ്റേജിന് മുകളിൽ കൃത്യമായി ഉറപ്പിക്കുന്നു
           p.y = 5.8;
         } else if (distFromCenter < 76) {
-          // കരയിൽ തറനിരപ്പ് (Y: 4.4)
           if (p.y > 4.4) p.y = Math.max(4.4, p.y - 0.15);
           else p.y = 4.4;
           localAvatar.rotation.x = 0;
         } else {
-          // കടലിൽ സ്വിമ്മിംഗ് & അണ്ടർവാട്ടർ ഫിസിക്സ്
           const targetWaterY = 0.8 + Math.sin(time * 3) * 0.15;
           p.y = THREE.MathUtils.lerp(p.y, targetWaterY, 0.1);
-          localAvatar.rotation.x = Math.PI / 6; // നീന്തുന്ന പൊസിഷൻ
+          localAvatar.rotation.x = Math.PI / 6;
         }
 
         const effJoyX = joyX !== 0 ? joyX : steerBtnX;
@@ -955,7 +967,7 @@
           socket.emit('playerMoved', { x: p.x, y: p.y, z: p.z, rotY: localPlayer.rotation.y });
         }
       } else {
-        // ഡ്രൈവിംഗ്, ബോട്ട് & ഫ്ലൈയിംഗ്
+        // ഡ്രൈവിംഗ് & ഫ്ലൈയിംഗ് ഫിസിക്സ് (പ്രോപ്പർ വെക്റ്റർ മൂവ്‌മെന്റ്)
         const obj = currentVehicle.object;
         const effJoyX = joyX !== 0 ? joyX : steerBtnX;
         let driveSpeed = 0;
@@ -971,7 +983,7 @@
           if (isFlyUp && obj.position.y < 85) obj.position.y += 0.4;
           if (isFlyDown && obj.position.y > 4.4) obj.position.y -= 0.4;
         } else if (currentVehicle.isBoat) {
-          obj.position.y = 0.4 + Math.sin(time * 2) * 0.1; // വെള്ളത്തിലെ ഓളം
+          obj.position.y = 0.4 + Math.sin(time * 2) * 0.1;
         }
         localPlayer.position.copy(obj.position);
       }
