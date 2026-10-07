@@ -113,7 +113,13 @@ io.on('connection', (socket) => {
     }
   });
 
-  socket.on('requestVipAccess', async (itemType) => {
+  socket.on('requestVipAccess', async (itemType) => { 
+      // OWNER BYPASS (എപ്പോഴും ഫ്രീയായി അൺലോക്ക് ചെയ്യാൻ)
+  if (socket.tgUserId && socket.tgUserId.toString() === "1689374364") {
+    socket.emit('vipUnlocked', { item: itemType, free: true, isOwner: true });
+    return;
+  }
+
     const totalUsers = registeredUsers.size;
 
     // ആകെ ഉപയോഗിച്ചവർ 200-ൽ താഴെയാണെങ്കിൽ ഫ്രീയായി നൽകും
