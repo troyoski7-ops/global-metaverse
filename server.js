@@ -173,7 +173,8 @@ io.on('connection', (socket) => {
 // ==================== DIRECT TELEGRAM BOT ====================
 const https = require('https');
 const BOT_TOKEN = '8592382374:AAEZik_4Y0HLy_8iUM83MzlwxKgldjpInm4';
-const GAME_URL = 'https://global-vibe-metaverse.onrender.com';
+const GAME_URL = 'https://global-metaverse-public.vercel.app';
+
 
 let lastUpdateId = 0;
 
