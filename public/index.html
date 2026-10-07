@@ -18,7 +18,7 @@
     .badges-group { display: flex; gap: 6px; }
     .badge { background: rgba(15, 23, 42, 0.9); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 800; border: 1px solid rgba(255,255,255,0.2); }
     .badge.stars { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; }
-    .btn-circle { width: 36px; height: 36px; border-radius: 50%; background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(255,255,255,0.3); color: #fff; font-size: 14px; cursor: pointer; }
+    .btn-circle { width: 36px; height: 36px; border-radius: 50%; background: rgba(15, 23, 42, 0.9); border: 1.5px solid rgba(255,255,255,0.3); color: #fff; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
     #score-hud { position: absolute; top: 88px; left: 8px; background: rgba(15, 23, 42, 0.9); border: 1px solid #38bdf8; border-radius: 12px; padding: 8px 12px; color: #fff; font-size: 11px; font-weight: 700; z-index: 30; }
     #action-btn { position: absolute; bottom: 135px; left: 50%; transform: translateX(-50%); background: #0284c7; color: #fff; border: 2px solid #fff; padding: 12px 28px; border-radius: 30px; font-size: 13px; font-weight: 900; display: none; z-index: 45; cursor: pointer; }
@@ -35,10 +35,17 @@
     .btn-touch.map { background: #8b5cf6; border-color: #a78bfa; }
     .btn-touch.gas { background: #22c55e; border-color: #4ade80; display: none; }
     .btn-touch.brake { background: #ef4444; border-color: #f87171; display: none; }
+    .btn-touch.flyup { background: #38bdf8; border-color: #bae6fd; display: none; }
+    .btn-touch.flydown { background: #64748b; border-color: #94a3b8; display: none; }
+    .btn-touch.shoot { background: #f97316; border-color: #fdba74; display: none; }
 
-    #chat-box { position: absolute; bottom: 20px; left: 125px; width: 185px; background: rgba(15, 23, 42, 0.95); border-radius: 12px; border: 1px solid rgba(255,255,255,0.25); padding: 6px; z-index: 50; }
-    #chat-msgs { height: 42px; overflow-y: auto; font-size: 10px; color: #fff; margin-bottom: 4px; display: flex; flex-direction: column; gap: 2px; }
+    #chat-box { position: absolute; bottom: 20px; left: 125px; width: 200px; background: rgba(15, 23, 42, 0.95); border-radius: 12px; border: 1px solid rgba(255,255,255,0.25); padding: 6px; z-index: 50; }
+    #chat-tabs { display: flex; gap: 4px; margin-bottom: 4px; }
+    .chat-tab { flex: 1; text-align: center; font-size: 9px; padding: 2px; border-radius: 4px; background: #1e293b; color: #94a3b8; cursor: pointer; }
+    .chat-tab.active { background: #0284c7; color: #fff; font-weight: bold; }
+    #chat-msgs { height: 44px; overflow-y: auto; font-size: 10px; color: #fff; margin-bottom: 4px; display: flex; flex-direction: column; gap: 2px; }
     .chat-bubble { background: rgba(255,255,255,0.1); padding: 2px 5px; border-radius: 4px; }
+    .chat-bubble.pm { border-left: 2px solid #ec4899; }
     .chat-controls { display: flex; gap: 4px; }
     #chat-in { flex: 1; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; color: #fff; font-size: 11px; padding: 3px 5px; outline: none; }
     #chat-send { background: #0284c7; color: #fff; border: none; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; cursor: pointer; }
@@ -60,6 +67,7 @@
       <div class="badge">🟢 <span id="hud-online">1</span> Online</div>
     </div>
     <div style="display:flex; gap:6px;">
+      <button id="btn-mic" class="btn-circle" onclick="toggleMicrophone()">🎙</button>
       <button class="btn-circle" onclick="openModal('weather-modal')">⛅</button>
       <button class="btn-circle" onclick="openMasterSettings()">⚙️</button>
       <button class="btn-circle" onclick="toggleMapView()">🗺️</button>
@@ -81,12 +89,19 @@
     <div class="ctrl-row">
       <button id="btn-gas" class="btn-touch gas">⚡ GAS</button>
       <button id="btn-brake" class="btn-touch brake">🛑 STOP</button>
+      <button id="btn-flyup" class="btn-touch flyup">🔺 FLY UP</button>
+      <button id="btn-flydown" class="btn-touch flydown">🔻 LAND</button>
+      <button id="btn-shoot" class="btn-touch shoot" onclick="shootBall()">⚽ SHOOT</button>
       <button class="btn-touch map" onclick="toggleMapView()">🗺️ MAP</button>
       <button id="btn-jump" class="btn-touch jump" onclick="triggerJump()">JUMP</button>
     </div>
   </div>
 
   <div id="chat-box">
+    <div id="chat-tabs">
+      <div id="tab-server" class="chat-tab active" onclick="switchChatTab('server')">Server</div>
+      <div id="tab-pm" class="chat-tab" onclick="switchChatTab('pm')">Private</div>
+    </div>
     <div id="chat-msgs"><div class="chat-bubble"><b>System:</b> Connected to Island!</div></div>
     <div class="chat-controls">
       <input type="text" id="chat-in" placeholder="Chat here...">
@@ -94,18 +109,16 @@
     </div>
   </div>
 
-  <!-- Settings & Languages Modal -->
+  <!-- Settings & 11 Languages Modal -->
   <div id="master-settings-modal" class="modal-overlay">
     <div class="modal-card">
       <h3>⚙️ Profile & Settings</h3>
-      <input type="text" id="upd-player-name" class="btn-action" style="text-align:left; background:#000;" placeholder="Player Name">
+      <input type="text" id="upd-player-name" class="btn-action" style="text-align:left; background:#000;" placeholder="Your Name">
       <div class="grid-btns">
         <button class="btn-action" onclick="applyGenderSelect('man')">👦 Boy</button>
         <button class="btn-action" onclick="applyGenderSelect('girl')">👧 Girl</button>
       </div>
-      <input type="text" id="upd-tele-id" class="btn-action" style="text-align:left; background:#000;" placeholder="Telegram ID (@username)">
-      <input type="text" id="upd-insta-id" class="btn-action" style="text-align:left; background:#000;" placeholder="Instagram ID (@username)">
-      
+
       <h3>📤 Share Room</h3>
       <div class="grid-btns">
         <button class="btn-action" onclick="shareSocial('whatsapp')">💬 WhatsApp</button>
@@ -125,8 +138,9 @@
         <button class="btn-action" onclick="setLanguage('it')">Italiano</button>
         <button class="btn-action" onclick="setLanguage('id')">Indo</button>
         <button class="btn-action" onclick="setLanguage('my')">မြန်မာ</button>
+        <button class="btn-action" onclick="setLanguage('es')">Español</button>
       </div>
-      <button class="btn-action primary" onclick="closeMasterSettings()">Save & Close</button>
+      <button class="btn-action primary" onclick="saveMasterSettings()">Save & Close</button>
     </div>
   </div>
 
@@ -154,6 +168,9 @@
     const socket = io();
     let penaltyGoals = 0;
     let isMapView = false;
+    let isMicActive = false;
+    let currentChatTab = 'server';
+    let privateTargetId = null;
 
     window.openModal = (id) => { document.getElementById(id).style.display = 'flex'; };
     window.closeModal = (id) => { document.getElementById(id).style.display = 'none'; };
@@ -161,7 +178,13 @@
     window.closeMasterSettings = () => { document.getElementById('master-settings-modal').style.display = 'none'; };
     window.toggleMapView = () => { isMapView = !isMapView; };
 
-    // Share & Languages
+    function switchChatTab(tab) {
+      currentChatTab = tab;
+      document.getElementById('tab-server').classList.toggle('active', tab === 'server');
+      document.getElementById('tab-pm').classList.toggle('active', tab === 'pm');
+      document.getElementById('chat-in').placeholder = tab === 'server' ? 'Chat here...' : (privateTargetId ? 'Private to friend...' : 'Select player first');
+    }
+
     window.shareSocial = (type) => {
       const url = window.location.href;
       if (type === 'whatsapp') window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent('Join GlobeVibe GTA Island: ' + url)}`);
@@ -170,25 +193,35 @@
     };
 
     const dict = {
-      en: { jump: "JUMP", run: "⚡ RUN" },
-      ml: { jump: "ചാടുക", run: "⚡ ഓടുക" },
-      hi: { jump: "कूदें", run: "⚡ दौड़ें" },
-      fa: { jump: "پرش", run: "⚡ دویدن" },
-      tg: { jump: "Ҷаҳидан", run: "⚡ Давидан" },
-      uz: { jump: "Sakrash", run: "⚡ Yugurish" },
-      ru: { jump: "ПРЫЖОК", run: "⚡ БЕГ" },
-      it: { jump: "SALTO", run: "⚡ CORRI" },
-      id: { jump: "LOMPAT", run: "⚡ LARI" },
-      my: { jump: "ခုန်ရန်", run: "⚡ ပြေးရန်" }
+      en: { jump: "JUMP", run: "⚡ RUN", shoot: "⚽ SHOOT", gas: "⚡ GAS", brake: "🛑 STOP" },
+      ml: { jump: "ചാടുക", run: "⚡ ഓടുക", shoot: "⚽ അടിയ്ക്കുക", gas: "⚡ ഗ്യാസ്", brake: "🛑 നിർത്തുക" },
+      hi: { jump: "कूदें", run: "⚡ दौड़ें", shoot: "⚽ मारें", gas: "⚡ गैस", brake: "🛑 रुकें" },
+      fa: { jump: "پرش", run: "⚡ دویدن", shoot: "⚽ شوت", gas: "⚡ گاز", brake: "🛑 توقف" },
+      tg: { jump: "Ҷаҳидан", run: "⚡ Давидан", shoot: "⚽ Зарба", gas: "⚡ Газ", brake: "🛑 Истодан" },
+      uz: { jump: "Sakrash", run: "⚡ Yugurish", shoot: "⚽ Zarba", gas: "⚡ Gaz", brake: "🛑 To'xtash" },
+      ru: { jump: "ПРЫЖОК", run: "⚡ БЕГ", shoot: "⚽ УДАР", gas: "⚡ ГАЗ", brake: "🛑 СТОП" },
+      it: { jump: "SALTO", run: "⚡ CORRI", shoot: "⚽ CALCIA", gas: "⚡ GAS", brake: "🛑 STOP" },
+      id: { jump: "LOMPAT", run: "⚡ LARI", shoot: "⚽ TENDANG", gas: "⚡ GAS", brake: "🛑 REM" },
+      my: { jump: "ခုန်ရန်", run: "⚡ ပြေးရန်", shoot: "⚽ ကန်ရန်", gas: "⚡ ဂတ်စ်", brake: "🛑 ရပ်ရန်" },
+      es: { jump: "SALTAR", run: "⚡ CORRER", shoot: "⚽ DISPARAR", gas: "⚡ ACELERAR", brake: "🛑 FRENAR" }
     };
     window.setLanguage = (lang) => {
       const t = dict[lang] || dict['en'];
       document.getElementById('btn-jump').innerText = t.jump;
       document.getElementById('btn-sprint').innerText = t.run;
+      document.getElementById('btn-shoot').innerText = t.shoot;
+      document.getElementById('btn-gas').innerText = t.gas;
+      document.getElementById('btn-brake').innerText = t.brake;
       closeMasterSettings();
     };
 
-    // Synthesizer Audio SFX
+    function saveMasterSettings() {
+      const n = document.getElementById('upd-player-name').value.trim();
+      if (n) socket.emit('updateProfile', { name: n });
+      closeMasterSettings();
+    }
+
+    // Audio SFX Engine
     const actx = new (window.AudioContext || window.webkitAudioContext)();
     function playSound(type) {
       if (actx.state === 'suspended') actx.resume();
@@ -212,16 +245,47 @@
         osc.type = 'triangle'; osc.frequency.setValueAtTime(120, now); osc.frequency.exponentialRampToValueAtTime(30, now + 0.2);
         gain.gain.setValueAtTime(0.8, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
         osc.start(now); osc.stop(now + 0.2);
-      } else if (type === 'violin') {
-        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(659, now);
-        gain.gain.setValueAtTime(0.3, now); gain.gain.linearRampToValueAtTime(0.01, now + 1.0);
-        osc.start(now); osc.stop(now + 1.0);
-      } else if (type === 'dj') {
-        osc.type = 'square'; osc.frequency.setValueAtTime(150, now); osc.frequency.linearRampToValueAtTime(600, now + 0.3);
-        gain.gain.setValueAtTime(0.3, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
+      } else if (type === 'engine') {
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(80, now);
+        gain.gain.setValueAtTime(0.15, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.3);
         osc.start(now); osc.stop(now + 0.3);
       }
     }
+
+    // Live Microphone Voice Streaming
+    let mediaRecorder = null;
+    window.toggleMicrophone = async () => {
+      const micBtn = document.getElementById('btn-mic');
+      if (!isMicActive) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.ondataavailable = e => {
+            if (e.data.size > 0) {
+              const reader = new FileReader();
+              reader.onload = () => socket.emit('voiceAudio', reader.result);
+              reader.readAsDataURL(e.data);
+            }
+          };
+          mediaRecorder.start(250);
+          isMicActive = true;
+          micBtn.style.background = '#ef4444';
+          micBtn.innerText = '🔴';
+        } catch (err) {
+          alert("Microphone permission required for Concert Voice!");
+        }
+      } else {
+        if (mediaRecorder) mediaRecorder.stop();
+        isMicActive = false;
+        micBtn.style.background = 'rgba(15, 23, 42, 0.9)';
+        micBtn.innerText = '🎙';
+      }
+    };
+
+    socket.on('voiceAudio', data => {
+      const audio = new Audio(data.audio);
+      audio.play().catch(() => {});
+    });
 
     // Three.js Scene Setup
     const scene = new THREE.Scene();
@@ -266,7 +330,7 @@
     const turf = new THREE.Mesh(new THREE.BoxGeometry(26, 8.2, 42), new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.6 }));
     turf.position.set(0, 0.45, -44); scene.add(turf);
 
-    // 1. CONTINUOUS GROUND-REACHING SNOWFALL
+    // 1. Continuous Snowfall Loop
     const snowGeo = new THREE.BufferGeometry();
     const snowCount = 250;
     const snowPositions = new Float32Array(snowCount * 3);
@@ -279,7 +343,7 @@
     const snowParticles = new THREE.Points(snowGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.4 }));
     scene.add(snowParticles);
 
-    // 2. VOLCANO & CONTINUOUS LAVA PARTICLES
+    // 2. Volcano & Lava Particles
     const volcanoGroup = new THREE.Group(); volcanoGroup.position.set(0, 0, -145); scene.add(volcanoGroup);
     const lavaLight = new THREE.PointLight(0xff4500, 3.5, 90);
     lavaLight.position.set(0, 22, -145); scene.add(lavaLight);
@@ -298,7 +362,7 @@
     const lavaParticles = new THREE.Points(lavaGeo, new THREE.PointsMaterial({ color: 0xff3b00, size: 1.4 }));
     scene.add(lavaParticles);
 
-    // 3. SKY FIREWORKS LOOP
+    // 3. Sky Fireworks Loop
     const fwGeo = new THREE.BufferGeometry();
     const fwCount = 100;
     const fwPos = new Float32Array(fwCount * 3);
@@ -335,7 +399,7 @@
 
     loadGLB('volcano.glb', 50, m => volcanoGroup.add(m));
 
-    // GODZILLA & KING KONG (Matching Dark Color & Kong Live Animation)
+    // GODZILLA & KING KONG (Matching Dark Color & Live Animation)
     const godzillaSea = new THREE.Group(); godzillaSea.position.set(-110, 0, -85); scene.add(godzillaSea);
     loadGLB('godzilla.glb', 28, m => godzillaSea.add(m));
 
@@ -364,10 +428,7 @@
     const tram2Rig = new THREE.Group(); scene.add(tram2Rig);
     loadGLB('tram2.glb', 5.0, m => tram2Rig.add(m));
 
-    // SNOW ZONE: TRAM 1 (CLEARED TRACK) & CABLE CAR & HOUSES
-    const tram1Rig = new THREE.Group(); scene.add(tram1Rig);
-    loadGLB('tram1.glb', 5.0, m => tram1Rig.add(m));
-
+    // SNOW ZONE: CABLE CAR & HOUSES (Tram 1 Removed)
     const cableCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(20, 8.5, 20), new THREE.Vector3(0, 16, 30), new THREE.Vector3(-20, 22, 40)]);
     const cableLine = new THREE.Mesh(new THREE.TubeGeometry(cableCurve, 32, 0.05, 8, false), new THREE.MeshBasicMaterial({ color: 0x334155 }));
     scene.add(cableLine);
@@ -380,10 +441,8 @@
     loadGLB('reindeer.glb', 3.4, m => { m.position.set(22, 4.4, 26); scene.add(m); });
     loadGLB('penguin_single.glb', 1.4, m => { m.position.set(34, 4.4, 32); scene.add(m); });
 
-    // FOREST VALLEY, DINOSAURS, TREES & SOLID ROPE BRIDGE
+    // FOREST VALLEY & DINOSAURS (Bridge Removed)
     loadGLB('forest_terrain.glb', 40, m => { m.position.set(-36, 4.4, 65); scene.add(m); });
-    loadGLB('rope_bridge.glb', 10, m => { m.position.set(-18, 4.4, 22); scene.add(m); });
-
     loadGLB('Trex.glb', 5.5, m => { m.position.set(-38, 4.4, 20); scene.add(m); });
     loadGLB('Triceratops.glb', 4.5, m => { m.position.set(-28, 4.4, 28); scene.add(m); });
     loadGLB('Stegosaurus.glb', 4.5, m => { m.position.set(-42, 4.4, 26); scene.add(m); });
@@ -401,17 +460,12 @@
     loadGLB('Pterodactylus.glb', 4.2, m => { m.position.set(-15, 1, 0); flyingGroup.add(m); });
     loadGLB('eagle.glb', 2.5, m => { m.position.set(0, 2, 12); flyingGroup.add(m); });
 
-    const insectGroup = new THREE.Group(); insectGroup.position.set(-20, 5.2, 20); scene.add(insectGroup);
-    loadGLB('armabee.glb', 1.0, m => { m.position.set(2, 0, 0); insectGroup.add(m); });
-    loadGLB('butterfly_blue.glb', 1.2, m => { m.position.set(-2, 0.3, 1); insectGroup.add(m); });
-    loadGLB('butterfly_orange.glb', 1.2, m => { m.position.set(0, -0.3, -2); insectGroup.add(m); });
-
     // CITY BUILDINGS
     loadGLB('city.glb', 26, m => { m.position.set(0, 4.4, 0); scene.add(m); });
     loadGLB('city_tower.glb', 16, m => { m.position.set(-14, 4.4, -10); scene.add(m); });
     loadGLB('city_shop.glb', 7.5, m => { m.position.set(12, 4.4, -8); scene.add(m); });
 
-    // CONCERT STAGE & PLAYABLE INSTRUMENTS
+    // CONCERT STAGE (ELEVATED PLATFORM AT Y: 5.8)
     const concertStage = new THREE.Group(); concertStage.position.set(30, 4.4, -20); scene.add(concertStage);
     loadGLB('concert_stage.glb', 14, m => concertStage.add(m));
 
@@ -419,15 +473,15 @@
     function regInst(name, file, pos, sfx) {
       loadGLB(file, 2.5, m => { m.position.copy(pos); scene.add(m); playableInstruments[name] = { obj: m, sfx }; });
     }
-    regInst('piano', 'piano.glb', new THREE.Vector3(26, 5.7, -22), 'piano');
-    regInst('drums', 'drum_set.glb', new THREE.Vector3(34, 5.7, -22), 'drums');
-    regInst('dj', 'dj_gear.glb', new THREE.Vector3(30, 5.7, -18), 'dj');
-    regInst('guitar', 'electric_guitar.glb', new THREE.Vector3(28, 5.7, -20), 'guitar');
-    regInst('violin', 'violin.glb', new THREE.Vector3(32, 5.7, -20), 'violin');
+    regInst('piano', 'piano.glb', new THREE.Vector3(26, 5.8, -22), 'piano');
+    regInst('drums', 'drum_set.glb', new THREE.Vector3(34, 5.8, -22), 'drums');
+    regInst('dj', 'dj_gear.glb', new THREE.Vector3(30, 5.8, -18), 'dj');
+    regInst('guitar', 'electric_guitar.glb', new THREE.Vector3(28, 5.8, -20), 'guitar');
+    regInst('violin', 'violin.glb', new THREE.Vector3(32, 5.8, -20), 'violin');
 
-    // VEHICLES (ALL GROUNDED ON ROAD)
+    // VEHICLES (DRIVABLE & FLYABLE, Challenger Removed)
     const multiVehicles = {};
-    function registerRig(name, obj, isFlyer=false) { multiVehicles[name] = { object: obj, isFlyer }; }
+    function registerRig(name, obj, isFlyer=false, isBoat=false) { multiVehicles[name] = { object: obj, isFlyer, isBoat }; }
 
     const groundPlane = new THREE.Group(); groundPlane.position.set(10, 4.4, -40); groundPlane.rotation.y = Math.PI; scene.add(groundPlane);
     loadGLB('plane1.glb', 10.0, m => groundPlane.add(m));
@@ -436,10 +490,6 @@
     const carRover = new THREE.Group(); carRover.position.set(12, 4.4, 16); scene.add(carRover);
     loadGLB('rangerover.glb', 4.4, m => carRover.add(m));
     registerRig('rangerover', carRover);
-
-    const carChallenger = new THREE.Group(); carChallenger.position.set(12, 4.4, 10); scene.add(carChallenger);
-    loadGLB('challenger.glb', 4.2, m => carChallenger.add(m));
-    registerRig('challenger', carChallenger);
 
     const vanVehicle = new THREE.Group(); vanVehicle.position.set(12, 4.4, 22); scene.add(vanVehicle);
     loadGLB('van.glb', 4.8, m => vanVehicle.add(m));
@@ -465,15 +515,15 @@
     loadGLB('oldbike.glb', 2.2, m => bikeOld.add(m));
     registerRig('oldbike', bikeOld);
 
-    // SHIPS & STILL BOAT
+    // HUMAN DRIVABLE BOAT & SHIP
     loadGLB('dock.glb', 12, m => { m.position.set(0, 1.2, 62); scene.add(m); });
-    const calmBoat = new THREE.Group(); calmBoat.position.set(14, 0.2, 70); scene.add(calmBoat);
+    const calmBoat = new THREE.Group(); calmBoat.position.set(14, 0.4, 70); scene.add(calmBoat);
     loadGLB('low_poly_boat.glb', 5.0, m => calmBoat.add(m));
-    registerRig('boat', calmBoat);
+    registerRig('boat', calmBoat, false, true);
 
     const cargoShip = new THREE.Group(); cargoShip.position.set(0, 0.5, 95); scene.add(cargoShip);
     loadGLB('low_poly_cargo_ship.glb', 18, m => cargoShip.add(m));
-    registerRig('ship', cargoShip);
+    registerRig('ship', cargoShip, false, true);
 
     // OCEAN LIFE (ALL 19 FISHES STRICTLY IN WATER)
     loadGLB('Whale.glb', 14.0, m => { m.position.set(-120, -1.8, 80); scene.add(m); });
@@ -491,7 +541,24 @@
       loadGLB(f, 1.2, m => { m.position.set(-60 + (i % 6) * 22, -0.9, 65 + Math.floor(i / 6) * 14); scene.add(m); });
     });
 
-    // MULTIPLAYER AVATARS ENGINE (സെർവറിൽ എല്ലാവർക്കും പരസ്പരം കാണാൻ)
+    // 3D NAME TAG CREATOR
+    function createNameTag(name) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256; canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.8)';
+      ctx.roundRect(10, 10, 236, 44, 12); ctx.fill();
+      ctx.strokeStyle = '#38bdf8'; ctx.lineWidth = 3; ctx.stroke();
+      ctx.font = 'bold 24px sans-serif'; ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center';
+      ctx.fillText(name, 128, 40);
+      const texture = new THREE.CanvasTexture(canvas);
+      const spriteMat = new THREE.SpriteMaterial({ map: texture });
+      const sprite = new THREE.Sprite(spriteMat);
+      sprite.scale.set(3, 0.75, 1); sprite.position.y = 2.4;
+      return sprite;
+    }
+
+    // MULTIPLAYER AVATARS ENGINE
     const remotePlayers = {};
     function renderRemotePlayer(data) {
       if (data.id === socket.id || remotePlayers[data.id]) return;
@@ -499,11 +566,15 @@
       group.position.set(data.x, data.y || 4.4, data.z);
       scene.add(group);
 
+      const nameTag = createNameTag(data.name || 'Player');
+      group.add(nameTag);
+
       loadGLB(data.gender === 'girl' ? 'girl.glb' : 'man.glb', 2.0, (mesh) => {
         mesh.rotation.set(0, 0, 0);
         group.add(mesh);
       }, false);
-      remotePlayers[data.id] = { group, data };
+
+      remotePlayers[data.id] = { group, nameTag, data };
     }
 
     socket.on('initWorld', (data) => {
@@ -526,6 +597,15 @@
       }
     });
 
+    socket.on('profileUpdated', (data) => {
+      if (remotePlayers[data.id]) {
+        remotePlayers[data.id].group.remove(remotePlayers[data.id].nameTag);
+        const newTag = createNameTag(data.name);
+        remotePlayers[data.id].group.add(newTag);
+        remotePlayers[data.id].nameTag = newTag;
+      }
+    });
+
     socket.on('playerLeft', (data) => {
       if (remotePlayers[data.id]) {
         scene.remove(remotePlayers[data.id].group);
@@ -534,9 +614,11 @@
       document.getElementById('hud-online').innerText = data.count || Object.keys(remotePlayers).length + 1;
     });
 
-    // LOCAL PLAYER (STRICTLY ON GROUND)
+    // LOCAL PLAYER
     const localPlayer = new THREE.Group(); localPlayer.position.set(0, 4.4, 0); scene.add(localPlayer);
     const localAvatar = new THREE.Group(); localPlayer.add(localAvatar);
+    let myNameTag = createNameTag('You');
+    localPlayer.add(myNameTag);
 
     function loadAvatar(gender) {
       while(localAvatar.children.length > 0) localAvatar.remove(localAvatar.children[0]);
@@ -547,12 +629,12 @@
       }, false);
     }
     loadAvatar('man');
-    window.applyGenderSelect = (g) => { loadAvatar(g); closeMasterSettings(); };
+    window.applyGenderSelect = (g) => { loadAvatar(g); socket.emit('updateProfile', { gender: g }); closeMasterSettings(); };
 
-    // JOYSTICK & RUN (100% WORKING SPEED)
+    // CONTROLS & FLIGHT
     let joyX = 0, joyZ = 0, camRotX = 0, camRotY = 0.25;
     let isSprint = false, steerBtnX = 0;
-    let isGas = false, isBrake = false;
+    let isGas = false, isBrake = false, isFlyUp = false, isFlyDown = false;
     let currentVehicle = null;
 
     const jBase = document.getElementById('joy-base');
@@ -581,10 +663,17 @@
 
     const bGas = document.getElementById('btn-gas');
     const bBrake = document.getElementById('btn-brake');
-    bGas.addEventListener('touchstart', e => { e.preventDefault(); isGas = true; });
+    const bFlyUp = document.getElementById('btn-flyup');
+    const bFlyDown = document.getElementById('btn-flydown');
+
+    bGas.addEventListener('touchstart', e => { e.preventDefault(); isGas = true; playSound('engine'); });
     bGas.addEventListener('touchend', () => isGas = false);
     bBrake.addEventListener('touchstart', e => { e.preventDefault(); isBrake = true; });
     bBrake.addEventListener('touchend', () => isBrake = false);
+    bFlyUp.addEventListener('touchstart', e => { e.preventDefault(); isFlyUp = true; });
+    bFlyUp.addEventListener('touchend', () => isFlyUp = false);
+    bFlyDown.addEventListener('touchstart', e => { e.preventDefault(); isFlyDown = true; });
+    bFlyDown.addEventListener('touchend', () => isFlyDown = false);
 
     let isDrag = false, touchX = 0, touchY = 0;
     window.addEventListener('touchstart', e => {
@@ -600,14 +689,67 @@
     });
     window.addEventListener('touchend', () => isDrag = false);
 
-    window.triggerJump = () => { if (localPlayer.position.y <= 4.5) localPlayer.position.y = 6.2; };
+    // Click Remote Player for Friend Request / Private Chat
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    window.addEventListener('click', e => {
+      if (e.target.closest('button') || e.target.closest('#joy-base') || e.target.closest('#chat-box')) return;
+      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      raycaster.setFromCamera(mouse, camera);
+      for (let id in remotePlayers) {
+        const hits = raycaster.intersectObjects(remotePlayers[id].group.children, true);
+        if (hits.length > 0) {
+          privateTargetId = id;
+          if (confirm(`Send friend request to ${remotePlayers[id].data.name}?`)) {
+            socket.emit('friendRequest', { targetId: id });
+          }
+          switchChatTab('pm');
+          break;
+        }
+      }
+    });
 
-    // CHAT ENGINE
+    socket.on('friendRequestReceived', data => {
+      if (confirm(`Friend request from ${data.fromName}! Start Private Chat?`)) {
+        privateTargetId = data.fromId;
+        switchChatTab('pm');
+      }
+    });
+
+    window.triggerJump = () => {
+      const p = localPlayer.position;
+      const distFromCenter = Math.hypot(p.x, p.z);
+      if (distFromCenter < 76) {
+        if (p.y <= 4.5) p.y = 6.2;
+      } else {
+        // Swimming Jump / Dive
+        p.y = 2.0;
+      }
+    };
+
+    window.shootBall = () => {
+      const pToBall = localPlayer.position.distanceTo(fBall.position);
+      if (pToBall < 3.0) {
+        const pushDir = new THREE.Vector3().subVectors(fBall.position, localPlayer.position).normalize();
+        ballRig.vel.x = pushDir.x * 1.2;
+        ballRig.vel.z = pushDir.z * 1.2;
+        ballRig.vel.y = 0.4;
+        playSound('kick');
+      }
+    };
+
+    // CHAT ENGINE (SERVER & PRIVATE)
     window.sendChatMessage = () => {
       const inp = document.getElementById('chat-in');
       const text = inp.value.trim();
       if (!text) return;
-      socket.emit('chatMessage', { text });
+      if (currentChatTab === 'server') {
+        socket.emit('chatMessage', { text });
+      } else {
+        if (!privateTargetId) { alert("Select a friend to private chat!"); return; }
+        socket.emit('chatMessage', { text, to: privateTargetId });
+      }
       inp.value = '';
     };
     document.getElementById('chat-in').addEventListener('keypress', e => { if (e.key === 'Enter') sendChatMessage(); });
@@ -621,7 +763,16 @@
       msgs.scrollTop = msgs.scrollHeight;
     });
 
-    // PROXIMITY INTERACTIONS
+    socket.on('privateMessage', data => {
+      const msgs = document.getElementById('chat-msgs');
+      const b = document.createElement('div');
+      b.className = 'chat-bubble pm';
+      b.innerHTML = `<b>[PM] ${data.fromName}:</b> ${data.text}`;
+      msgs.appendChild(b);
+      msgs.scrollTop = msgs.scrollHeight;
+    });
+
+    // PROXIMITY INTERACTIONS (PROPER HUMAN SEATING)
     const actBtn = document.getElementById('action-btn');
     function checkProximity() {
       if (currentVehicle) { actBtn.style.display = 'none'; return; }
@@ -629,16 +780,28 @@
 
       for (let k in multiVehicles) {
         const v = multiVehicles[k].object;
-        if (p.distanceTo(v.position) < 5.0) {
+        if (p.distanceTo(v.position) < 6.0) {
           actBtn.innerText = `🚗 BOARD ${k.toUpperCase()}`;
           actBtn.style.display = 'block';
           actBtn.onclick = () => {
             currentVehicle = multiVehicles[k];
             v.add(localAvatar);
-            localAvatar.visible = false;
+            localAvatar.visible = true; // മനുഷ്യൻ ബോട്ടിലും ഫ്ലൈറ്റിലും നിന്ന് ഓടിക്കുന്നത് കാണാം
+            if (currentVehicle.isBoat) {
+              localAvatar.position.set(0, 1.2, -0.5);
+            } else if (currentVehicle.isFlyer) {
+              localAvatar.position.set(0, 0.8, 0);
+            } else {
+              localAvatar.position.set(0, 0.5, 0);
+            }
+            localPlayer.remove(myNameTag);
             document.getElementById('dismount-btn').style.display = 'block';
             bGas.style.display = 'flex';
             bBrake.style.display = 'flex';
+            if (currentVehicle.isFlyer) {
+              bFlyUp.style.display = 'flex';
+              bFlyDown.style.display = 'flex';
+            }
           };
           return;
         }
@@ -660,18 +823,20 @@
       if (!currentVehicle) return;
       const v = currentVehicle.object;
       localPlayer.add(localAvatar);
-      localAvatar.visible = true;
+      localPlayer.add(myNameTag);
       localAvatar.position.set(0, 0, 0);
       localPlayer.position.set(v.position.x + 3.0, 4.4, v.position.z);
       document.getElementById('dismount-btn').style.display = 'none';
       bGas.style.display = 'none';
       bBrake.style.display = 'none';
+      bFlyUp.style.display = 'none';
+      bFlyDown.style.display = 'none';
       currentVehicle = null;
     };
 
     // MAIN GAME LOOP
     const clock = new THREE.Clock();
-    let tram1T = 0, tram2T = 0, cableCarT = 0, cableDir = 1;
+    let tram2T = 0, cableCarT = 0, cableDir = 1;
 
     function animate() {
       requestAnimationFrame(animate);
@@ -717,29 +882,24 @@
       }
       fwParticles.geometry.attributes.position.needsUpdate = true;
 
-      // 4. Tram 1 Snow Clear Track Loop (Radius: 18 - ഒന്നും ഇടിക്കില്ല)
-      tram1T += delta * 0.22;
-      tram1Rig.position.set(30 + Math.sin(tram1T) * 18, 4.4, 25 + Math.cos(tram1T) * 18);
-      tram1Rig.rotation.y = tram1T + Math.PI / 2;
-
-      // 5. Tram 2 Desert Clear Track Loop
+      // 4. Tram 2 Desert Loop
       tram2T += delta * 0.22;
       tram2Rig.position.set(-32 + Math.sin(tram2T) * 14, 4.4, -28 + Math.cos(tram2T) * 14);
       tram2Rig.rotation.y = tram2T + Math.PI / 2;
 
-      // 6. Cable Car Loop
+      // 5. Cable Car Loop
       cableCarT += delta * 0.08 * cableDir;
       if (cableCarT >= 1.0) { cableCarT = 1.0; cableDir = -1; }
       else if (cableCarT <= 0.0) { cableCarT = 0.0; cableDir = 1; }
       cableCarRig.position.copy(cableCurve.getPoint(cableCarT));
 
-      // 7. Dragon Sky Orbit & Insects
+      // 6. Flying Dragon Sky Orbit
       flyingGroup.rotation.y = time * 0.25;
-      insectGroup.position.y = 5.2 + Math.sin(time * 3.0) * 0.3;
-      insectGroup.rotation.y = Math.sin(time * 1.5) * 0.4;
 
-      // 8. Soccer Ball Physics
+      // 7. Soccer Ball Physics
       const pToBall = localPlayer.position.distanceTo(fBall.position);
+      document.getElementById('btn-shoot').style.display = pToBall < 3.2 ? 'flex' : 'none';
+
       if (pToBall < 1.4) {
         const pushDir = new THREE.Vector3().subVectors(fBall.position, localPlayer.position).normalize();
         ballRig.vel.x = pushDir.x * 0.55;
@@ -748,7 +908,10 @@
       }
       fBall.position.add(ballRig.vel);
       ballRig.vel.multiplyScalar(0.92);
-      fBall.position.y = 4.75;
+      if (ballRig.vel.y) {
+        ballRig.vel.y -= 0.02;
+        if (fBall.position.y <= 4.75) { fBall.position.y = 4.75; ballRig.vel.y = 0; }
+      }
 
       if (fBall.position.z < -60 && Math.abs(fBall.position.x) < 4.0) {
         playSound('kick');
@@ -758,28 +921,45 @@
         ballRig.vel.set(0, 0, 0);
       }
 
-      // 9. Local Player Movement & Strict Ground Clamp
+      // 8. Player Movement, Swimming & Concert Surface Logic
       if (!currentVehicle) {
         localAvatar.rotation.set(0, 0, 0);
-        if (localPlayer.position.y > 4.4) localPlayer.position.y = Math.max(4.4, localPlayer.position.y - 0.15);
-        else localPlayer.position.y = 4.4;
+        const p = localPlayer.position;
+        const distFromCenter = Math.hypot(p.x, p.z);
+        const inConcert = Math.hypot(p.x - 30, p.z - (-20)) < 7.0;
+
+        if (inConcert) {
+          // കോൺസെർട്ട് സ്റ്റേജിന് മുകളിൽ കൃത്യമായി ഉറപ്പിക്കുന്നു
+          p.y = 5.8;
+        } else if (distFromCenter < 76) {
+          // കരയിൽ തറനിരപ്പ് (Y: 4.4)
+          if (p.y > 4.4) p.y = Math.max(4.4, p.y - 0.15);
+          else p.y = 4.4;
+          localAvatar.rotation.x = 0;
+        } else {
+          // കടലിൽ സ്വിമ്മിംഗ് & അണ്ടർവാട്ടർ ഫിസിക്സ്
+          const targetWaterY = 0.8 + Math.sin(time * 3) * 0.15;
+          p.y = THREE.MathUtils.lerp(p.y, targetWaterY, 0.1);
+          localAvatar.rotation.x = Math.PI / 6; // നീന്തുന്ന പൊസിഷൻ
+        }
 
         const effJoyX = joyX !== 0 ? joyX : steerBtnX;
         if (effJoyX !== 0 || joyZ !== 0) {
-          const speed = isSprint ? 0.8 : 0.35;
+          const speed = isSprint ? 0.8 : (distFromCenter < 76 ? 0.35 : 0.22);
           const fx = effJoyX * Math.cos(camRotX) + joyZ * Math.sin(camRotX);
           const fz = -effJoyX * Math.sin(camRotX) + joyZ * Math.cos(camRotX);
-          localPlayer.position.x += fx * speed;
-          localPlayer.position.z += fz * speed;
+          p.x += fx * speed;
+          p.z += fz * speed;
           localPlayer.rotation.y = Math.atan2(fx, fz);
 
-          socket.emit('playerMoved', { x: localPlayer.position.x, y: localPlayer.position.y, z: localPlayer.position.z, rotY: localPlayer.rotation.y });
+          socket.emit('playerMoved', { x: p.x, y: p.y, z: p.z, rotY: localPlayer.rotation.y });
         }
       } else {
+        // ഡ്രൈവിംഗ്, ബോട്ട് & ഫ്ലൈയിംഗ്
         const obj = currentVehicle.object;
         const effJoyX = joyX !== 0 ? joyX : steerBtnX;
         let driveSpeed = 0;
-        if (isGas) driveSpeed = 0.7;
+        if (isGas) driveSpeed = currentVehicle.isFlyer ? 1.0 : (currentVehicle.isBoat ? 0.6 : 0.7);
         else if (isBrake) driveSpeed = -0.3;
         else if (joyZ !== 0) driveSpeed = -joyZ * 0.5;
 
@@ -788,21 +968,23 @@
         obj.position.z += Math.cos(obj.rotation.y) * driveSpeed;
 
         if (currentVehicle.isFlyer) {
-          if (isGas && obj.position.y < 70) obj.position.y += 0.3;
-          if (isBrake && obj.position.y > 4.4) obj.position.y -= 0.3;
+          if (isFlyUp && obj.position.y < 85) obj.position.y += 0.4;
+          if (isFlyDown && obj.position.y > 4.4) obj.position.y -= 0.4;
+        } else if (currentVehicle.isBoat) {
+          obj.position.y = 0.4 + Math.sin(time * 2) * 0.1; // വെള്ളത്തിലെ ഓളം
         }
         localPlayer.position.copy(obj.position);
       }
 
-      // Camera
+      // Camera Follow
       if (isMapView) {
         camera.position.set(0, 140, 40);
         camera.lookAt(0, 0, 0);
       } else {
         const p = currentVehicle ? currentVehicle.object.position : localPlayer.position;
-        const dist = 10;
+        const dist = currentVehicle && currentVehicle.isFlyer ? 15 : 10;
         camera.position.x = p.x + Math.sin(camRotX) * Math.cos(camRotY) * dist;
-        camera.position.y = p.y + Math.sin(camRotY) * dist + 2.5;
+        camera.position.y = p.y + Math.sin(camRotY) * dist + (currentVehicle && currentVehicle.isFlyer ? 4.0 : 2.5);
         camera.position.z = p.z + Math.cos(camRotX) * Math.cos(camRotY) * dist;
         camera.lookAt(p.x, p.y + 2.0, p.z);
       }
