@@ -131,10 +131,10 @@ function pollTelegram() {
 function sendBotReply(chatId) {
   const replyData = JSON.stringify({
     chat_id: chatId,
-    text: "🌴 GlobeVibe GTA Island-ലേക്ക് സ്വാഗതം!\n\nകളിക്കാൻ താഴെ ക്ലിക്ക് ചെയ്യുക:",
+    text: "🌴 Welcome to GlobeVibe GDM Island!\n\nClick below to start playing:"
     reply_markup: {
       inline_keyboard: [
-        [{ text: "🎮 Play GTA Island", web_app: { url: GAME_URL } }],
+        [{ text: "🎮 Play GDM Island", web_app: { url: GAME_URL } }],
         [{ text: "👥 Share Link", url: `https://t.me/share/url?url=${encodeURIComponent(GAME_URL)}` }]
       ]
     }
