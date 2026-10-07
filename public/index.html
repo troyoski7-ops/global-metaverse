@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>GlobeVibe GTA Island</title>
+  <title>GlobeVibe Metaverse GTA Island</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -95,6 +95,7 @@
     </div>
   </div>
 
+  <!-- Settings & 11 Languages Modal -->
   <div id="master-settings-modal" class="modal-overlay">
     <div class="modal-card">
       <h3>⚙️ Profile & Settings</h3>
@@ -131,6 +132,7 @@
     </div>
   </div>
 
+  <!-- Climate Modal -->
   <div id="weather-modal" class="modal-overlay">
     <div class="modal-card">
       <h3>⛅ Weather</h3>
@@ -206,6 +208,14 @@
         osc.type = 'sine'; osc.frequency.setValueAtTime(440, now);
         gain.gain.setValueAtTime(0.5, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 1.0);
         osc.start(now); osc.stop(now + 1.0);
+      } else if (type === 'guitar') {
+        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(330, now);
+        gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.8);
+        osc.start(now); osc.stop(now + 0.8);
+      } else if (type === 'drums') {
+        osc.type = 'triangle'; osc.frequency.setValueAtTime(120, now); osc.frequency.exponentialRampToValueAtTime(30, now + 0.2);
+        gain.gain.setValueAtTime(0.8, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+        osc.start(now); osc.stop(now + 0.2);
       }
     }
 
@@ -249,6 +259,9 @@
     const desertBase = new THREE.Mesh(new THREE.CylinderGeometry(25, 26, 9.2, 32), new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.9 }));
     desertBase.position.set(-32, 0.45, -28); scene.add(desertBase);
 
+    const turf = new THREE.Mesh(new THREE.BoxGeometry(26, 9.25, 42), new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.6 }));
+    turf.position.set(0, 0.45, -44); scene.add(turf);
+
     // GLB Asset Loader (Ensures zero sinking under surface)
     const mixers = [];
     const gltfLoader = new THREE.GLTFLoader();
@@ -273,7 +286,7 @@
       gltfLoader.load(file, handle, undefined, () => gltfLoader.load('/' + file, handle, undefined, () => {}));
     }
 
-    // 1. Sky Fireworks Loop
+    // 1. SKY FIREWORKS LOOP
     const fwGeo = new THREE.BufferGeometry();
     const fwCount = 100;
     const fwPos = new Float32Array(fwCount * 3);
@@ -288,7 +301,11 @@
     const fwParticles = new THREE.Points(fwGeo, new THREE.PointsMaterial({ color: 0xf59e0b, size: 1.5 }));
     scene.add(fwParticles);
 
-    // 2. Godzilla & King Kong (Dark Charcoal skin & Live Animation)
+    // 2. ACTIVE VOLCANO
+    const volcanoGroup = new THREE.Group(); volcanoGroup.position.set(0, 0, -145); scene.add(volcanoGroup);
+    loadGLB('volcano.glb', 50, 0, m => volcanoGroup.add(m));
+
+    // 3. GODZILLA & KING KONG (Matching Dark Color & Live Animation)
     const godzillaSea = new THREE.Group(); godzillaSea.position.set(-110, 0, -85); scene.add(godzillaSea);
     loadGLB('godzilla.glb', 28, 0, m => godzillaSea.add(m));
 
@@ -300,58 +317,197 @@
       kingKongSea.add(m);
     });
 
-    // 3. Soccer Field: Goalpost & Ball
+    // 4. SOCCER GROUND: STRAIGHT GOALPOST & BALL
     const goalpost = new THREE.Group(); goalpost.position.set(0, 4.9, -60); goalpost.rotation.y = 0; scene.add(goalpost);
     loadGLB('goalpost.glb', 5.5, 4.9, m => goalpost.add(m));
 
-    const fBall = new THREE.Group(); fBall.position.set(0, 5.2, -48); scene.add(fBall);
+    const ballRig = { pos: new THREE.Vector3(0, 5.2, -48), vel: new THREE.Vector3(0, 0, 0) };
+    const fBall = new THREE.Group(); fBall.position.copy(ballRig.pos); scene.add(fBall);
     loadGLB('football.glb', 0.8, 5.2, m => fBall.add(m));
 
-    // 4. Desert: Elevated Camel & Tram 2
+    // 5. DESERT ZONE (Elevated Camel & Tram 2 Safe on Surface)
     loadGLB('camel_walk.glb', 4.5, 4.9, m => { m.position.set(-32, 4.9, -28); scene.add(m); });
+    loadGLB('fennecfox.glb', 1.6, 4.9, m => { m.position.set(-28, 4.9, -24); scene.add(m); });
+    loadGLB('scorpion.glb', 1.2, 4.9, m => { m.position.set(-36, 4.9, -20); scene.add(m); });
+    loadGLB('boulder.glb', 3.5, 4.9, m => { m.position.set(-38, 4.9, -32); scene.add(m); });
+    loadGLB('small_rock.glb', 1.8, 4.9, m => { m.position.set(-30, 4.9, -34); scene.add(m); });
+
     const tram2Rig = new THREE.Group(); scene.add(tram2Rig);
     loadGLB('tram2.glb', 5.0, 4.9, m => tram2Rig.add(m));
 
-    // 5. Snow: Tram 1 & Surface Vehicles
+    // 6. SNOW ZONE: TRAM 1, CABLE CAR & ANIMALS
     const tram1Rig = new THREE.Group(); scene.add(tram1Rig);
     loadGLB('tram1.glb', 5.0, 4.9, m => tram1Rig.add(m));
 
-    const vehicles = {};
-    function regCar(name, obj) { vehicles[name] = obj; }
+    const cableCurve = new THREE.CatmullRomCurve3([new THREE.Vector3(20, 8.5, 20), new THREE.Vector3(0, 16, 30), new THREE.Vector3(-20, 22, 40)]);
+    const cableLine = new THREE.Mesh(new THREE.TubeGeometry(cableCurve, 32, 0.05, 8, false), new THREE.MeshBasicMaterial({ color: 0x334155 }));
+    scene.add(cableLine);
+    const cableCarRig = new THREE.Group(); scene.add(cableCarRig);
+    loadGLB('cablecar.glb', 3.2, 4.9, m => cableCarRig.add(m));
 
-    const roverCar = new THREE.Group(); roverCar.position.set(12, 4.9, 16); scene.add(roverCar);
-    loadGLB('rangerover.glb', 4.4, 4.9, m => roverCar.add(m));
-    regCar('rover', roverCar);
+    loadGLB('ski_station.glb', 10, 4.9, m => { m.position.set(20, 4.9, 16); scene.add(m); });
+    loadGLB('ski_lift_station.glb', 7, 4.9, m => { m.position.set(20, 4.9, 22); scene.add(m); });
+    loadGLB('winter_market.glb', 8, 4.9, m => { m.position.set(32, 4.9, 18); scene.add(m); });
+    loadGLB('polar_bear.glb', 3.8, 4.9, m => { m.position.set(28, 4.9, 26); scene.add(m); });
+    loadGLB('reindeer.glb', 3.4, 4.9, m => { m.position.set(24, 4.9, 24); scene.add(m); });
+    loadGLB('snow_leopard.glb', 2.8, 4.9, m => { m.position.set(30, 4.9, 22); scene.add(m); });
+    loadGLB('penguin_single.glb', 1.4, 4.9, m => { m.position.set(32, 4.9, 28); scene.add(m); });
+    loadGLB('ice_penguins.glb', 4.5, 4.9, m => { m.position.set(28, 4.9, 30); scene.add(m); });
+    loadGLB('iceberg_large.glb', 14, 0.0, m => { m.position.set(50, 0.0, 52); scene.add(m); });
 
-    const groundPlane = new THREE.Group(); groundPlane.position.set(10, 4.9, -40); groundPlane.rotation.y = Math.PI; scene.add(groundPlane);
-    loadGLB('plane1.glb', 10.0, 4.9, m => groundPlane.add(m));
-    regCar('plane', groundPlane);
-
-    // 6. Forest Valley, Mountain & Flying Birds/Dragon
+    // 7. FOREST VALLEY, MOUNTAIN, DINOSAURS, TREES & FLOWERS
     loadGLB('forest_terrain.glb', 40, 4.9, m => { m.position.set(-36, 4.9, 65); scene.add(m); });
     loadGLB('rope_bridge.glb', 10, 5.5, m => { m.position.set(-18, 5.5, 22); scene.add(m); });
 
+    // Dinosaurs in Valley
+    loadGLB('Trex.glb', 5.5, 4.9, m => { m.position.set(-38, 4.9, 20); scene.add(m); });
+    loadGLB('Triceratops.glb', 4.5, 4.9, m => { m.position.set(-28, 4.9, 28); scene.add(m); });
+    loadGLB('Stegosaurus.glb', 4.5, 4.9, m => { m.position.set(-42, 4.9, 26); scene.add(m); });
+    loadGLB('velociraptor.glb', 3.2, 4.9, m => { m.position.set(-34, 4.9, 24); scene.add(m); });
+    loadGLB('Oviraptor.glb', 2.8, 4.9, m => { m.position.set(-30, 4.9, 16); scene.add(m); });
+    loadGLB('oviraptor_2.glb', 2.8, 4.9, m => { m.position.set(-26, 4.9, 18); scene.add(m); });
+
+    // Forest Trees & Flowers
+    const treeList = ['twisted_tree_1.glb', 'twisted_tree_2', 'forest_trees.glb', 'tree_large.glb', 'tree.glb', 'palm_tree.glb'];
+    treeList.forEach((t, i) => loadGLB(t, 6.0, 4.9, m => { m.position.set(-20 - i * 4, 4.9, 14 + i * 3); scene.add(m); }));
+    const flowerList = ['flower_bush.glb', 'flower_group.glb', 'flower_single.glb', 'flower_yellow.glb', 'flowers_small.glb'];
+    flowerList.forEach((f, i) => loadGLB(f, 2.0, 4.9, m => { m.position.set(-16 - i * 3, 4.9, 14 + i * 4); scene.add(m); }));
+    loadGLB('panda.glb', 2.0, 4.9, m => { m.position.set(-32, 4.9, 32); scene.add(m); });
+    loadGLB('bird_house.glb', 2.0, 4.9, m => { m.position.set(-36, 4.9, 34); scene.add(m); });
+
+    // Insects floating over flowers
+    const insectGroup = new THREE.Group(); insectGroup.position.set(-20, 5.2, 20); scene.add(insectGroup);
+    loadGLB('armabee.glb', 1.0, 5.2, m => { m.position.set(2, 0, 0); insectGroup.add(m); });
+    loadGLB('butterfly_blue.glb', 1.2, 5.2, m => { m.position.set(-2, 0.3, 1); insectGroup.add(m); });
+    loadGLB('butterfly_orange.glb', 1.2, 5.2, m => { m.position.set(0, -0.3, -2); insectGroup.add(m); });
+
+    // Flying Birds & Dragon ONLY in Mountain Sky
     const flyingGroup = new THREE.Group(); flyingGroup.position.set(-36, 22, 35); scene.add(flyingGroup);
     loadGLB('dragon.glb', 6.5, 22, m => { m.position.set(15, 0, 0); flyingGroup.add(m); });
     loadGLB('Pterodactylus.glb', 4.2, 22, m => { m.position.set(-15, 1, 0); flyingGroup.add(m); });
     loadGLB('eagle.glb', 2.5, 22, m => { m.position.set(0, 2, 12); flyingGroup.add(m); });
+    loadGLB('bird.glb', 1.2, 22, m => { m.position.set(8, 0, 8); flyingGroup.add(m); });
+    loadGLB('bird_2.glb', 1.2, 22, m => { m.position.set(-8, 1, -8); flyingGroup.add(m); });
+    loadGLB('parrot.glb', 1.4, 22, m => { m.position.set(0, -1, -12); flyingGroup.add(m); });
 
-    loadGLB('Trex.glb', 5.5, 4.9, m => { m.position.set(-38, 4.9, 20); scene.add(m); });
-    loadGLB('velociraptor.glb', 3.2, 4.9, m => { m.position.set(-34, 4.9, 24); scene.add(m); });
+    // 8. CITY BUILDINGS & STREETS
+    loadGLB('city.glb', 26, 4.9, m => { m.position.set(0, 4.9, 0); scene.add(m); });
+    loadGLB('city_tower.glb', 16, 4.9, m => { m.position.set(-14, 4.9, -10); scene.add(m); });
+    loadGLB('city_shop.glb', 7.5, 4.9, m => { m.position.set(12, 4.9, -8); scene.add(m); });
+    loadGLB('city_house.glb', 8.0, 4.9, m => { m.position.set(-6, 4.9, -14); scene.add(m); });
+    loadGLB('street_light.glb', 4, 4.9, m => { m.position.set(8, 4.9, 8); scene.add(m); });
+    loadGLB('wooden_bench.glb', 2.5, 4.9, m => { m.position.set(6, 4.9, 6); scene.add(m); });
+    loadGLB('train_station.glb', 12, 4.9, m => { m.position.set(24, 4.9, 30); scene.add(m); });
 
-    // 7. Concert Stage & Instruments
+    // 9. CONCERT STAGE & INSTRUMENTS
     const concertStage = new THREE.Group(); concertStage.position.set(30, 4.9, -20); scene.add(concertStage);
     loadGLB('concert_stage.glb', 14, 4.9, m => concertStage.add(m));
-    loadGLB('piano.glb', 2.5, 6.2, m => { m.position.set(26, 6.2, -22); scene.add(m); });
+    loadGLB('stage_lights.glb', 4.5, 8.4, m => { m.position.set(0, 3.5, 0); concertStage.add(m); });
+    loadGLB('speaker.glb', 3.0, 5.4, m => { m.position.set(4, 0.5, 4); concertStage.add(m); });
+    loadGLB('stage_barrier.glb', 4.0, 5.0, m => { m.position.set(0, 0.1, 6); concertStage.add(m); });
+    loadGLB('stage_mic.glb', 1.5, 6.2, m => { m.position.set(30, 6.2, -17); scene.add(m); });
 
-    // 8. Ocean Water Life (All Fishes Strictly in Sea)
+    const playableInstruments = {};
+    function regInst(name, file, pos, sfx) {
+      loadGLB(file, 2.5, 6.2, m => { m.position.copy(pos); scene.add(m); playableInstruments[name] = { obj: m, sfx }; });
+    }
+    regInst('piano', 'piano.glb', new THREE.Vector3(26, 6.2, -22), 'piano');
+    regInst('drums', 'drum_set.glb', new THREE.Vector3(34, 6.2, -22), 'drums');
+    regInst('dj', 'dj_gear.glb', new THREE.Vector3(30, 6.2, -18), 'dj');
+    regInst('guitar', 'electric_guitar.glb', new THREE.Vector3(28, 6.2, -20), 'guitar');
+    regInst('violin', 'violin.glb', new THREE.Vector3(32, 6.2, -20), 'violin');
+
+    // 10. VEHICLES (ALL RESTORED)
+    const multiVehicles = {};
+    function registerRig(name, obj, isFlyer=false) { multiVehicles[name] = { object: obj, isFlyer }; }
+
+    const groundPlane = new THREE.Group(); groundPlane.position.set(10, 4.9, -40); groundPlane.rotation.y = Math.PI; scene.add(groundPlane);
+    loadGLB('plane1.glb', 10.0, 4.9, m => groundPlane.add(m));
+    registerRig('plane1', groundPlane, true);
+
+    const carChallenger = new THREE.Group(); carChallenger.position.set(12, 4.9, 10); scene.add(carChallenger);
+    loadGLB('challenger.glb', 4.2, 4.9, m => carChallenger.add(m));
+    registerRig('challenger', carChallenger);
+
+    const carRover = new THREE.Group(); carRover.position.set(12, 4.9, 16); scene.add(carRover);
+    loadGLB('rangerover.glb', 4.4, 4.9, m => carRover.add(m));
+    registerRig('rangerover', carRover);
+
+    const vanVehicle = new THREE.Group(); vanVehicle.position.set(12, 4.9, 22); scene.add(vanVehicle);
+    loadGLB('van.glb', 4.8, 4.9, m => vanVehicle.add(m));
+    registerRig('van', vanVehicle);
+
+    const spaceJet = new THREE.Group(); spaceJet.position.set(-25, 4.9, 0); scene.add(spaceJet);
+    loadGLB('spaceship.glb', 6.0, 4.9, m => spaceJet.add(m));
+    registerRig('jet', spaceJet, true);
+
+    const heliEntity = new THREE.Group(); heliEntity.position.set(-15, 4.9, 10); scene.add(heliEntity);
+    loadGLB('helicopter.glb', 5.5, 4.9, m => heliEntity.add(m));
+    registerRig('heli', heliEntity, true);
+
+    const mechEntity = new THREE.Group(); mechEntity.position.set(0, 4.9, -22); scene.add(mechEntity);
+    loadGLB('mech.glb', 8.0, 4.9, m => mechEntity.add(m));
+    registerRig('mech', mechEntity);
+
+    const bikeMoto = new THREE.Group(); bikeMoto.position.set(6, 4.9, 12); scene.add(bikeMoto);
+    loadGLB('motorcycle.glb', 2.6, 4.9, m => bikeMoto.add(m));
+    registerRig('motorcycle', bikeMoto);
+
+    const bikeOld = new THREE.Group(); bikeOld.position.set(6, 4.9, 16); scene.add(bikeOld);
+    loadGLB('oldbike.glb', 2.2, 4.9, m => bikeOld.add(m));
+    registerRig('oldbike', bikeOld);
+
+    const snowBike = new THREE.Group(); snowBike.position.set(22, 4.9, 12); scene.add(snowBike);
+    loadGLB('snow_bike.glb', 2.8, 4.9, m => snowBike.add(m));
+    registerRig('snowbike', snowBike);
+
+    // 11. OCEAN SHIPS & STILL BOAT
+    loadGLB('dock.glb', 12, 1.2, m => { m.position.set(0, 1.2, 62); scene.add(m); });
+    const calmBoat = new THREE.Group(); calmBoat.position.set(14, 0.2, 70); scene.add(calmBoat);
+    loadGLB('low_poly_boat.glb', 5.0, 0.2, m => calmBoat.add(m));
+    registerRig('boat', calmBoat);
+
+    const cargoShip = new THREE.Group(); cargoShip.position.set(0, 0.5, 95); scene.add(cargoShip);
+    loadGLB('low_poly_cargo_ship.glb', 18, 0.5, m => cargoShip.add(m));
+    registerRig('ship', cargoShip);
+
+    const cruiseShip = new THREE.Group(); cruiseShip.position.set(-45, 0.5, 115); scene.add(cruiseShip);
+    loadGLB('cruise.glb', 25, 0.5, m => cruiseShip.add(m));
+    registerRig('cruise', cruiseShip);
+
+    // 12. OCEAN WATER LIFE (ALL 19 FISHES STRICTLY IN WATER)
     loadGLB('Whale.glb', 14.0, -1.8, m => { m.position.set(-120, -1.8, 80); scene.add(m); });
     loadGLB('dolphin.glb', 4.5, -0.8, m => { m.position.set(-95, -0.8, 90); scene.add(m); });
     loadGLB('shark.glb', 5.5, -1.0, m => { m.position.set(100, -1.0, 95); scene.add(m); });
+    loadGLB('shark_green.glb', 5.0, -1.0, m => { m.position.set(110, -1.0, 60); scene.add(m); });
+    loadGLB('shark_quaternius.glb', 5.2, -1.0, m => { m.position.set(80, -1.0, 95); scene.add(m); });
+    loadGLB('small_shark_blue.glb', 4.0, -1.0, m => { m.position.set(-70, -1.0, 95); scene.add(m); });
+    loadGLB('sea_monster.glb', 14.0, -1.0, m => { m.position.set(100, -1.0, -80); scene.add(m); });
+    loadGLB('plesiosaur.glb', 10.0, -1.2, m => { m.position.set(110, -1.2, -80); scene.add(m); });
     loadGLB('stingray.glb', 4.0, -1.0, m => { m.position.set(-50, -1.0, 85); scene.add(m); });
+    loadGLB('manta_ray.glb', 5.0, -0.9, m => { m.position.set(50, -0.9, 85); scene.add(m); });
+    loadGLB('clam.glb', 2.0, -0.4, m => { m.position.set(-18, -0.4, 65); scene.add(m); });
+    loadGLB('frog.glb', 1.5, 0.1, m => { m.position.set(-25, 0.1, 52); scene.add(m); });
+    loadGLB('jellyfish.glb', 3.5, -0.8, m => { m.position.set(-55, -0.8, -90); scene.add(m); });
+    loadGLB('seahorse.glb', 2.0, -0.5, m => { m.position.set(-45, -0.5, 75); scene.add(m); });
+    loadGLB('seal_baby.glb', 2.2, 0.1, m => { m.position.set(45, 0.1, 55); scene.add(m); });
+    loadGLB('turtle_orange.glb', 2.8, -0.4, m => { m.position.set(85, -0.4, 70); scene.add(m); });
+    loadGLB('turtle_yellow.glb', 2.8, -0.4, m => { m.position.set(75, -0.4, 80); scene.add(m); });
+    loadGLB('turtle_grey.glb', 2.8, -0.4, m => { m.position.set(-85, -0.4, 85); scene.add(m); });
+    loadGLB('underwater_coral.glb', 6.0, -1.5, m => { m.position.set(60, -1.5, -50); scene.add(m); });
+
+    const fishRoster = [
+      'fish_bubbles.glb', 'fish_white.glb', 'fish_blue.glb', 'fish_front.glb', 'swordfish.glb',
+      'fish_betta.glb', 'fish_parrot.glb', 'fish_catfish.glb', 'goldfish.glb', 'fish_milkfish.glb',
+      'fish_clownfish_zebra.glb', 'fish_blue_goldfish.glb', 'fish_lionfish.glb', 'fish_piranha.glb',
+      'fish_trout.glb', 'fish_kingfish.glb', 'clownfish.glb', 'blowfish.glb', 'fish_small_1.glb', 'fish_butterfly.glb'
+    ];
+    fishRoster.forEach((f, i) => {
+      loadGLB(f, 1.2, -0.9, m => { m.position.set(-60 + (i % 6) * 22, -0.9, 65 + Math.floor(i / 6) * 14); scene.add(m); });
+    });
 
     // ==========================================
-    // MULTIPLAYER AVATAR RENDERING ENGINE (കാണാൻ സാധിക്കുന്നത്)
+    // MULTIPLAYER AVATAR RENDERING ENGINE
     // ==========================================
     const remotePlayers = {};
     function renderRemotePlayer(data) {
@@ -395,7 +551,7 @@
       document.getElementById('hud-online').innerText = data.count || Object.keys(remotePlayers).length + 1;
     });
 
-    // Local Player
+    // Local Player & Upright Lock
     const localPlayer = new THREE.Group(); localPlayer.position.set(0, 4.9, 0); scene.add(localPlayer);
     const localAvatar = new THREE.Group(); localPlayer.add(localAvatar);
 
@@ -485,13 +641,13 @@
       if (currentVehicle) { actBtn.style.display = 'none'; return; }
       const p = localPlayer.position;
 
-      for (let k in vehicles) {
-        const v = vehicles[k];
+      for (let k in multiVehicles) {
+        const v = multiVehicles[k].object;
         if (p.distanceTo(v.position) < 5.0) {
           actBtn.innerText = `🚗 BOARD ${k.toUpperCase()}`;
           actBtn.style.display = 'block';
           actBtn.onclick = () => {
-            currentVehicle = v;
+            currentVehicle = multiVehicles[k];
             v.add(localAvatar);
             localAvatar.visible = false;
             document.getElementById('dismount-btn').style.display = 'block';
@@ -502,30 +658,34 @@
         }
       }
 
-      if (p.distanceTo(new THREE.Vector3(26, 6.2, -22)) < 3.0) {
-        actBtn.innerText = "🎵 PLAY PIANO";
-        actBtn.style.display = 'block';
-        actBtn.onclick = () => playSound('piano');
-        return;
+      for (let k in playableInstruments) {
+        const inst = playableInstruments[k];
+        if (p.distanceTo(inst.obj.position) < 3.2) {
+          actBtn.innerText = `🎵 PLAY ${k.toUpperCase()}`;
+          actBtn.style.display = 'block';
+          actBtn.onclick = () => playSound(inst.sfx);
+          return;
+        }
       }
       actBtn.style.display = 'none';
     }
 
     window.exitVehicle = () => {
       if (!currentVehicle) return;
+      const v = currentVehicle.object;
       localPlayer.add(localAvatar);
       localAvatar.visible = true;
       localAvatar.position.set(0, 0, 0);
-      localPlayer.position.set(currentVehicle.position.x + 3.0, 4.9, currentVehicle.position.z);
+      localPlayer.position.set(v.position.x + 3.0, 4.9, v.position.z);
       document.getElementById('dismount-btn').style.display = 'none';
       bGas.style.display = 'none';
       bBrake.style.display = 'none';
       currentVehicle = null;
     };
 
-    // Main Loop
+    // Main Game Loop
     const clock = new THREE.Clock();
-    let tram1T = 0, tram2T = 0;
+    let tram1T = 0, tram2T = 0, cableCarT = 0, cableDir = 1;
 
     function animate() {
       requestAnimationFrame(animate);
@@ -557,8 +717,36 @@
       tram2Rig.position.set(-32 + Math.sin(tram2T) * 14, 4.9, -28 + Math.cos(tram2T) * 14);
       tram2Rig.rotation.y = tram2T + Math.PI / 2;
 
-      // Dragon Sky Orbit
+      // Cable Car Loop
+      cableCarT += delta * 0.08 * cableDir;
+      if (cableCarT >= 1.0) { cableCarT = 1.0; cableDir = -1; }
+      else if (cableCarT <= 0.0) { cableCarT = 0.0; cableDir = 1; }
+      cableCarRig.position.copy(cableCurve.getPoint(cableCarT));
+
+      // Dragon Sky Orbit & Insects
       flyingGroup.rotation.y = time * 0.25;
+      insectGroup.position.y = 5.2 + Math.sin(time * 3.0) * 0.3;
+      insectGroup.rotation.y = Math.sin(time * 1.5) * 0.4;
+
+      // Soccer Ball Physics
+      const pToBall = localPlayer.position.distanceTo(fBall.position);
+      if (pToBall < 1.4) {
+        const pushDir = new THREE.Vector3().subVectors(fBall.position, localPlayer.position).normalize();
+        ballRig.vel.x = pushDir.x * 0.55;
+        ballRig.vel.z = pushDir.z * 0.55;
+        playSound('kick');
+      }
+      fBall.position.add(ballRig.vel);
+      ballRig.vel.multiplyScalar(0.92);
+      fBall.position.y = 5.2;
+
+      if (fBall.position.z < -60 && Math.abs(fBall.position.x) < 4.0) {
+        playSound('kick');
+        penaltyGoals++;
+        document.getElementById('score-goals').innerText = penaltyGoals;
+        fBall.position.set(0, 5.2, -48);
+        ballRig.vel.set(0, 0, 0);
+      }
 
       // Player / Vehicle Movement
       if (!currentVehicle) {
@@ -579,16 +767,22 @@
           socket.emit('playerMoved', { x: localPlayer.position.x, y: localPlayer.position.y, z: localPlayer.position.z, rotY: localPlayer.rotation.y });
         }
       } else {
+        const obj = currentVehicle.object;
         const effJoyX = joyX !== 0 ? joyX : steerBtnX;
         let driveSpeed = 0;
         if (isGas) driveSpeed = 0.7;
         else if (isBrake) driveSpeed = -0.3;
         else if (joyZ !== 0) driveSpeed = -joyZ * 0.5;
 
-        currentVehicle.rotation.y -= effJoyX * 0.04;
-        currentVehicle.position.x += Math.sin(currentVehicle.rotation.y) * driveSpeed;
-        currentVehicle.position.z += Math.cos(currentVehicle.rotation.y) * driveSpeed;
-        localPlayer.position.copy(currentVehicle.position);
+        obj.rotation.y -= effJoyX * 0.04;
+        obj.position.x += Math.sin(obj.rotation.y) * driveSpeed;
+        obj.position.z += Math.cos(obj.rotation.y) * driveSpeed;
+
+        if (currentVehicle.isFlyer) {
+          if (isGas && obj.position.y < 70) obj.position.y += 0.3;
+          if (isBrake && obj.position.y > 4.9) obj.position.y -= 0.3;
+        }
+        localPlayer.position.copy(obj.position);
       }
 
       // Camera
@@ -596,7 +790,7 @@
         camera.position.set(0, 140, 40);
         camera.lookAt(0, 0, 0);
       } else {
-        const p = currentVehicle ? currentVehicle.position : localPlayer.position;
+        const p = currentVehicle ? currentVehicle.object.position : localPlayer.position;
         const dist = 11;
         camera.position.x = p.x + Math.sin(camRotX) * Math.cos(camRotY) * dist;
         camera.position.y = p.y + Math.sin(camRotY) * dist + 2.5;
