@@ -24,10 +24,7 @@ io.on('connection', (socket) => {
     z: 0,
     rotY: 0,
     name: "Player_" + socket.id.substr(0, 4),
-    gender: "man",
-    room: "Global",
-    action: "idle",
-    friends: []
+    gender: "man"
   };
 
   // വേൾഡ് ഇനിഷ്യലൈസേഷൻ
@@ -100,7 +97,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log('Player left:', socket.id);
     delete players[socket.id];
     io.emit('playerLeft', {
       id: socket.id,
@@ -119,10 +115,10 @@ try {
   const TelegramBot = require('node-telegram-bot-api');
   const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: true });
 
-  // ഗ്രൂപ്പുകളിലും (/start@botname) പ്രൈവറ്റിലും വർക്കാവുന്ന റെജക്സ്
-  bot.onText(/\/start(@\w+)?/, (msg) => {
+  // ഗ്രൂപ്പുകളിലും (/start@botname) നേരിട്ടും വർക്കാവുന്ന റെജക്സ്
+  bot.onText(/\/start(.*)/, (msg) => {
     const chatId = msg.chat.id;
-    bot.sendMessage(chatId, "🌴 GlobeVibe Metaverse GTA Island-ലേക്ക് സ്വാഗതം!\n\nസുഹൃത്തുക്കളോടൊപ്പം കളിക്കാൻ താഴെയുള്ള ലിങ്ക് ക്ലിക്ക് ചെയ്യുക:", {
+    bot.sendMessage(chatId, "🌴 GlobeVibe Metaverse GTA Island-ലേക്ക് സ്വാഗതം!\n\nകളിക്കാൻ താഴെ ക്ലിക്ക് ചെയ്യുക:", {
       reply_markup: {
         inline_keyboard: [
           [
@@ -141,6 +137,9 @@ try {
   console.log("Telegram Bot error:", err.message);
 }
 
+// ==========================================
+// 3. SERVER PORT LISTENER
+// ==========================================
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, () => {
   console.log(`Server running smoothly on port ${PORT}`);
