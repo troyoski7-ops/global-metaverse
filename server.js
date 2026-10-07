@@ -95,33 +95,70 @@ io.on('connection', (socket) => {
   });
 });
 
-// TELEGRAM BOT WEBHOOK CLEAR & DIRECT RESPONSE
-const TELEGRAM_BOT_TOKEN = process.env.BOT_TOKEN || '8592382374:AAEZik_4Y0HLy_8iUM83MzlwxKgldjpInm4';
-const GAME_URL = process.env.GAME_URL || 'https://global-vibe-metaverse.onrender.com';
+// ==================== DIRECT TELEGRAM BOT ====================
+const https = require('https');
+const BOT_TOKEN = '8592382374:AAEZik_4Y0HLy_8iUM83MzlwxKgldjpInm4';
+const GAME_URL = 'https://global-vibe-metaverse.onrender.com';
 
-async function startBot() {
-  try {
-    const TelegramBot = require('node-telegram-bot-api');
-    const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, { polling: false });
-    await bot.deleteWebhook({ drop_pending_updates: true });
-    bot.startPolling();
+let lastUpdateId = 0;
 
-    bot.on('message', (msg) => {
-      bot.sendMessage(msg.chat.id, "🌴 GlobeVibe GTA Island-ലേക്ക് സ്വാഗതം!\n\nകളിക്കാൻ താഴെ ക്ലിക്ക് ചെയ്യുക:", {
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: "🎮 Play GTA Island", web_app: { url: GAME_URL } }],
-            [{ text: "👥 Share Link", url: `https://t.me/share/url?url=${encodeURIComponent(GAME_URL)}` }]
-          ]
+function pollTelegram() {
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${lastUpdateId + 1}&timeout=10`;
+  
+  https.get(url, (res) => {
+    let data = '';
+    res.on('data', chunk => data += chunk);
+    res.on('end', () => {
+      try {
+        const json = JSON.parse(data);
+        if (json.ok && json.result) {
+          json.result.forEach(update => {
+            lastUpdateId = update.update_id;
+            if (update.message && update.message.text) {
+              const chatId = update.message.chat.id;
+              sendBotReply(chatId);
+            }
+          });
         }
-      });
+      } catch (e) {}
+      setTimeout(pollTelegram, 1000);
     });
-    console.log("Telegram Bot is running smoothly!");
-  } catch (err) {
-    console.log("Bot Error:", err.message);
-  }
+  }).on('error', () => {
+    setTimeout(pollTelegram, 3000);
+  });
 }
-startBot();
+
+function sendBotReply(chatId) {
+  const replyData = JSON.stringify({
+    chat_id: chatId,
+    text: "🌴 GlobeVibe GTA Island-ലേക്ക് സ്വാഗതം!\n\nകളിക്കാൻ താഴെ ക്ലിക്ക് ചെയ്യുക:",
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: "🎮 Play GTA Island", web_app: { url: GAME_URL } }],
+        [{ text: "👥 Share Link", url: `https://t.me/share/url?url=${encodeURIComponent(GAME_URL)}` }]
+      ]
+    }
+  });
+
+  const options = {
+    hostname: 'api.telegram.org',
+    path: `/bot${BOT_TOKEN}/sendMessage`,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(replyData)
+    }
+  };
+
+  const req = https.request(options);
+  req.write(replyData);
+  req.end();
+}
+
+pollTelegram();
+console.log("Direct Telegram Bot polling started!");
+// ==============================================================
+
 
 const PORT = process.env.PORT || 3000;
 http.listen(PORT, () => {
