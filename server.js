@@ -10,7 +10,7 @@ let totalConnectedUsers = 0;
 
 io.on('connection', (socket) => {
   totalConnectedUsers++;
-  console.log(`Player connected: ${socket.id} | Total: ${totalConnectedUsers}`);
+  console.log(`Player connected: ${socket.id} | Online: ${totalConnectedUsers}`);
 
   players[socket.id] = {
     id: socket.id,
@@ -22,7 +22,6 @@ io.on('connection', (socket) => {
     gender: "man"
   };
 
-  // വേൾഡ് ഇനിഷ്യലൈസേഷൻ & തത്സമയം നിലവിലുള്ള എല്ലാവർക്കും പരസ്പരം കാണാൻ
   socket.emit('initWorld', {
     myId: socket.id,
     count: Object.keys(players).length,
@@ -44,12 +43,47 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('updateProfile', (data) => {
+    if (players[socket.id]) {
+      if (data.name) players[socket.id].name = data.name;
+      if (data.gender) players[socket.id].gender = data.gender;
+      io.emit('profileUpdated', { id: socket.id, name: players[socket.id].name, gender: players[socket.id].gender });
+    }
+  });
+
   socket.on('chatMessage', (data) => {
-    io.emit('chatMessage', {
-      senderId: socket.id,
-      name: players[socket.id]?.name || 'Player',
-      text: data.text
-    });
+    if (data.to) {
+      io.to(data.to).emit('privateMessage', {
+        fromId: socket.id,
+        fromName: players[socket.id]?.name || 'Player',
+        text: data.text
+      });
+      socket.emit('privateMessage', {
+        fromId: socket.id,
+        toId: data.to,
+        fromName: players[socket.id]?.name || 'Player',
+        text: data.text
+      });
+    } else {
+      io.emit('chatMessage', {
+        senderId: socket.id,
+        name: players[socket.id]?.name || 'Player',
+        text: data.text
+      });
+    }
+  });
+
+  socket.on('friendRequest', (data) => {
+    if (data.targetId && io.sockets.sockets.get(data.targetId)) {
+      io.to(data.targetId).emit('friendRequestReceived', {
+        fromId: socket.id,
+        fromName: players[socket.id]?.name || 'Player'
+      });
+    }
+  });
+
+  socket.on('voiceAudio', (audioData) => {
+    socket.broadcast.emit('voiceAudio', { senderId: socket.id, audio: audioData });
   });
 
   socket.on('disconnect', () => {
@@ -61,7 +95,7 @@ io.on('connection', (socket) => {
   });
 });
 
-// Telegram Bot Webhook Clear & Start Handler
+// TELEGRAM BOT WEBHOOK CLEAR & START
 const TELEGRAM_BOT_TOKEN = process.env.BOT_TOKEN || '8592382374:AAEZik_4Y0HLy_8iUM83MzlwxKgldjpInm4';
 const GAME_URL = process.env.GAME_URL || 'https://global-vibe-metaverse.onrender.com';
 
@@ -73,8 +107,7 @@ async function startBot() {
     bot.startPolling();
 
     bot.on('message', (msg) => {
-      const chatId = msg.chat.id;
-      bot.sendMessage(chatId, "🌴 GlobeVibe GTA Island-ലേക്ക് സ്വാഗതം!\n\nകളിക്കാൻ താഴെ ക്ലിക്ക് ചെയ്യുക:", {
+      bot.sendMessage(msg.chat.id, "🌴 GlobeVibe GTA Island-ലേക്ക് സ്വാഗതം!\n\nകളിക്കാൻ താഴെ ക്ലിക്ക് ചെയ്യുക:", {
         reply_markup: {
           inline_keyboard: [
             [{ text: "🎮 Play GTA Island", web_app: { url: GAME_URL } }],
@@ -83,7 +116,7 @@ async function startBot() {
         }
       });
     });
-    console.log("Telegram Bot active and replying to all messages!");
+    console.log("Telegram Bot is running smoothly!");
   } catch (err) {
     console.log("Bot Error:", err.message);
   }
